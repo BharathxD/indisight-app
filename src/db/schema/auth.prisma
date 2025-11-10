@@ -10,6 +10,7 @@ model User {
     updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
     sessions      Session[]
     accounts      Account[]
+    authors       Author[]
 
     @@unique([email])
     @@map("user")

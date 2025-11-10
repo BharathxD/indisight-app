@@ -1,0 +1,57 @@
+model ArticleAuthor {
+  articleId   String   @map("article_id")
+  authorId    String   @map("author_id")
+  authorOrder Int      @default(0) @map("author_order")
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author  Author  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, authorId])
+  @@index([authorId])
+  @@index([articleId, isPrimary])
+  @@map("article_author")
+}
+
+model ArticleCategory {
+  articleId  String   @map("article_id")
+  categoryId String   @map("category_id")
+  isPrimary  Boolean  @default(false) @map("is_primary")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  article  Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, categoryId])
+  @@index([categoryId])
+  @@index([articleId, isPrimary])
+  @@map("article_category")
+}
+
+model ArticleTag {
+  articleId String   @map("article_id")
+  tagId     String   @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+  @@map("article_tag")
+}
+
+model ArticleRelated {
+  articleId        String @map("article_id")
+  relatedArticleId String @map("related_article_id")
+  relevanceScore   Float  @default(0) @map("relevance_score")
+
+  article        Article @relation("ArticleToRelated", fields: [articleId], references: [id], onDelete: Cascade)
+  relatedArticle Article @relation("RelatedToArticle", fields: [relatedArticleId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, relatedArticleId])
+  @@index([relatedArticleId])
+  @@index([articleId, relevanceScore])
+  @@map("article_related")
+}
