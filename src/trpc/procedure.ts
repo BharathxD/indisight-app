@@ -1,3 +1,4 @@
+import { UserRole } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { t } from "@/trpc/server";
 
@@ -5,7 +6,25 @@ export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.user?.id) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not authorized to access this resource",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      user: ctx.user,
+    },
+  });
+});
+
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== UserRole.SUPER_ADMIN) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not authorized to access this resource",
+    });
   }
   return next({
     ctx: {
