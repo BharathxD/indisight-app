@@ -1,0 +1,12 @@
+enum UserRole {
+  SUPER_ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum ArticleStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
