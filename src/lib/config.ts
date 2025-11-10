@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "IndiSight",
   title: "IndiSight - Insights for Leaders & Innovators",
   description:
-    "Editorial content platform featuring CXO Series, Quiet Architects, and thought leadership articles for business leaders and innovators.",
+    "IndiSight captures the minds shaping meaningful change. We document people, institutions, and ideas through the lens of intent, resilience, and quiet conviction. Not for headlines — but for those who care how things are truly built.",
   url: env.NEXT_PUBLIC_APP_URL,
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.jpg`,
   links: {

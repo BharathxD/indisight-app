@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: Readonly<React.PropsWithChildren>) => (
   <html lang="en" suppressHydrationWarning>
     <body className={cn("antialiased", geistSans.variable, geistMono.variable)}>
-      {children}
+      <Providers>{children}</Providers>
     </body>
   </html>
 );

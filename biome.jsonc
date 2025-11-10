@@ -23,6 +23,9 @@
         "noNoninteractiveElementInteractions": "off"
       },
       "recommended": true,
+      "nursery": {
+        "noShadow": "off"
+      },
       "style": {
         "noMagicNumbers": "off",
         "noNestedTernary": "off",

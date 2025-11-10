@@ -15,6 +15,8 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: z.url().endsWith(".upstash.io"),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(63).max(63),
 
+    SIGNUP_ENABLED: z.enum(["true", "false"]).default("false"),
+
     NODE_ENV: z.enum(["development", "production"]).default("development"),
   },
 
