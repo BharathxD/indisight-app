@@ -79,6 +79,7 @@ export const ArticleCardStandard = ({
                 date={article.publishedAt}
                 readTime={article.readTime}
                 showAvatar={false}
+                disableLinks
               />
             )}
           </div>
@@ -127,6 +128,7 @@ export const ArticleCardStandard = ({
               date={article.publishedAt}
               readTime={article.readTime}
               showAvatar={false}
+              disableLinks
             />
           )}
         </div>
