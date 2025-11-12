@@ -1,9 +1,10 @@
+import Link from "next/link";
 import {
   ArticleCardFeatured,
-  ArticleCardHero,
   ArticleCardStandard,
 } from "@/components/public/articles";
 import { PublicLayout } from "@/components/public/public-layout";
+import { siteConfig } from "@/lib/config";
 import { trpc } from "@/trpc/server-client";
 
 export const revalidate = 30;
@@ -11,48 +12,154 @@ export const revalidate = 30;
 const HomePage = async () => {
   const caller = await trpc();
   const [featuredArticles, latestArticles] = await Promise.all([
-    caller.cms.article.getFeatured({ limit: 7 }),
-    caller.cms.article.getLatest({ limit: 12 }),
+    caller.cms.article.getFeatured({ limit: 6 }),
+    caller.cms.article.getLatest({ limit: 6 }),
   ]);
-
-  const heroArticle = featuredArticles[0];
-  const featuredGrid = featuredArticles.slice(1, 7);
-  const latestList = latestArticles;
 
   return (
     <PublicLayout>
       <div className="min-h-screen bg-white">
-        <main className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
-          {heroArticle && (
-            <section className="mb-12 md:mb-16">
-              <ArticleCardHero article={heroArticle} />
-            </section>
-          )}
+        <section className="relative overflow-hidden border-neutral-200 border-b bg-linear-to-br from-white via-neutral-50 to-white">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[64px_64px]" />
 
-          {featuredGrid.length > 0 && (
-            <section className="mb-12 md:mb-16">
-              <div className="mb-6 flex items-center justify-between border-gray-200 border-b pb-4">
-                <h2 className="font-bold text-2xl text-gray-900 tracking-tight">
-                  Featured Stories
-                </h2>
+          <div className="relative mx-auto max-w-[1280px] px-6 py-20 md:px-12 md:py-32 lg:py-40">
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="mb-6 inline-flex items-center gap-2 border border-neutral-200 bg-white px-4 py-2 text-neutral-600 text-sm shadow-sm">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-neutral-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-neutral-500" />
+                </span>
+                Editorial Platform for Leaders & Innovators
+              </div>
+
+              <h1 className="mb-6 font-bold text-5xl text-gray-900 leading-tight tracking-tight md:text-7xl md:leading-tight">
+                Capturing the minds shaping{" "}
+                <span className="bg-linear-to-r from-neutral-900 via-neutral-700 to-neutral-900 bg-clip-text text-transparent">
+                  meaningful change
+                </span>
+              </h1>
+
+              <p className="mx-auto mb-10 max-w-2xl text-gray-600 text-lg leading-relaxed md:text-xl">
+                {siteConfig.description}
+              </p>
+
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Link
+                  className="inline-flex items-center justify-center border border-neutral-900 bg-neutral-900 px-8 py-3 font-medium text-sm text-white transition-all hover:bg-neutral-800"
+                  href="/articles"
+                >
+                  Explore Articles
+                  <svg
+                    aria-hidden="true"
+                    className="ml-2 size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
+                <Link
+                  className="inline-flex items-center justify-center border border-neutral-300 bg-white px-8 py-3 font-medium text-neutral-900 text-sm transition-all hover:border-neutral-400 hover:bg-neutral-50"
+                  href="/about"
+                >
+                  Learn More
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-neutral-200 border-b bg-white py-12 md:py-16">
+          <div className="mx-auto max-w-[1280px] px-6 md:px-12">
+            <div className="grid gap-8 md:grid-cols-3">
+              {siteConfig.categories.slice(1, 4).map((category) => (
+                <Link
+                  className="group hover:-translate-y-1 border border-neutral-200 bg-white p-6 transition-all hover:shadow-lg"
+                  href={`/categories/${category.slug}`}
+                  key={category.slug}
+                >
+                  <h3 className="mb-2 font-semibold text-gray-900 text-lg tracking-tight">
+                    {category.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {category.description}
+                  </p>
+                  <div className="mt-4 flex items-center font-medium text-neutral-600 text-sm transition-colors group-hover:text-neutral-900">
+                    Explore
+                    <svg
+                      aria-hidden="true"
+                      className="ml-1 size-4 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M9 5l7 7-7 7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <main className="mx-auto max-w-[1280px] px-6 py-16 md:px-12 md:py-20">
+          {featuredArticles.length > 0 && (
+            <section className="mb-20">
+              <div className="mb-8 flex items-end justify-between">
+                <div>
+                  <h2 className="mb-2 font-bold text-3xl text-gray-900 tracking-tight">
+                    Featured Stories
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Handpicked insights from industry leaders
+                  </p>
+                </div>
+                <Link
+                  className="font-medium text-neutral-600 text-sm transition-colors hover:text-neutral-900"
+                  href="/articles"
+                >
+                  View all →
+                </Link>
               </div>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {featuredGrid.map((article) => (
+                {featuredArticles.map((article) => (
                   <ArticleCardFeatured article={article} key={article.id} />
                 ))}
               </div>
             </section>
           )}
 
-          {latestList.length > 0 && (
+          {latestArticles.length > 0 && (
             <section>
-              <div className="mb-6 flex items-center justify-between border-gray-200 border-b pb-4">
-                <h2 className="font-bold text-2xl text-gray-900 tracking-tight">
-                  Latest Articles
-                </h2>
+              <div className="mb-8 flex items-end justify-between">
+                <div>
+                  <h2 className="mb-2 font-bold text-3xl text-gray-900 tracking-tight">
+                    Latest Articles
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Fresh perspectives on leadership and innovation
+                  </p>
+                </div>
+                <Link
+                  className="font-medium text-neutral-600 text-sm transition-colors hover:text-neutral-900"
+                  href="/articles"
+                >
+                  View all →
+                </Link>
               </div>
               <div className="grid gap-6 md:grid-cols-2">
-                {latestList.map((article) => (
+                {latestArticles.map((article) => (
                   <ArticleCardStandard
                     article={article}
                     key={article.id}
@@ -63,20 +170,18 @@ const HomePage = async () => {
             </section>
           )}
 
-          {!heroArticle &&
-            featuredGrid.length === 0 &&
-            latestList.length === 0 && (
-              <div className="flex min-h-[400px] items-center justify-center">
-                <div className="text-center">
-                  <h2 className="mb-2 font-bold text-2xl text-gray-900">
-                    No articles yet
-                  </h2>
-                  <p className="text-gray-600">
-                    Check back soon for new content.
-                  </p>
-                </div>
+          {featuredArticles.length === 0 && latestArticles.length === 0 && (
+            <div className="flex min-h-[400px] items-center justify-center">
+              <div className="text-center">
+                <h2 className="mb-2 font-bold text-2xl text-gray-900">
+                  No articles yet
+                </h2>
+                <p className="text-gray-600">
+                  Check back soon for new content.
+                </p>
               </div>
-            )}
+            </div>
+          )}
         </main>
       </div>
     </PublicLayout>

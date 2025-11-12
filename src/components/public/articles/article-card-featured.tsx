@@ -39,33 +39,33 @@ export const ArticleCardFeatured = ({
   return (
     <article
       className={cn(
-        "group overflow-hidden border border-gray-200 bg-white shadow-sm transition-shadow duration-150 hover:shadow-md",
+        "group hover:-translate-y-0.5 overflow-hidden border border-neutral-200 bg-white transition-all duration-200 hover:shadow-lg",
         className
       )}
     >
       <Link className="block" href={`/articles/${article.slug}`}>
         {article.featuredImageUrl && (
-          <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
+          <div className="relative aspect-video w-full overflow-hidden bg-neutral-100">
             <Image
               alt={article.title}
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-opacity duration-200 group-hover:opacity-90"
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               src={article.featuredImageUrl}
             />
           </div>
         )}
-        <div className="p-6">
+        <div className="p-8">
           {primaryCategory && (
-            <div className="mb-3">
+            <div className="mb-4">
               <CategoryBadge name={primaryCategory.category.name} />
             </div>
           )}
-          <h2 className="mb-3 font-semibold text-gray-900 text-xl leading-tight tracking-tight md:text-2xl">
+          <h2 className="mb-4 font-semibold text-gray-900 text-xl leading-snug tracking-tight md:text-2xl">
             {article.title}
           </h2>
           {article.excerpt && (
-            <p className="mb-4 line-clamp-2 text-base text-gray-600 leading-relaxed">
+            <p className="mb-5 line-clamp-2 text-base text-gray-700 leading-relaxed">
               {article.excerpt}
             </p>
           )}

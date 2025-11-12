@@ -3,6 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { StandaloneThemeToggle } from "@/components/ui/standalone-theme-toggle";
 import { siteConfig } from "@/lib/config";
 
 type HeaderProps = {
@@ -28,6 +29,18 @@ export const Header = ({ categories = [] }: HeaderProps) => {
             </Link>
 
             <nav className="hidden items-center gap-6 md:flex">
+              <Link
+                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                href="/"
+              >
+                Home
+              </Link>
+              <Link
+                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                href="/articles"
+              >
+                All Articles
+              </Link>
               {categories.slice(0, 5).map((category) => (
                 <Link
                   className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
@@ -41,13 +54,7 @@ export const Header = ({ categories = [] }: HeaderProps) => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* <ThemeToggle /> */}
-            <Link
-              className="hidden font-medium text-gray-700 text-sm transition-colors hover:text-gray-900 md:block"
-              href="/admin"
-            >
-              Admin
-            </Link>
+            <StandaloneThemeToggle />
 
             <button
               aria-label="Toggle menu"
@@ -67,6 +74,20 @@ export const Header = ({ categories = [] }: HeaderProps) => {
         {mobileMenuOpen && (
           <nav className="border-gray-200 border-t py-4 md:hidden">
             <div className="flex flex-col gap-4">
+              <Link
+                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                href="/articles"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                All Articles
+              </Link>
               {categories.map((category) => (
                 <Link
                   className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"

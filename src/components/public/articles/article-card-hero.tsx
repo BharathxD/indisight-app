@@ -39,34 +39,35 @@ export const ArticleCardHero = ({
   return (
     <article
       className={cn(
-        "group relative overflow-hidden border border-gray-200 bg-white shadow-sm transition-shadow duration-150 hover:shadow-md",
+        "group relative overflow-hidden border border-neutral-200 bg-white",
         className
       )}
     >
       <Link className="block" href={`/articles/${article.slug}`}>
         {article.featuredImageUrl && (
-          <div className="relative h-[400px] w-full overflow-hidden bg-gray-100 md:h-[500px]">
+          <div className="relative h-[480px] w-full overflow-hidden bg-neutral-100 md:h-[560px]">
             <Image
               alt={article.title}
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-opacity duration-300 group-hover:opacity-90"
               fill
               priority
               sizes="(max-width: 1280px) 100vw, 1280px"
               src={article.featuredImageUrl}
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           </div>
         )}
-        <div className="p-6 md:p-8">
+        <div className="p-8 md:p-12">
           {primaryCategory && (
-            <div className="mb-4">
+            <div className="mb-5">
               <CategoryBadge name={primaryCategory.category.name} />
             </div>
           )}
-          <h1 className="mb-4 font-bold text-3xl text-gray-900 leading-tight tracking-tight md:text-5xl md:leading-tight md:tracking-tight">
+          <h1 className="mb-5 font-bold text-3xl text-gray-900 leading-tight tracking-tight md:text-5xl md:leading-tight">
             {article.title}
           </h1>
           {article.excerpt && (
-            <p className="mb-6 line-clamp-3 text-base text-gray-600 leading-relaxed md:text-lg">
+            <p className="mb-8 line-clamp-3 text-base text-gray-700 leading-relaxed md:text-lg md:leading-relaxed">
               {article.excerpt}
             </p>
           )}

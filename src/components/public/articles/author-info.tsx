@@ -32,33 +32,29 @@ export const AuthorInfo = ({
   showAvatar = true,
   disableLinks = false,
 }: AuthorInfoProps) => {
+  const isSmall = className?.includes("text-xs");
+  const avatarSize = isSmall ? 28 : 32;
+
   const avatarContent = author.profileImageUrl ? (
     <Image
       alt={author.name}
-      className="size-8 object-cover"
-      height={32}
+      className="rounded-full object-cover"
+      height={avatarSize}
       src={author.profileImageUrl}
-      width={32}
+      style={{ width: avatarSize, height: avatarSize }}
+      width={avatarSize}
     />
   ) : (
-    <div className="flex size-8 items-center justify-center bg-gray-200 font-semibold text-gray-600 text-xs">
+    <div
+      className="flex items-center justify-center rounded-full bg-neutral-200 font-semibold text-neutral-600 text-xs"
+      style={{ width: avatarSize, height: avatarSize }}
+    >
       {author.name.charAt(0).toUpperCase()}
     </div>
   );
 
-  const authorName = disableLinks ? (
-    <span className="font-medium">{author.name}</span>
-  ) : (
-    <Link
-      className="font-medium hover:text-gray-900"
-      href={`/authors/${author.slug}`}
-    >
-      {author.name}
-    </Link>
-  );
-
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-3", className)}>
       {showAvatar &&
         (disableLinks ? (
           <div className="shrink-0">{avatarContent}</div>
@@ -67,11 +63,20 @@ export const AuthorInfo = ({
             {avatarContent}
           </Link>
         ))}
-      <div className="flex items-center gap-2 text-gray-600 text-sm">
-        {authorName}
+      <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+        {disableLinks ? (
+          <span className="font-medium text-gray-900">{author.name}</span>
+        ) : (
+          <Link
+            className="font-medium text-gray-900 transition-colors hover:text-neutral-600"
+            href={`/authors/${author.slug}`}
+          >
+            {author.name}
+          </Link>
+        )}
         {date && (
           <>
-            <span className="text-gray-400">·</span>
+            <span className="text-neutral-300">·</span>
             <time
               dateTime={typeof date === "string" ? date : date.toISOString()}
             >
@@ -81,7 +86,7 @@ export const AuthorInfo = ({
         )}
         {readTime && (
           <>
-            <span className="text-gray-400">·</span>
+            <span className="text-neutral-300">·</span>
             <span>{readTime} min read</span>
           </>
         )}
