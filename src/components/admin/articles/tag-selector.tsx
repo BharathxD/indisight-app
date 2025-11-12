@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { animationVariants } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 
@@ -46,13 +48,13 @@ export const TagSelector = ({ value, onChange }: TagSelectorProps) => {
   };
 
   return (
-    <div className="space-y-2">
-      <Label>Tags</Label>
+    <div className="space-y-3">
+      <Label className="font-medium text-sm">Tags</Label>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             className={cn(
-              "w-full justify-between",
+              "h-10 w-full justify-between",
               !value.length && "text-muted-foreground"
             )}
             variant="outline"
@@ -93,17 +95,38 @@ export const TagSelector = ({ value, onChange }: TagSelectorProps) => {
       </Popover>
 
       {selectedTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedTags.map((tag) => (
-            <Badge className="gap-1" key={tag.id} variant="outline">
-              {tag.name}
-              <X
-                className="size-3 cursor-pointer"
-                onClick={() => removeTag(tag.id)}
-              />
-            </Badge>
-          ))}
-        </div>
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap gap-2"
+          initial={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.25 }}
+        >
+          <AnimatePresence mode="popLayout">
+            {selectedTags.map((tag) => (
+              <motion.div
+                animate="animate"
+                exit="exit"
+                initial="initial"
+                key={tag.id}
+                layout
+                variants={animationVariants.badge}
+              >
+                <Badge className="gap-1.5" variant="outline">
+                  {tag.name}
+                  <motion.button
+                    className="inline-flex items-center"
+                    onClick={() => removeTag(tag.id)}
+                    type="button"
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <X className="size-3" />
+                  </motion.button>
+                </Badge>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
 
       <p className="text-muted-foreground text-xs">

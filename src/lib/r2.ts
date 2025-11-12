@@ -11,7 +11,7 @@ export const r2Client = new S3Client({
 });
 
 export const getPublicUrl = (key: string) =>
-  `https://pub-${env.CLOUDFLARE_ACCOUNT_ID}.r2.dev/${key}`;
+  `${env.NEXT_PUBLIC_CLOUDFLARE_R2_URL}/${key}`;
 
 export const generateFileKey = (filename: string, folder?: string) => {
   const timestamp = Date.now();

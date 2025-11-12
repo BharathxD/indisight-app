@@ -2,7 +2,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import { Typography } from "@tiptap/extension-typography";
 import { Placeholder, Selection } from "@tiptap/extensions";
 import type { Content, Editor, UseEditorOptions } from "@tiptap/react";
-import { useEditor, useEditorState } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import * as React from "react";
 import { toast } from "sonner";
@@ -292,26 +292,7 @@ export const useMinimalTiptapEditor = ({
     ...props,
   });
 
-  const { editor: mainEditor } = useEditorState({
-    editor,
-    selector(context) {
-      if (!context.editor) {
-        return {
-          editor: null,
-          editorState: undefined,
-          canCommand: undefined,
-        };
-      }
-
-      return {
-        editor: context.editor,
-        editorState: context.editor.state,
-        canCommand: context.editor.can,
-      };
-    },
-  });
-
-  return mainEditor;
+  return editor;
 };
 
 export default useMinimalTiptapEditor;

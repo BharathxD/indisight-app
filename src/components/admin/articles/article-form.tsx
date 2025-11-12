@@ -2,23 +2,56 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleStatus } from "@prisma/client";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import type { Editor } from "@tiptap/react";
+import {
+  FileText,
+  Hash,
+  ImageIcon,
+  Layers,
+  Tag,
+  Type,
+  Users,
+} from "lucide-react";
+
+import { motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AuthorSelector } from "@/components/admin/articles/author-selector";
 import { CategorySelector } from "@/components/admin/articles/category-selector";
+import { EditorStatusBar } from "@/components/admin/articles/editor-status-bar";
+import { ImagePreviewCard } from "@/components/admin/articles/image-preview-card";
+import { StickyActionBar } from "@/components/admin/articles/sticky-action-bar";
 import { TagSelector } from "@/components/admin/articles/tag-selector";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { MinimalTiptapEditor } from "@/tiptap";
+import { animationVariants } from "@/lib/animation-variants";
 import { trpc } from "@/trpc/client";
+
+const MinimalTiptapEditor = dynamic(
+  () => import("@/tiptap").then((mod) => mod.MinimalTiptapEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[500px] space-y-3 rounded-md border p-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
+    ),
+  }
+);
 
 const articleSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
@@ -33,7 +66,7 @@ const articleSchema = z.object({
   categoryIds: z.array(z.string()).min(1, "At least one category is required"),
   primaryCategoryId: z.string().min(1, "Primary category is required"),
   tagIds: z.array(z.string()),
-  status: z.enum(ArticleStatus),
+  status: z.nativeEnum(ArticleStatus),
 });
 
 type ArticleFormData = z.infer<typeof articleSchema>;
@@ -42,15 +75,20 @@ type ArticleFormProps = {
   mode: "create" | "edit";
   articleId?: string;
   initialData?: Partial<ArticleFormData>;
+  editorRef?: React.RefObject<Editor | null>;
 };
 
 export const ArticleForm = ({
   mode,
   articleId,
   initialData,
+  editorRef: externalEditorRef,
 }: ArticleFormProps) => {
   const router = useRouter();
   const utils = trpc.useUtils();
+  const internalEditorRef = useRef<Editor | null>(null);
+  const editorRef = externalEditorRef || internalEditorRef;
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const {
     register,
@@ -84,6 +122,8 @@ export const ArticleForm = ({
   const categoryIds = watch("categoryIds");
   const primaryCategoryId = watch("primaryCategoryId");
   const tagIds = watch("tagIds");
+  const featuredImageUrl = watch("featuredImageUrl");
+  const thumbnailUrl = watch("thumbnailUrl");
 
   useEffect(() => {
     if (mode === "create" && title && !initialData?.slug) {
@@ -107,6 +147,7 @@ export const ArticleForm = ({
     onSuccess: () => {
       toast.success("Article updated successfully");
       utils.cms.article.list.invalidate();
+      setLastSaved(new Date());
       router.push("/admin/articles");
     },
     onError: (error) => {
@@ -140,189 +181,315 @@ export const ArticleForm = ({
 
   const isPending = createArticle.isPending || updateArticle.isPending;
 
+  const handleSaveDraft = () => {
+    setValue("status", ArticleStatus.DRAFT);
+    handleSubmit(onSubmit)();
+  };
+
+  const handlePublish = () => {
+    setValue("status", ArticleStatus.PUBLISHED);
+    handleSubmit(onSubmit)();
+  };
+
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={() => router.back()}
-          size="sm"
-          type="button"
-          variant="ghost"
+    <>
+      <motion.form
+        animate="visible"
+        className="mx-auto w-full max-w-3xl space-y-6 px-6 pt-6 pb-32 sm:px-8"
+        initial="hidden"
+        onSubmit={handleSubmit(onSubmit)}
+        variants={animationVariants.staggerContainer}
+      >
+        <motion.div
+          className="space-y-3"
+          variants={animationVariants.staggerItem}
         >
-          <ArrowLeft />
-          Back
-        </Button>
-        <div className="flex items-center gap-2">
-          <Button
-            disabled={isPending}
-            onClick={() => setValue("status", ArticleStatus.DRAFT)}
-            type="submit"
-            variant="outline"
+          <Label
+            className="flex items-center gap-2 font-medium text-sm"
+            htmlFor="title"
           >
-            Save as Draft
-          </Button>
-          <Button
+            <Type className="size-4" />
+            Title <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            autoComplete="off"
+            className="h-10 font-semibold text-2xl tracking-tight"
+            id="title"
+            placeholder="Enter article title..."
+            {...register("title")}
+            aria-invalid={!!errors.title}
             disabled={isPending}
-            onClick={() => setValue("status", ArticleStatus.PUBLISHED)}
-            type="submit"
+          />
+          {errors.title && (
+            <motion.p
+              animate={{ opacity: 1, y: 0 }}
+              className="text-destructive text-sm"
+              initial={{ opacity: 0, y: -4 }}
+            >
+              {errors.title.message}
+            </motion.p>
+          )}
+        </motion.div>
+
+        <motion.div
+          className="space-y-3"
+          variants={animationVariants.staggerItem}
+        >
+          <Label
+            className="flex items-center gap-2 font-medium text-sm"
+            htmlFor="slug"
           >
-            {isPending && <Loader2 className="animate-spin" />}
-            {mode === "create" ? "Publish" : "Update"}
-          </Button>
-        </div>
-      </div>
+            <Hash className="size-4" />
+            Slug <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            autoComplete="off"
+            className="h-10 font-mono text-sm"
+            id="slug"
+            placeholder="article-slug"
+            {...register("slug")}
+            aria-invalid={!!errors.slug}
+            disabled={isPending}
+          />
+          {errors.slug && (
+            <motion.p
+              animate={{ opacity: 1, y: 0 }}
+              className="text-destructive text-sm"
+              initial={{ opacity: 0, y: -4 }}
+            >
+              {errors.slug.message}
+            </motion.p>
+          )}
+          <p className="text-muted-foreground text-xs">
+            URL-friendly identifier. Auto-generated from title.
+          </p>
+        </motion.div>
 
-      <Separator />
+        <motion.div
+          className="space-y-3"
+          variants={animationVariants.staggerItem}
+        >
+          <Label
+            className="flex items-center gap-2 font-medium text-sm"
+            htmlFor="subtitle"
+          >
+            <Type className="size-4 opacity-70" />
+            Subtitle
+          </Label>
+          <Input
+            autoComplete="off"
+            className="h-10"
+            id="subtitle"
+            placeholder="Optional subtitle..."
+            {...register("subtitle")}
+            disabled={isPending}
+          />
+        </motion.div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Title <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="title"
-              placeholder="Enter article title..."
-              {...register("title")}
-              aria-invalid={!!errors.title}
-              disabled={isPending}
-            />
-            {errors.title && (
-              <p className="text-destructive text-sm">{errors.title.message}</p>
-            )}
-          </div>
+        <motion.div variants={animationVariants.staggerItem}>
+          <EditorStatusBar
+            editor={editorRef.current}
+            isSaving={isPending}
+            lastSaved={lastSaved}
+          />
+        </motion.div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">
-              Slug <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="slug"
-              placeholder="article-slug"
-              {...register("slug")}
-              aria-invalid={!!errors.slug}
-              disabled={isPending}
-            />
-            {errors.slug && (
-              <p className="text-destructive text-sm">{errors.slug.message}</p>
-            )}
-            <p className="text-muted-foreground text-xs">
-              URL-friendly identifier. Auto-generated from title.
-            </p>
-          </div>
+        <motion.div
+          className="space-y-3"
+          variants={animationVariants.staggerItem}
+        >
+          <Label className="flex items-center gap-2 font-medium text-sm">
+            <FileText className="size-4" />
+            Content <span className="text-destructive">*</span>
+          </Label>
+          <MinimalTiptapEditor
+            className="min-h-[500px]"
+            editorRef={editorRef}
+            onChange={(value) => setValue("content", value)}
+            value={content}
+          />
+          {errors.content && (
+            <motion.p
+              animate={{ opacity: 1, y: 0 }}
+              className="text-destructive text-sm"
+              initial={{ opacity: 0, y: -4 }}
+            >
+              {errors.content?.message as string}
+            </motion.p>
+          )}
+        </motion.div>
 
-          <div className="space-y-2">
-            <Label htmlFor="subtitle">Subtitle</Label>
-            <Input
-              id="subtitle"
-              placeholder="Optional subtitle..."
-              {...register("subtitle")}
-              disabled={isPending}
-            />
-          </div>
+        <motion.div
+          className="space-y-3"
+          variants={animationVariants.staggerItem}
+        >
+          <Label
+            className="flex items-center gap-2 font-medium text-sm"
+            htmlFor="excerpt"
+          >
+            <FileText className="size-4 opacity-70" />
+            Excerpt
+          </Label>
+          <Textarea
+            autoComplete="off"
+            className="min-h-[100px]"
+            id="excerpt"
+            placeholder="Brief summary of the article..."
+            {...register("excerpt")}
+            disabled={isPending}
+            rows={4}
+          />
+          <p className="text-muted-foreground text-xs">
+            Shown in article previews and search results
+          </p>
+        </motion.div>
 
-          <div className="space-y-2">
-            <Label>
-              Content <span className="text-destructive">*</span>
-            </Label>
-            <div className="rounded-md border">
-              <MinimalTiptapEditor
-                className="min-h-[400px]"
-                onChange={(value) => setValue("content", value)}
-                value={content}
+        <Separator />
+
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
+                <Users className="size-4" />
+                People
+              </h3>
+              <AuthorSelector
+                error={
+                  errors.authorIds?.message || errors.primaryAuthorId?.message
+                }
+                onChange={(ids) => setValue("authorIds", ids)}
+                onPrimaryChange={(id) => setValue("primaryAuthorId", id)}
+                primaryAuthorId={primaryAuthorId}
+                value={authorIds}
               />
-            </div>
-            {errors.content && (
-              <p className="text-destructive text-sm">
-                {errors.content?.message as string}
-              </p>
-            )}
-          </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-          <div className="space-y-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
-            <Textarea
-              id="excerpt"
-              placeholder="Brief summary of the article..."
-              {...register("excerpt")}
-              disabled={isPending}
-              rows={3}
-            />
-            <p className="text-muted-foreground text-xs">
-              Shown in article previews and search results
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="space-y-4 rounded-md border p-4">
-            <h3 className="font-medium">Relationships</h3>
-
-            <AuthorSelector
-              error={
-                errors.authorIds?.message || errors.primaryAuthorId?.message
-              }
-              onChange={(ids) => setValue("authorIds", ids)}
-              onPrimaryChange={(id) => setValue("primaryAuthorId", id)}
-              primaryAuthorId={primaryAuthorId}
-              value={authorIds}
-            />
-
-            <CategorySelector
-              error={
-                errors.categoryIds?.message || errors.primaryCategoryId?.message
-              }
-              onChange={(ids) => setValue("categoryIds", ids)}
-              onPrimaryChange={(id) => setValue("primaryCategoryId", id)}
-              primaryCategoryId={primaryCategoryId}
-              value={categoryIds}
-            />
-
-            <TagSelector
-              onChange={(ids) => setValue("tagIds", ids)}
-              value={tagIds}
-            />
-          </div>
-
-          <div className="space-y-4 rounded-md border p-4">
-            <h3 className="font-medium">Images</h3>
-
-            <div className="space-y-2">
-              <Label htmlFor="featuredImageUrl">Featured Image URL</Label>
-              <Input
-                id="featuredImageUrl"
-                placeholder="https://..."
-                type="url"
-                {...register("featuredImageUrl")}
-                aria-invalid={!!errors.featuredImageUrl}
-                disabled={isPending}
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
+                <Layers className="size-4" />
+                Organization
+              </h3>
+              <CategorySelector
+                error={
+                  errors.categoryIds?.message ||
+                  errors.primaryCategoryId?.message
+                }
+                onChange={(ids) => setValue("categoryIds", ids)}
+                onPrimaryChange={(id) => setValue("primaryCategoryId", id)}
+                primaryCategoryId={primaryCategoryId}
+                value={categoryIds}
               />
-              {errors.featuredImageUrl && (
-                <p className="text-destructive text-sm">
-                  {errors.featuredImageUrl.message}
-                </p>
-              )}
-            </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-            <div className="space-y-2">
-              <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
-              <Input
-                id="thumbnailUrl"
-                placeholder="https://..."
-                type="url"
-                {...register("thumbnailUrl")}
-                aria-invalid={!!errors.thumbnailUrl}
-                disabled={isPending}
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
+                <Tag className="size-4" />
+                Discovery
+              </h3>
+              <TagSelector
+                onChange={(ids) => setValue("tagIds", ids)}
+                value={tagIds}
               />
-              {errors.thumbnailUrl && (
-                <p className="text-destructive text-sm">
-                  {errors.thumbnailUrl.message}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
+                <ImageIcon className="size-4" />
+                Media
+              </h3>
+
+              <div className="space-y-3">
+                <Label
+                  className="flex items-center gap-2 font-medium text-sm"
+                  htmlFor="featuredImageUrl"
+                >
+                  <ImageIcon className="size-3.5 opacity-70" />
+                  Featured Image URL
+                </Label>
+                <Input
+                  autoComplete="off"
+                  className="h-10"
+                  id="featuredImageUrl"
+                  placeholder="https://..."
+                  type="url"
+                  {...register("featuredImageUrl")}
+                  aria-invalid={!!errors.featuredImageUrl}
+                  disabled={isPending}
+                />
+                {errors.featuredImageUrl && (
+                  <motion.p
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-destructive text-sm"
+                    initial={{ opacity: 0, y: -4 }}
+                  >
+                    {errors.featuredImageUrl.message}
+                  </motion.p>
+                )}
+                {featuredImageUrl && (
+                  <ImagePreviewCard
+                    onRemove={() => setValue("featuredImageUrl", "")}
+                    url={featuredImageUrl}
+                  />
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <Label
+                  className="flex items-center gap-2 font-medium text-sm"
+                  htmlFor="thumbnailUrl"
+                >
+                  <ImageIcon className="size-3.5 opacity-70" />
+                  Thumbnail URL
+                </Label>
+                <Input
+                  autoComplete="off"
+                  className="h-10"
+                  id="thumbnailUrl"
+                  placeholder="https://..."
+                  type="url"
+                  {...register("thumbnailUrl")}
+                  aria-invalid={!!errors.thumbnailUrl}
+                  disabled={isPending}
+                />
+                {errors.thumbnailUrl && (
+                  <motion.p
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-destructive text-sm"
+                    initial={{ opacity: 0, y: -4 }}
+                  >
+                    {errors.thumbnailUrl.message}
+                  </motion.p>
+                )}
+                {thumbnailUrl && (
+                  <ImagePreviewCard
+                    onRemove={() => setValue("thumbnailUrl", "")}
+                    url={thumbnailUrl}
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.form>
+
+      <StickyActionBar
+        isPending={isPending}
+        onBack={() => router.back()}
+        onPublish={handlePublish}
+        onSaveDraft={handleSaveDraft}
+      />
+    </>
   );
 };

@@ -27,6 +27,7 @@ export const env = createEnv({
   clientPrefix: "NEXT_PUBLIC_",
 
   client: {
+    NEXT_PUBLIC_CLOUDFLARE_R2_URL: z.url().startsWith("https://"),
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
     NEXT_PUBLIC_GA_ID: z.string().optional(),
   },
@@ -37,6 +38,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     ...process.env,
+    NEXT_PUBLIC_CLOUDFLARE_R2_URL: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
   },

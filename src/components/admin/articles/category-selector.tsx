@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { animationVariants } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 
@@ -62,15 +64,15 @@ export const CategorySelector = ({
   };
 
   return (
-    <div className="space-y-2">
-      <Label>
+    <div className="space-y-3">
+      <Label className="font-medium text-sm">
         Categories <span className="text-destructive">*</span>
       </Label>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             className={cn(
-              "w-full justify-between",
+              "h-10 w-full justify-between",
               !value.length && "text-muted-foreground",
               error && "border-destructive"
             )}
@@ -114,24 +116,52 @@ export const CategorySelector = ({
       </Popover>
 
       {selectedCategories.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedCategories.map((category: { id: string; name: string }) => (
-            <Badge
-              className="cursor-pointer"
-              key={category.id}
-              onClick={() => onPrimaryChange(category.id)}
-              variant={
-                category.id === primaryCategoryId ? "default" : "outline"
-              }
-            >
-              {category.name}
-              {category.id === primaryCategoryId && " (Primary)"}
-            </Badge>
-          ))}
-        </div>
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap gap-2"
+          initial={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.25 }}
+        >
+          <AnimatePresence mode="popLayout">
+            {selectedCategories.map(
+              (category: { id: string; name: string }) => (
+                <motion.div
+                  animate="animate"
+                  exit="exit"
+                  initial="initial"
+                  key={category.id}
+                  layout
+                  variants={animationVariants.badge}
+                  whileHover="hover"
+                >
+                  <Badge
+                    className="cursor-pointer"
+                    onClick={() => onPrimaryChange(category.id)}
+                    variant={
+                      category.id === primaryCategoryId ? "default" : "outline"
+                    }
+                  >
+                    {category.name}
+                    {category.id === primaryCategoryId && (
+                      <span className="ml-1 text-xs opacity-70">(Primary)</span>
+                    )}
+                  </Badge>
+                </motion.div>
+              )
+            )}
+          </AnimatePresence>
+        </motion.div>
       )}
 
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && (
+        <motion.p
+          animate={{ opacity: 1, y: 0 }}
+          className="text-destructive text-sm"
+          initial={{ opacity: 0, y: -4 }}
+        >
+          {error}
+        </motion.p>
+      )}
       <p className="text-muted-foreground text-xs">
         Click a badge to set as primary category
       </p>

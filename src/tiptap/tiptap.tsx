@@ -1,5 +1,6 @@
 import type { Content, Editor } from "@tiptap/react";
 import { EditorContent } from "@tiptap/react";
+import * as React from "react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { LinkBubbleMenu } from "./components/bubble-menu/link-bubble-menu";
@@ -18,6 +19,7 @@ export interface MinimalTiptapProps
   onChange?: (value: Content) => void;
   className?: string;
   editorContentClassName?: string;
+  editorRef?: React.RefObject<Editor | null>;
 }
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
@@ -68,6 +70,7 @@ export const MinimalTiptapEditor = ({
   onChange,
   className,
   editorContentClassName,
+  editorRef,
   ...props
 }: MinimalTiptapProps) => {
   const editor = useMinimalTiptapEditor({
@@ -75,6 +78,12 @@ export const MinimalTiptapEditor = ({
     onUpdate: onChange,
     ...props,
   });
+
+  React.useEffect(() => {
+    if (editorRef && editor) {
+      (editorRef as React.MutableRefObject<Editor | null>).current = editor;
+    }
+  }, [editor, editorRef]);
 
   if (!editor) {
     return null;
@@ -92,7 +101,7 @@ export const MinimalTiptapEditor = ({
     >
       <Toolbar editor={editor} />
       <EditorContent
-        className={cn("minimal-tiptap-editor", editorContentClassName)}
+        className={cn("minimal-tiptap-editor p-4", editorContentClassName)}
         editor={editor}
       />
       <LinkBubbleMenu editor={editor} />

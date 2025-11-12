@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, User } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { animationVariants } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 
@@ -57,15 +59,15 @@ export const AuthorSelector = ({
   };
 
   return (
-    <div className="space-y-2">
-      <Label>
+    <div className="space-y-3">
+      <Label className="font-medium text-sm">
         Authors <span className="text-destructive">*</span>
       </Label>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             className={cn(
-              "w-full justify-between",
+              "h-10 w-full justify-between",
               !value.length && "text-muted-foreground",
               error && "border-destructive"
             )}
@@ -123,22 +125,62 @@ export const AuthorSelector = ({
       </Popover>
 
       {selectedAuthors.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedAuthors.map((author) => (
-            <Badge
-              className="cursor-pointer"
-              key={author.id}
-              onClick={() => onPrimaryChange(author.id)}
-              variant={author.id === primaryAuthorId ? "default" : "outline"}
-            >
-              {author.name}
-              {author.id === primaryAuthorId && " (Primary)"}
-            </Badge>
-          ))}
-        </div>
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap gap-2"
+          initial={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.25 }}
+        >
+          <AnimatePresence mode="popLayout">
+            {selectedAuthors.map((author) => (
+              <motion.div
+                animate="animate"
+                exit="exit"
+                initial="initial"
+                key={author.id}
+                layout
+                variants={animationVariants.badge}
+                whileHover="hover"
+              >
+                <Badge
+                  className="cursor-pointer gap-1.5"
+                  onClick={() => onPrimaryChange(author.id)}
+                  variant={
+                    author.id === primaryAuthorId ? "default" : "outline"
+                  }
+                >
+                  {author.profileImageUrl ? (
+                    <div className="size-3.5 overflow-hidden rounded-full">
+                      <div
+                        className="size-full bg-center bg-cover"
+                        style={{
+                          backgroundImage: `url(${author.profileImageUrl})`,
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <User className="size-3.5" />
+                  )}
+                  {author.name}
+                  {author.id === primaryAuthorId && (
+                    <span className="text-xs opacity-70">(Primary)</span>
+                  )}
+                </Badge>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
 
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && (
+        <motion.p
+          animate={{ opacity: 1, y: 0 }}
+          className="text-destructive text-sm"
+          initial={{ opacity: 0, y: -4 }}
+        >
+          {error}
+        </motion.p>
+      )}
       <p className="text-muted-foreground text-xs">
         Click a badge to set as primary author
       </p>
