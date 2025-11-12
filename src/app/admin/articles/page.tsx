@@ -3,6 +3,7 @@
 import { FileText, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
+import { Suspense } from "react";
 import { ArticlesError } from "@/components/admin/articles/articles-error";
 import { ArticlesLoading } from "@/components/admin/articles/articles-loading";
 import { ArticlesTable } from "@/components/admin/articles/articles-table";
@@ -10,7 +11,7 @@ import { DashboardContainer } from "@/components/dashboard-container";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
 
-const ArticlesPage = () => {
+const ArticlesPageContent = () => {
   const router = useRouter();
   const [search] = useQueryState("search", parseAsString.withDefault(""));
 
@@ -57,5 +58,11 @@ const ArticlesPage = () => {
     </DashboardContainer>
   );
 };
+
+const ArticlesPage = () => (
+  <Suspense fallback={<ArticlesLoading />}>
+    <ArticlesPageContent />
+  </Suspense>
+);
 
 export default ArticlesPage;

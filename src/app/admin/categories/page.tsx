@@ -2,7 +2,7 @@
 
 import { FolderTree, Plus } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { CategoriesError } from "@/components/admin/categories/categories-error";
 import { CategoriesLoading } from "@/components/admin/categories/categories-loading";
 import { CategoriesTable } from "@/components/admin/categories/categories-table";
@@ -31,7 +31,7 @@ type Category = {
   children?: { id: string; name: string; slug: string }[];
 };
 
-const CategoriesPage = () => {
+const CategoriesPageContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
@@ -109,5 +109,11 @@ const CategoriesPage = () => {
     </DashboardContainer>
   );
 };
+
+const CategoriesPage = () => (
+  <Suspense fallback={<CategoriesLoading />}>
+    <CategoriesPageContent />
+  </Suspense>
+);
 
 export default CategoriesPage;

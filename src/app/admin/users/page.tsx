@@ -3,7 +3,7 @@
 import type { UserRole } from "@prisma/client";
 import { Info, Plus, Users } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { UserDialog } from "@/components/admin/users/user-dialog";
 import { UsersError } from "@/components/admin/users/users-error";
 import { UsersLoading } from "@/components/admin/users/users-loading";
@@ -25,7 +25,7 @@ type UserType = {
   };
 };
 
-const UsersPage = () => {
+const UsersPageContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [search] = useQueryState("search", parseAsString.withDefault(""));
@@ -103,5 +103,11 @@ const UsersPage = () => {
     </DashboardContainer>
   );
 };
+
+const UsersPage = () => (
+  <Suspense fallback={<UsersLoading />}>
+    <UsersPageContent />
+  </Suspense>
+);
 
 export default UsersPage;

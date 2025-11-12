@@ -2,7 +2,7 @@
 
 import { Plus, Users } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { AuthorDialog } from "@/components/admin/authors/author-dialog";
 import { AuthorsError } from "@/components/admin/authors/authors-error";
 import { AuthorsLoading } from "@/components/admin/authors/authors-loading";
@@ -30,7 +30,7 @@ type Author = {
   } | null;
 };
 
-const AuthorsPage = () => {
+const AuthorsPageContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
   const [search] = useQueryState("search", parseAsString.withDefault(""));
@@ -105,5 +105,11 @@ const AuthorsPage = () => {
     </DashboardContainer>
   );
 };
+
+const AuthorsPage = () => (
+  <Suspense fallback={<AuthorsLoading />}>
+    <AuthorsPageContent />
+  </Suspense>
+);
 
 export default AuthorsPage;

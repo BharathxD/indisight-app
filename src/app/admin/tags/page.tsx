@@ -2,7 +2,7 @@
 
 import { Hash, Plus } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { TagDialog } from "@/components/admin/tags/tag-dialog";
 import { TagsError } from "@/components/admin/tags/tags-error";
 import { TagsLoading } from "@/components/admin/tags/tags-loading";
@@ -22,7 +22,7 @@ type Tag = {
   updatedAt: Date;
 };
 
-const TagsPage = () => {
+const TagsPageContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [search] = useQueryState("search", parseAsString.withDefault(""));
@@ -93,5 +93,11 @@ const TagsPage = () => {
     </DashboardContainer>
   );
 };
+
+const TagsPage = () => (
+  <Suspense fallback={<TagsLoading />}>
+    <TagsPageContent />
+  </Suspense>
+);
 
 export default TagsPage;
