@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
-import { Mail, Shield, User } from "lucide-react";
+import { CheckCircle2, Mail, Shield, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,16 +30,6 @@ import {
 import { formatEnumLabel } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
-
-const generatePassword = () => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let password = "";
-  for (let i = 0; i < 12; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
-};
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
@@ -78,7 +68,7 @@ type UserDialogProps = {
 export const UserDialog = ({ open, onOpenChange, user }: UserDialogProps) => {
   const { invalidateUserGraph } = useTrpcInvalidations();
   const { data: session } = useSession();
-  const [generatedPassword, setGeneratedPassword] = useState("");
+  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
 
   const isEditingSelf = !!(user && session?.user?.id === user.id);
 
@@ -102,28 +92,29 @@ export const UserDialog = ({ open, onOpenChange, user }: UserDialogProps) => {
 
   useEffect(() => {
     if (open && !user) {
-      const password = generatePassword();
-      setGeneratedPassword(password);
       reset({
         name: "",
         email: "",
         role: UserRole.VIEWER,
       });
+      setCreatedPassword(null);
     } else if (open && user) {
       reset({
         name: user.name,
         email: user.email,
         role: user.role,
       });
-      setGeneratedPassword("");
+      setCreatedPassword(null);
     }
   }, [open, user, reset]);
 
   const createUser = trpc.cms.user.create.useMutation({
-    onSuccess: async () => {
-      toast.success("User created successfully");
-      await invalidateUserGraph();
-      onOpenChange(false);
+    onSuccess: async (data) => {
+      if (data.password) {
+        setCreatedPassword(data.password);
+        toast.success("User created successfully");
+        await invalidateUserGraph();
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create user");
@@ -151,8 +142,54 @@ export const UserDialog = ({ open, onOpenChange, user }: UserDialogProps) => {
 
   const isPending = createUser.isPending || updateUser.isPending;
 
+  const handleClose = () => {
+    setCreatedPassword(null);
+    onOpenChange(false);
+  };
+
+  if (createdPassword) {
+    return (
+      <Dialog onOpenChange={handleClose} open={open}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="size-5 text-emerald-500" />
+              User Created Successfully
+            </DialogTitle>
+            <DialogDescription>
+              Save this password securely. It will not be shown again.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2 rounded-md border bg-muted/50 p-4">
+              <Label>Generated Password</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  className="font-mono text-sm"
+                  readOnly
+                  value={createdPassword}
+                />
+                <CopyButton textToCopy={createdPassword} />
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Make sure to copy this password before closing this dialog.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={handleClose} type="button">
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
+    <Dialog onOpenChange={handleClose} open={open}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{user ? "Edit User" : "Create User"}</DialogTitle>
@@ -243,27 +280,10 @@ export const UserDialog = ({ open, onOpenChange, user }: UserDialogProps) => {
             )}
           </div>
 
-          {!user && generatedPassword && (
-            <div className="space-y-2 rounded-md border bg-muted/50 p-4">
-              <Label>Generated Password</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  className="font-mono text-sm"
-                  readOnly
-                  value={generatedPassword}
-                />
-                <CopyButton textToCopy={generatedPassword} />
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Save this password securely. It will not be shown again.
-              </p>
-            </div>
-          )}
-
           <DialogFooter>
             <Button
               disabled={isPending}
-              onClick={() => onOpenChange(false)}
+              onClick={handleClose}
               type="button"
               variant="outline"
             >

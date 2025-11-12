@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  FileText,
-  FolderTree,
-  Hash,
-  LayoutDashboard,
-  LogOut,
-  User,
-  Users,
-  Users2,
-} from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useRef } from "react";
 import { signOut, useSession } from "@/auth/client";
 import {
   DropdownMenu,
@@ -21,6 +13,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  FileTextIcon,
+  type FileTextIconHandle,
+} from "@/components/ui/icons/file-text";
+import { HashIcon, type HashIconHandle } from "@/components/ui/icons/hash";
+import { HomeIcon, type HomeIconHandle } from "@/components/ui/icons/home";
+import {
+  SettingsIcon,
+  type SettingsIconHandle,
+} from "@/components/ui/icons/settings";
+import { UsersIcon, type UsersIconHandle } from "@/components/ui/icons/users";
+import {
+  WorkflowIcon,
+  type WorkflowIconHandle,
+} from "@/components/ui/icons/workflow";
 import {
   SidebarContent,
   SidebarFooter,
@@ -35,49 +42,21 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { siteConfig } from "@/lib/config";
 import { formatEnumLabel } from "@/lib/utils";
-
-const primaryNavItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Articles",
-    href: "/admin/articles",
-    icon: FileText,
-  },
-  {
-    title: "Authors",
-    href: "/admin/authors",
-    icon: Users,
-  },
-  {
-    title: "Users",
-    href: "/admin/users",
-    icon: Users2,
-    superAdminOnly: true,
-  },
-];
-
-const taxonomyNavItems = [
-  {
-    title: "Categories",
-    href: "/admin/categories",
-    icon: FolderTree,
-  },
-  {
-    title: "Tags",
-    href: "/admin/tags",
-    icon: Hash,
-  },
-];
 
 export const Sidebar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
+
+  const homeIconRef = useRef<HomeIconHandle>(null);
+  const articlesIconRef = useRef<FileTextIconHandle>(null);
+  const authorsIconRef = useRef<UsersIconHandle>(null);
+  const categoriesIconRef = useRef<WorkflowIconHandle>(null);
+  const tagsIconRef = useRef<HashIconHandle>(null);
+  const usersIconRef = useRef<UsersIconHandle>(null);
+  const settingsIconRef = useRef<SettingsIconHandle>(null);
 
   return (
     <SidebarPrimitive collapsible="icon">
@@ -89,32 +68,65 @@ export const Sidebar = () => {
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <SidebarSeparator className="m-0" />
+
         <SidebarGroup>
+          <SidebarGroupLabel>Content</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryNavItems.map((item) => {
-                if (
-                  item.superAdminOnly &&
-                  session?.user?.role !== "SUPER_ADMIN"
-                ) {
-                  return null;
-                }
-                const isActive = pathname === item.href;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.title}
-                    >
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin"}
+                  tooltip="Dashboard"
+                >
+                  <Link
+                    href="/admin"
+                    onMouseEnter={() => homeIconRef.current?.startAnimation()}
+                    onMouseLeave={() => homeIconRef.current?.stopAnimation()}
+                  >
+                    <HomeIcon ref={homeIconRef} size={18} />
+                    <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/articles"}
+                  tooltip="Articles"
+                >
+                  <Link
+                    href="/admin/articles"
+                    onMouseEnter={() =>
+                      articlesIconRef.current?.startAnimation()
+                    }
+                    onMouseLeave={() =>
+                      articlesIconRef.current?.stopAnimation()
+                    }
+                  >
+                    <FileTextIcon ref={articlesIconRef} size={18} />
+                    <span>Articles</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/authors"}
+                  tooltip="Authors"
+                >
+                  <Link
+                    href="/admin/authors"
+                    onMouseEnter={() =>
+                      authorsIconRef.current?.startAnimation()
+                    }
+                    onMouseLeave={() => authorsIconRef.current?.stopAnimation()}
+                  >
+                    <UsersIcon ref={authorsIconRef} size={18} />
+                    <span>Authors</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -123,30 +135,107 @@ export const Sidebar = () => {
           <SidebarGroupLabel>Taxonomy</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {taxonomyNavItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.title}
-                    >
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/categories"}
+                  tooltip="Categories"
+                >
+                  <Link
+                    href="/admin/categories"
+                    onMouseEnter={() =>
+                      categoriesIconRef.current?.startAnimation()
+                    }
+                    onMouseLeave={() =>
+                      categoriesIconRef.current?.stopAnimation()
+                    }
+                  >
+                    <WorkflowIcon ref={categoriesIconRef} size={18} />
+                    <span>Categories</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/tags"}
+                  tooltip="Tags"
+                >
+                  <Link
+                    href="/admin/tags"
+                    onMouseEnter={() => tagsIconRef.current?.startAnimation()}
+                    onMouseLeave={() => tagsIconRef.current?.stopAnimation()}
+                  >
+                    <HashIcon ref={tagsIconRef} size={18} />
+                    <span>Tags</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarSeparator className="mx-0 mt-0 mb-auto" />
+        <SidebarSeparator className="mx-0 mt-0" />
+        {session?.user?.role === "SUPER_ADMIN" && (
+          <>
+            <SidebarGroup>
+              <SidebarGroupLabel>System</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === "/admin/users"}
+                      tooltip="Users"
+                    >
+                      <Link
+                        href="/admin/users"
+                        onMouseEnter={() =>
+                          usersIconRef.current?.startAnimation()
+                        }
+                        onMouseLeave={() =>
+                          usersIconRef.current?.stopAnimation()
+                        }
+                      >
+                        <UsersIcon ref={usersIconRef} size={18} />
+                        <span>Users</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === "/admin/profile"}
+                      tooltip="Settings"
+                    >
+                      <Link
+                        href="/admin/profile"
+                        onMouseEnter={() =>
+                          settingsIconRef.current?.startAnimation()
+                        }
+                        onMouseLeave={() =>
+                          settingsIconRef.current?.stopAnimation()
+                        }
+                      >
+                        <SettingsIcon ref={settingsIconRef} size={18} />
+                        <span>Settings</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator className="m-0" />
+          </>
+        )}
       </SidebarContent>
-      <SidebarFooter className="border-t group-data-[collapsible=icon]:p-1">
-        <Profile />
+      <SidebarFooter className="border-t px-0">
+        <div className="px-2">
+          <ThemeToggle />
+        </div>
+        <SidebarSeparator className="m-0" />
+        <div className="px-2 group-data-[collapsible=icon]:px-1">
+          <Profile />
+        </div>
       </SidebarFooter>
     </SidebarPrimitive>
   );

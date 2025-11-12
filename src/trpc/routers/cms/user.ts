@@ -15,8 +15,10 @@ const generatePassword = () => {
   return password;
 };
 
+const normalizeEmail = (email: string) => email.toLowerCase().trim();
+
 const listUsersSchema = z.object({
-  role: z.enum(UserRole).optional(),
+  role: z.nativeEnum(UserRole).optional(),
   isActive: z.boolean().optional(),
   search: z.string().optional(),
   limit: z.number().min(1).max(100).default(50),
@@ -25,15 +27,19 @@ const listUsersSchema = z.object({
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
-  email: z.email("Invalid email format"),
-  role: z.enum(UserRole).default(UserRole.VIEWER),
+  email: z.string().email("Invalid email format").transform(normalizeEmail),
+  role: z.nativeEnum(UserRole).default(UserRole.VIEWER),
 });
 
 const updateUserSchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(255).optional(),
-  email: z.email("Invalid email format").optional(),
-  role: z.enum(UserRole).optional(),
+  email: z
+    .string()
+    .email("Invalid email format")
+    .transform(normalizeEmail)
+    .optional(),
+  role: z.nativeEnum(UserRole).optional(),
 });
 
 export const userRouter = router({
@@ -133,6 +139,7 @@ export const userRouter = router({
       }
 
       const password = generatePassword();
+      let createdUserId: string | null = null;
 
       try {
         const result = await auth.api.signUpEmail({
@@ -150,21 +157,51 @@ export const userRouter = router({
           });
         }
 
+        createdUserId = result.user.id;
+
         await ctx.db.user.update({
-          where: { id: result.user.id },
+          where: { id: createdUserId },
           data: { role: input.role },
         });
 
-        return {
-          user: await ctx.db.user.findUnique({
-            where: { id: result.user.id },
-          }),
-          password,
-        };
+        const user = await ctx.db.user.findUnique({
+          where: { id: createdUserId },
+          include: {
+            _count: {
+              select: {
+                sessions: true,
+                authors: true,
+              },
+            },
+          },
+        });
+
+        return { user, password };
       } catch (error) {
+        if (createdUserId) {
+          await ctx.db.user
+            .delete({ where: { id: createdUserId } })
+            .catch(() => {
+              // do nothing
+            });
+        }
+
         if (error instanceof TRPCError) {
           throw error;
         }
+
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        if (
+          errorMessage.toLowerCase().includes("email") &&
+          errorMessage.toLowerCase().includes("already")
+        ) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "A user with this email already exists",
+          });
+        }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create user account",
@@ -189,18 +226,37 @@ export const userRouter = router({
         });
       }
 
-      if (id === ctx.user.id && data.role && data.role !== existing.role) {
+      const isSelfUpdate = id === ctx.user.id;
+
+      if (isSelfUpdate && data.role && data.role !== existing.role) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You cannot change your own role",
         });
       }
 
-      if (id === ctx.user.id && data.email && data.email !== existing.email) {
+      if (isSelfUpdate && data.email && data.email !== existing.email) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You cannot change your own email",
         });
+      }
+
+      if (
+        data.role &&
+        data.role !== existing.role &&
+        existing.role === UserRole.SUPER_ADMIN
+      ) {
+        const superAdminCount = await ctx.db.user.count({
+          where: { role: UserRole.SUPER_ADMIN },
+        });
+
+        if (superAdminCount <= 1) {
+          throw new TRPCError({
+            code: "PRECONDITION_FAILED",
+            message: "Cannot demote the last Super Admin",
+          });
+        }
       }
 
       if (data.email && data.email !== existing.email) {
@@ -230,6 +286,7 @@ export const userRouter = router({
         where: { id: input.id },
         select: {
           id: true,
+          role: true,
           _count: {
             select: {
               authors: true,
@@ -250,6 +307,19 @@ export const userRouter = router({
           code: "FORBIDDEN",
           message: "You cannot delete your own account",
         });
+      }
+
+      if (user.role === UserRole.SUPER_ADMIN) {
+        const superAdminCount = await ctx.db.user.count({
+          where: { role: UserRole.SUPER_ADMIN },
+        });
+
+        if (superAdminCount <= 1) {
+          throw new TRPCError({
+            code: "PRECONDITION_FAILED",
+            message: "Cannot delete the last Super Admin",
+          });
+        }
       }
 
       if (user._count.authors > 0) {
