@@ -77,9 +77,9 @@ export const ArticleCardStandard = ({
                 author={primaryAuthor}
                 className="text-xs"
                 date={article.publishedAt}
+                disableLinks
                 readTime={article.readTime}
                 showAvatar={false}
-                disableLinks
               />
             )}
           </div>
@@ -126,9 +126,9 @@ export const ArticleCardStandard = ({
               author={primaryAuthor}
               className="text-xs"
               date={article.publishedAt}
+              disableLinks
               readTime={article.readTime}
               showAvatar={false}
-              disableLinks
             />
           )}
         </div>
