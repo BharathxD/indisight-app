@@ -4,6 +4,7 @@ import slugify from "slugify";
 import { toast } from "sonner";
 import { EntitySelector } from "@/components/admin/articles/entity-selector";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 type TagSelectorProps = {
   value: string[];
@@ -11,7 +12,7 @@ type TagSelectorProps = {
 };
 
 export const TagSelector = ({ value, onChange }: TagSelectorProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateTagGraph, utils } = useTrpcInvalidations();
   const { data: tagsData } = trpc.cms.tag.list.useQuery({ limit: 100 });
   const tags = tagsData?.tags || [];
 
@@ -54,8 +55,8 @@ export const TagSelector = ({ value, onChange }: TagSelectorProps) => {
       onChange(value.filter((id) => id !== context?.optimisticTag.id));
       toast.error(error.message || "Failed to create tag");
     },
-    onSettled: () => {
-      utils.cms.tag.list.invalidate();
+    onSettled: async () => {
+      await invalidateTagGraph();
     },
   });
 

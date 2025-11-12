@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
@@ -76,7 +77,7 @@ export const CategoryDialog = ({
   onOpenChange,
   category,
 }: CategoryDialogProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateCategoryGraph } = useTrpcInvalidations();
   const [isAutoSlug, setIsAutoSlug] = useState(!category);
   const [showSeoFields, setShowSeoFields] = useState(false);
 
@@ -164,9 +165,9 @@ export const CategoryDialog = ({
   }, [open, category, reset]);
 
   const createCategory = trpc.cms.category.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category created successfully");
-      utils.cms.category.list.invalidate();
+      await invalidateCategoryGraph();
       onOpenChange(false);
     },
     onError: (error) => {
@@ -175,9 +176,9 @@ export const CategoryDialog = ({
   });
 
   const updateCategory = trpc.cms.category.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category updated successfully");
-      utils.cms.category.list.invalidate();
+      await invalidateCategoryGraph();
       onOpenChange(false);
     },
     onError: (error) => {

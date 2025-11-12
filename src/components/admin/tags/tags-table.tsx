@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDataTable } from "@/hooks/use-data-table";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 type Tag = {
   id: string;
@@ -44,7 +45,7 @@ type TagsTableProps = {
 };
 
 export const TagsTable = ({ tags, pageCount, onEdit }: TagsTableProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateTagGraph } = useTrpcInvalidations();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [search, setSearch] = useQueryState(
     "search",
@@ -53,9 +54,9 @@ export const TagsTable = ({ tags, pageCount, onEdit }: TagsTableProps) => {
   const [searchInput, setSearchInput] = useState(search);
 
   const deleteTag = trpc.cms.tag.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Tag deleted successfully");
-      utils.cms.tag.list.invalidate();
+      await invalidateTagGraph();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete tag");

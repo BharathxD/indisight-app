@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDataTable } from "@/hooks/use-data-table";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 type Article = {
   id: string;
@@ -67,7 +68,7 @@ type ArticlesTableProps = {
 
 export const ArticlesTable = ({ articles, pageCount }: ArticlesTableProps) => {
   const router = useRouter();
-  const utils = trpc.useUtils();
+  const { invalidateArticleGraph } = useTrpcInvalidations();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [search, setSearch] = useQueryState(
     "search",
@@ -76,9 +77,9 @@ export const ArticlesTable = ({ articles, pageCount }: ArticlesTableProps) => {
   const [searchInput, setSearchInput] = useState(search);
 
   const deleteArticle = trpc.cms.article.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Article deleted successfully");
-      utils.cms.article.list.invalidate();
+      await invalidateArticleGraph();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete article");

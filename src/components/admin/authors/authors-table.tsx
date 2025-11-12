@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDataTable } from "@/hooks/use-data-table";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 type Author = {
   id: string;
@@ -57,7 +58,7 @@ export const AuthorsTable = ({
   pageCount,
   onEdit,
 }: AuthorsTableProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateAuthorGraph } = useTrpcInvalidations();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [search, setSearch] = useQueryState(
     "search",
@@ -66,9 +67,9 @@ export const AuthorsTable = ({
   const [searchInput, setSearchInput] = useState(search);
 
   const deleteAuthor = trpc.cms.author.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Author deleted successfully");
-      utils.cms.author.list.invalidate();
+      await invalidateAuthorGraph();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete author");

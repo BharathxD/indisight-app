@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 const socialLinksSchema = z.object({
   twitter: z.url().optional().or(z.literal("")),
@@ -70,7 +71,7 @@ export const AuthorDialog = ({
   onOpenChange,
   author,
 }: AuthorDialogProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateAuthorGraph } = useTrpcInvalidations();
   const [isAutoSlug, setIsAutoSlug] = useState(!author);
 
   const {
@@ -146,9 +147,9 @@ export const AuthorDialog = ({
   }, [open, author, reset]);
 
   const createAuthor = trpc.cms.author.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Author created successfully");
-      utils.cms.author.list.invalidate();
+      await invalidateAuthorGraph();
       onOpenChange(false);
     },
     onError: (error) => {
@@ -157,9 +158,9 @@ export const AuthorDialog = ({
   });
 
   const updateAuthor = trpc.cms.author.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Author updated successfully");
-      utils.cms.author.list.invalidate();
+      await invalidateAuthorGraph();
       onOpenChange(false);
     },
     onError: (error) => {

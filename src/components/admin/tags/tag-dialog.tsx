@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 const tagSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
@@ -49,7 +50,7 @@ type TagDialogProps = {
 };
 
 export const TagDialog = ({ open, onOpenChange, tag }: TagDialogProps) => {
-  const utils = trpc.useUtils();
+  const { invalidateTagGraph } = useTrpcInvalidations();
   const [isAutoSlug, setIsAutoSlug] = useState(!tag);
 
   const {
@@ -100,9 +101,9 @@ export const TagDialog = ({ open, onOpenChange, tag }: TagDialogProps) => {
   }, [open, tag, reset]);
 
   const createTag = trpc.cms.tag.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Tag created successfully");
-      utils.cms.tag.list.invalidate();
+      await invalidateTagGraph();
       onOpenChange(false);
     },
     onError: (error) => {
@@ -111,9 +112,9 @@ export const TagDialog = ({ open, onOpenChange, tag }: TagDialogProps) => {
   });
 
   const updateTag = trpc.cms.tag.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Tag updated successfully");
-      utils.cms.tag.list.invalidate();
+      await invalidateTagGraph();
       onOpenChange(false);
     },
     onError: (error) => {

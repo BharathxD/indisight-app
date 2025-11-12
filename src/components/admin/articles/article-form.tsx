@@ -35,6 +35,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { animationVariants } from "@/lib/animation-variants";
 import { trpc } from "@/trpc/client";
+import { useTrpcInvalidations } from "@/trpc/use-trpc-invalidations";
 
 const MinimalTiptapEditor = dynamic(
   () => import("@/tiptap").then((mod) => mod.MinimalTiptapEditor),
@@ -85,7 +86,7 @@ export const ArticleForm = ({
   editorRef: externalEditorRef,
 }: ArticleFormProps) => {
   const router = useRouter();
-  const utils = trpc.useUtils();
+  const { invalidateArticleGraph } = useTrpcInvalidations();
   const internalEditorRef = useRef<Editor | null>(null);
   const editorRef = externalEditorRef || internalEditorRef;
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -133,9 +134,9 @@ export const ArticleForm = ({
   }, [title, mode, initialData?.slug, setValue]);
 
   const createArticle = trpc.cms.article.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Article created successfully");
-      utils.cms.article.list.invalidate();
+      await invalidateArticleGraph();
       router.push("/admin/articles");
     },
     onError: (error) => {
@@ -144,9 +145,9 @@ export const ArticleForm = ({
   });
 
   const updateArticle = trpc.cms.article.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Article updated successfully");
-      utils.cms.article.list.invalidate();
+      await invalidateArticleGraph();
       setLastSaved(new Date());
       router.push("/admin/articles");
     },
