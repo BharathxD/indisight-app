@@ -20,4 +20,3 @@ export const CategoriesError = ({ error, onRetry }: CategoriesErrorProps) => (
     </Button>
   </div>
 );
-

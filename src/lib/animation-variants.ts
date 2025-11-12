@@ -180,4 +180,44 @@ export const animationVariants = {
       transition: { duration: 0.25, ease: easeOut },
     },
   },
+
+  dropzone: {
+    idle: {
+      scale: 1,
+      transition: { duration: 0.15, ease: easeOut },
+    },
+    dragActive: {
+      scale: 1.005,
+      transition: { duration: 0.15, ease: easeOut },
+    },
+    uploadIcon: {
+      idle: { scale: 1 },
+      active: {
+        scale: 1.1,
+        transition: { duration: 0.15, ease: easeOut },
+      },
+    },
+    content: {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { duration: 0.2 },
+      },
+    },
+    urlSection: {
+      hidden: { opacity: 0, y: 4 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { delay: 0.15, duration: 0.2 },
+      },
+    },
+    divider: {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { delay: 0.1, duration: 0.2 },
+      },
+    },
+  },
 };

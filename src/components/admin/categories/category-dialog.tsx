@@ -301,7 +301,9 @@ export const CategoryDialog = ({
                 {...register("icon")}
                 disabled={isPending}
               />
-              <p className="text-muted-foreground text-xs">Emoji or icon name</p>
+              <p className="text-muted-foreground text-xs">
+                Emoji or icon name
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -425,4 +427,3 @@ export const CategoryDialog = ({
     </Dialog>
   );
 };
-

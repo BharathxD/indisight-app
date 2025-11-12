@@ -24,7 +24,7 @@ import { z } from "zod";
 import { AuthorSelector } from "@/components/admin/articles/author-selector";
 import { CategorySelector } from "@/components/admin/articles/category-selector";
 import { EditorStatusBar } from "@/components/admin/articles/editor-status-bar";
-import { ImagePreviewCard } from "@/components/admin/articles/image-preview-card";
+import { ImageUploadDropzone } from "@/components/admin/articles/image-upload-dropzone";
 import { StickyActionBar } from "@/components/admin/articles/sticky-action-bar";
 import { TagSelector } from "@/components/admin/articles/tag-selector";
 import { Card, CardContent } from "@/components/ui/card";
@@ -410,75 +410,41 @@ export const ArticleForm = ({
                 Media
               </h3>
 
-              <div className="space-y-3">
-                <Label
-                  className="flex items-center gap-2 font-medium text-sm"
-                  htmlFor="featuredImageUrl"
+              <ImageUploadDropzone
+                disabled={isPending}
+                folder="articles/featured"
+                label="Featured Image"
+                onChange={(url) => setValue("featuredImageUrl", url)}
+                recommendedDimensions="1200 × 628px"
+                value={featuredImageUrl}
+              />
+              {errors.featuredImageUrl && (
+                <motion.p
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-destructive text-sm"
+                  initial={{ opacity: 0, y: -4 }}
                 >
-                  <ImageIcon className="size-3.5 opacity-70" />
-                  Featured Image URL
-                </Label>
-                <Input
-                  autoComplete="off"
-                  className="h-10"
-                  id="featuredImageUrl"
-                  placeholder="https://..."
-                  type="url"
-                  {...register("featuredImageUrl")}
-                  aria-invalid={!!errors.featuredImageUrl}
-                  disabled={isPending}
-                />
-                {errors.featuredImageUrl && (
-                  <motion.p
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-destructive text-sm"
-                    initial={{ opacity: 0, y: -4 }}
-                  >
-                    {errors.featuredImageUrl.message}
-                  </motion.p>
-                )}
-                {featuredImageUrl && (
-                  <ImagePreviewCard
-                    onRemove={() => setValue("featuredImageUrl", "")}
-                    url={featuredImageUrl}
-                  />
-                )}
-              </div>
+                  {errors.featuredImageUrl.message}
+                </motion.p>
+              )}
 
-              <div className="space-y-3">
-                <Label
-                  className="flex items-center gap-2 font-medium text-sm"
-                  htmlFor="thumbnailUrl"
+              <ImageUploadDropzone
+                disabled={isPending}
+                folder="articles/thumbnails"
+                label="Thumbnail"
+                onChange={(url) => setValue("thumbnailUrl", url)}
+                recommendedDimensions="300 × 300px"
+                value={thumbnailUrl}
+              />
+              {errors.thumbnailUrl && (
+                <motion.p
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-destructive text-sm"
+                  initial={{ opacity: 0, y: -4 }}
                 >
-                  <ImageIcon className="size-3.5 opacity-70" />
-                  Thumbnail URL
-                </Label>
-                <Input
-                  autoComplete="off"
-                  className="h-10"
-                  id="thumbnailUrl"
-                  placeholder="https://..."
-                  type="url"
-                  {...register("thumbnailUrl")}
-                  aria-invalid={!!errors.thumbnailUrl}
-                  disabled={isPending}
-                />
-                {errors.thumbnailUrl && (
-                  <motion.p
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-destructive text-sm"
-                    initial={{ opacity: 0, y: -4 }}
-                  >
-                    {errors.thumbnailUrl.message}
-                  </motion.p>
-                )}
-                {thumbnailUrl && (
-                  <ImagePreviewCard
-                    onRemove={() => setValue("thumbnailUrl", "")}
-                    url={thumbnailUrl}
-                  />
-                )}
-              </div>
+                  {errors.thumbnailUrl.message}
+                </motion.p>
+              )}
             </CardContent>
           </Card>
         </motion.div>

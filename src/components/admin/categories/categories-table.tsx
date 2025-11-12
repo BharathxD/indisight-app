@@ -284,4 +284,3 @@ export const CategoriesTable = ({
     </DataTable>
   );
 };
-
