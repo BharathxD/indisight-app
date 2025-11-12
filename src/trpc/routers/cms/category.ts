@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure } from "@/trpc/procedure";
+import { adminProcedure, publicProcedure } from "@/trpc/procedure";
 import { router } from "@/trpc/server";
 import {
   generateSlug,
@@ -33,6 +33,62 @@ const listCategoriesSchema = z.object({
 });
 
 export const categoryRouter = router({
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const categories = await ctx.db.category.findMany({
+      where: { isActive: true },
+      orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        imageUrl: true,
+        icon: true,
+        articleCount: true,
+      },
+    });
+
+    return categories;
+  }),
+
+  getBySlugPublic: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const category = await ctx.db.category.findUnique({
+        where: { slug: input.slug, isActive: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          imageUrl: true,
+          imageAlt: true,
+          icon: true,
+          articleCount: true,
+          seoMetaTitle: true,
+          seoMetaDescription: true,
+        },
+      });
+
+      if (!category) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Category not found",
+        });
+      }
+
+      return category;
+    }),
+
+  getAllSlugs: publicProcedure.query(async ({ ctx }) => {
+    const categories = await ctx.db.category.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+    });
+
+    return categories.map((c) => c.slug);
+  }),
+
   list: adminProcedure.input(listCategoriesSchema).query(({ input, ctx }) => {
     const { isActive, parentId, search } = input;
 

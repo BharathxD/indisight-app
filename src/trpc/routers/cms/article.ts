@@ -1,7 +1,7 @@
 import { ArticleStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure } from "@/trpc/procedure";
+import { adminProcedure, publicProcedure } from "@/trpc/procedure";
 import { router } from "@/trpc/server";
 import {
   generateSlug,
@@ -119,6 +119,452 @@ const validatePublishRequirements = (article: {
 };
 
 export const articleRouter = router({
+  getFeatured: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(20).default(6),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const articles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          isFeatured: true,
+        },
+        take: input.limit,
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return articles;
+    }),
+
+  getLatest: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(10),
+        categoryId: z.string().optional(),
+        excludeIds: z.array(z.string()).optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const articles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          ...(input.categoryId && {
+            articleCategories: { some: { categoryId: input.categoryId } },
+          }),
+          ...(input.excludeIds && {
+            id: { notIn: input.excludeIds },
+          }),
+        },
+        take: input.limit,
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return articles;
+    }),
+
+  getBySlugPublic: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const article = await ctx.db.article.findUnique({
+        where: {
+          slug: input.slug,
+          status: ArticleStatus.PUBLISHED,
+        },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  bio: true,
+                  profileImageUrl: true,
+                  socialLinks: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  description: true,
+                },
+              },
+            },
+          },
+          articleTags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!article) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Article not found",
+        });
+      }
+
+      await ctx.db.article.update({
+        where: { id: article.id },
+        data: { viewCount: { increment: 1 } },
+      });
+
+      return article;
+    }),
+
+  getRelated: publicProcedure
+    .input(
+      z.object({
+        articleId: z.string(),
+        limit: z.number().min(1).max(10).default(3),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const article = await ctx.db.article.findUnique({
+        where: { id: input.articleId },
+        select: {
+          articleCategories: {
+            select: { categoryId: true },
+          },
+          articleTags: {
+            select: { tagId: true },
+          },
+        },
+      });
+
+      if (!article) {
+        return [];
+      }
+
+      const categoryIds = article.articleCategories.map((ac) => ac.categoryId);
+      const tagIds = article.articleTags.map((at) => at.tagId);
+
+      const relatedArticles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          id: { not: input.articleId },
+          OR: [
+            {
+              articleCategories: {
+                some: { categoryId: { in: categoryIds } },
+              },
+            },
+            {
+              articleTags: {
+                some: { tagId: { in: tagIds } },
+              },
+            },
+          ],
+        },
+        take: input.limit,
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return relatedArticles;
+    }),
+
+  getByCategory: publicProcedure
+    .input(
+      z.object({
+        categorySlug: z.string(),
+        limit: z.number().min(1).max(50).default(12),
+        cursor: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const category = await ctx.db.category.findUnique({
+        where: { slug: input.categorySlug, isActive: true },
+        select: { id: true },
+      });
+
+      if (!category) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Category not found",
+        });
+      }
+
+      const articles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          articleCategories: { some: { categoryId: category.id } },
+        },
+        take: input.limit + 1,
+        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      let nextCursor: string | undefined;
+      if (articles.length > input.limit) {
+        const nextItem = articles.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return { articles, nextCursor };
+    }),
+
+  getByAuthor: publicProcedure
+    .input(
+      z.object({
+        authorSlug: z.string(),
+        limit: z.number().min(1).max(50).default(12),
+        cursor: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const author = await ctx.db.author.findUnique({
+        where: { slug: input.authorSlug },
+        select: { id: true },
+      });
+
+      if (!author) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Author not found",
+        });
+      }
+
+      const articles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          articleAuthors: { some: { authorId: author.id } },
+        },
+        take: input.limit + 1,
+        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      let nextCursor: string | undefined;
+      if (articles.length > input.limit) {
+        const nextItem = articles.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return { articles, nextCursor };
+    }),
+
+  getByTag: publicProcedure
+    .input(
+      z.object({
+        tagSlug: z.string(),
+        limit: z.number().min(1).max(50).default(12),
+        cursor: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const tag = await ctx.db.tag.findUnique({
+        where: { slug: input.tagSlug },
+        select: { id: true },
+      });
+
+      if (!tag) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tag not found",
+        });
+      }
+
+      const articles = await ctx.db.article.findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          articleTags: { some: { tagId: tag.id } },
+        },
+        take: input.limit + 1,
+        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        orderBy: { publishedAt: "desc" },
+        include: {
+          articleAuthors: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      let nextCursor: string | undefined;
+      if (articles.length > input.limit) {
+        const nextItem = articles.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return { articles, nextCursor };
+    }),
+
+  getAllPublishedSlugs: publicProcedure.query(async ({ ctx }) => {
+    const articles = await ctx.db.article.findMany({
+      where: { status: ArticleStatus.PUBLISHED },
+      select: { slug: true },
+    });
+
+    return articles.map((a) => a.slug);
+  }),
+
   list: adminProcedure
     .input(listArticlesSchema)
     .query(async ({ input, ctx }) => {

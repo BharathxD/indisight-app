@@ -1,0 +1,121 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { ArticleCardStandard } from "@/components/public/articles";
+import { PublicLayout } from "@/components/public/public-layout";
+import { siteConfig } from "@/lib/config";
+import { trpc } from "@/trpc/server-client";
+
+type TagPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export const revalidate = 300;
+
+export const generateStaticParams = async () => {
+  const caller = await trpc();
+  const slugs = await caller.cms.tag.getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
+};
+
+export const generateMetadata = async ({
+  params,
+}: TagPageProps): Promise<Metadata> => {
+  const { slug } = await params;
+
+  try {
+    const caller = await trpc();
+    const tag = await caller.cms.tag.getBySlugPublic({ slug });
+
+    return {
+      title: `${tag.name} - Tag`,
+      description: tag.description || `Articles tagged with ${tag.name}`,
+      openGraph: {
+        title: tag.name,
+        description: tag.description || undefined,
+        type: "website",
+        siteName: siteConfig.name,
+      },
+      alternates: {
+        canonical: `${siteConfig.url}/tags/${slug}`,
+      },
+    };
+  } catch {
+    return {
+      title: "Tag Not Found",
+    };
+  }
+};
+
+const TagPage = async ({ params }: TagPageProps) => {
+  const { slug } = await params;
+  const caller = await trpc();
+
+  let tag: Awaited<
+    ReturnType<
+      Awaited<ReturnType<typeof trpc>>["cms"]["tag"]["getBySlugPublic"]
+    >
+  >;
+  let articlesData: Awaited<
+    ReturnType<Awaited<ReturnType<typeof trpc>>["cms"]["article"]["getByTag"]>
+  >;
+
+  try {
+    [tag, articlesData] = await Promise.all([
+      caller.cms.tag.getBySlugPublic({ slug }),
+      caller.cms.article.getByTag({ tagSlug: slug, limit: 12 }),
+    ]);
+  } catch {
+    notFound();
+  }
+
+  const { articles } = articlesData;
+
+  return (
+    <PublicLayout>
+      <div className="min-h-screen bg-white">
+        <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
+          <div className="mb-12 border-gray-200 border-b pb-8">
+            <h1 className="mb-4 font-bold text-4xl text-gray-900 tracking-tight md:text-5xl">
+              #{tag.name}
+            </h1>
+            {tag.description && (
+              <p className="text-gray-600 text-lg leading-relaxed">
+                {tag.description}
+              </p>
+            )}
+            <p className="mt-4 text-gray-500 text-sm">
+              {tag.usageCount} {tag.usageCount === 1 ? "article" : "articles"}
+            </p>
+          </div>
+
+          {articles.length > 0 ? (
+            <section>
+              <div className="grid gap-6 md:grid-cols-2">
+                {articles.map((article) => (
+                  <ArticleCardStandard
+                    article={article}
+                    key={article.id}
+                    layout="vertical"
+                  />
+                ))}
+              </div>
+            </section>
+          ) : (
+            <div className="flex min-h-[400px] items-center justify-center">
+              <div className="text-center">
+                <h2 className="mb-2 font-bold text-2xl text-gray-900">
+                  No articles yet
+                </h2>
+                <p className="text-gray-600">
+                  Check back soon for articles with this tag.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default TagPage;

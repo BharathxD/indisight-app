@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure } from "@/trpc/procedure";
+import { adminProcedure, publicProcedure } from "@/trpc/procedure";
 import { router } from "@/trpc/server";
 import { generateSlug, validateSlugUnique } from "./utils";
 
@@ -16,7 +16,7 @@ const createAuthorSchema = z.object({
   name: z.string().min(1).max(255),
   slug: z.string().min(1).max(255),
   bio: z.string().optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   profileImageUrl: z.string().url().optional(),
   profileImageAlt: z.string().optional(),
   socialLinks: socialLinksSchema,
@@ -36,6 +36,42 @@ const listAuthorsSchema = z.object({
 });
 
 export const authorRouter = router({
+  getBySlugPublic: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const author = await ctx.db.author.findUnique({
+        where: { slug: input.slug },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          bio: true,
+          profileImageUrl: true,
+          profileImageAlt: true,
+          socialLinks: true,
+          isFeatured: true,
+          articleCount: true,
+        },
+      });
+
+      if (!author) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Author not found",
+        });
+      }
+
+      return author;
+    }),
+
+  getAllSlugs: publicProcedure.query(async ({ ctx }) => {
+    const authors = await ctx.db.author.findMany({
+      select: { slug: true },
+    });
+
+    return authors.map((a) => a.slug);
+  }),
+
   list: adminProcedure
     .input(listAuthorsSchema)
     .query(async ({ input, ctx }) => {

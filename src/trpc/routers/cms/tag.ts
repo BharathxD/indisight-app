@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure } from "@/trpc/procedure";
+import { adminProcedure, publicProcedure } from "@/trpc/procedure";
 import { router } from "@/trpc/server";
 import { generateSlug, updateTagUsageCount, validateSlugUnique } from "./utils";
 
@@ -24,6 +24,39 @@ const listTagsSchema = z.object({
 });
 
 export const tagRouter = router({
+  getBySlugPublic: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const tag = await ctx.db.tag.findUnique({
+        where: { slug: input.slug },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          usageCount: true,
+          isTrending: true,
+        },
+      });
+
+      if (!tag) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tag not found",
+        });
+      }
+
+      return tag;
+    }),
+
+  getAllSlugs: publicProcedure.query(async ({ ctx }) => {
+    const tags = await ctx.db.tag.findMany({
+      select: { slug: true },
+    });
+
+    return tags.map((t) => t.slug);
+  }),
+
   list: adminProcedure.input(listTagsSchema).query(async ({ input, ctx }) => {
     const { isTrending, search, limit, cursor } = input;
 
