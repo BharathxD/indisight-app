@@ -41,6 +41,7 @@ const JOIN_OPERATOR_KEY = "joinOperator";
 const ARRAY_SEPARATOR = ",";
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;
+const NON_ALPHANUMERIC_REGEX = /[^a-zA-Z0-9]/;
 
 interface UseDataTableProps<TData>
   extends Omit<
@@ -140,11 +141,11 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     (updaterOrValue: Updater<PaginationState>) => {
       if (typeof updaterOrValue === "function") {
         const newPagination = updaterOrValue(pagination);
-        void setPage(newPagination.pageIndex + 1);
-        void setPerPage(newPagination.pageSize);
+        setPage(newPagination.pageIndex + 1);
+        setPerPage(newPagination.pageSize);
       } else {
-        void setPage(updaterOrValue.pageIndex + 1);
-        void setPerPage(updaterOrValue.pageSize);
+        setPage(updaterOrValue.pageIndex + 1);
+        setPerPage(updaterOrValue.pageSize);
       }
     },
     [pagination, setPage, setPerPage]
@@ -203,8 +204,8 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
 
   const debouncedSetFilterValues = useDebouncedCallback(
     (values: typeof filterValues) => {
-      void setPage(1);
-      void setFilterValues(values);
+      setPage(1);
+      setFilterValues(values);
     },
     debounceMs
   );
@@ -217,8 +218,8 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
         if (value !== null) {
           const processedValue = Array.isArray(value)
             ? value
-            : typeof value === "string" && /[^a-zA-Z0-9]/.test(value)
-              ? value.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+            : typeof value === "string" && NON_ALPHANUMERIC_REGEX.test(value)
+              ? value.split(NON_ALPHANUMERIC_REGEX).filter(Boolean)
               : [value];
 
           filters.push({

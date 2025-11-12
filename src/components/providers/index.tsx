@@ -8,7 +8,7 @@ export const Providers = ({ children }: React.PropsWithChildren) => (
   <ThemeSwitcher>
     <TopLoader />
     <TRPCProvider>
-    <NuqsAdapter>{children}</NuqsAdapter>
+      <NuqsAdapter>{children}</NuqsAdapter>
     </TRPCProvider>
     <Toaster />
   </ThemeSwitcher>

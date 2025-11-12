@@ -156,6 +156,12 @@ export function DataTableSliderFilter<TData>({
               aria-label={`Clear ${title} filter`}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onClick={onReset}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onReset(e as unknown as React.MouseEvent);
+                }
+              }}
               role="button"
               tabIndex={0}
             >

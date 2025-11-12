@@ -32,7 +32,8 @@
         "useBlockStatements": "off",
         "noNamespace": "off",
         "useConsistentArrayType": "off",
-        "useShorthandFunctionType": "off"
+        "useShorthandFunctionType": "off",
+        "useNamingConvention": "off"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"

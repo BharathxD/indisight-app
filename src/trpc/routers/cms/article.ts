@@ -226,6 +226,49 @@ export const articleRouter = router({
       return article;
     }),
 
+  getById: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const article = await ctx.db.article.findUnique({
+        where: { id: input.id },
+        include: {
+          articleAuthors: {
+            include: { author: true },
+            orderBy: { authorOrder: "asc" },
+          },
+          articleCategories: {
+            include: { category: true },
+          },
+          articleTags: {
+            include: { tag: true },
+          },
+          relatedArticles: {
+            include: {
+              relatedArticle: {
+                select: {
+                  id: true,
+                  title: true,
+                  slug: true,
+                  excerpt: true,
+                  featuredImageUrl: true,
+                },
+              },
+            },
+            orderBy: { relevanceScore: "desc" },
+          },
+        },
+      });
+
+      if (!article) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Article not found",
+        });
+      }
+
+      return article;
+    }),
+
   create: adminProcedure
     .input(createArticleSchema)
     .mutation(async ({ input, ctx }) => {

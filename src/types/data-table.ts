@@ -1,15 +1,17 @@
 import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
-import type { DataTableConfig } from "@/components/data-table/data-table";
+import type { DataTableConfig } from "@/config/data-table";
 import type { FilterItemSchema } from "@/lib/parsers";
 
 declare module "@tanstack/react-table" {
-  // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface
-  type TableMeta<TData extends RowData> = {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: TData is used
+  // biome-ignore lint/correctness/noUnusedVariables: TData is used
+  interface TableMeta<TData extends RowData> {
     queryKeys?: QueryKeys;
-  };
+  }
 
-  // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
-  type ColumnMeta<TData extends RowData, TValue> = {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: TData and TValue are used
+  // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used
+  interface ColumnMeta<TData extends RowData, TValue> {
     label?: string;
     placeholder?: string;
     variant?: FilterVariant;
@@ -17,7 +19,7 @@ declare module "@tanstack/react-table" {
     range?: [number, number];
     unit?: string;
     icon?: React.FC<React.SVGProps<SVGSVGElement>>;
-  };
+  }
 }
 
 export type QueryKeys = {
