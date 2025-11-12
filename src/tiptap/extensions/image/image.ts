@@ -2,7 +2,7 @@ import type { ImageOptions } from "@tiptap/extension-image";
 import { Image as TiptapImage } from "@tiptap/extension-image";
 import type { Attrs } from "@tiptap/pm/model";
 import { ReplaceStep } from "@tiptap/pm/transform";
-import type { Editor } from "@tiptap/react";
+import type { Editor, SingleCommands } from "@tiptap/react";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import {
   type FileError,
@@ -53,26 +53,19 @@ interface CustomImageOptions
   onToggle?: (editor: Editor, files: File[], pos: number) => void;
 }
 
-declare module "@tiptap/react" {
-  type Commands<ReturnType> = {
-    setImages: {
+declare module "@tiptap/core" {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: this is a declaration file
+  interface Commands<ReturnType> {
+    customImage: {
       setImages: (
         attrs: { src: string | File; alt?: string; title?: string }[]
       ) => ReturnType;
-    };
-    downloadImage: {
       downloadImage: (attrs: DownloadImageCommandProps) => ReturnType;
-    };
-    copyImage: {
       copyImage: (attrs: DownloadImageCommandProps) => ReturnType;
-    };
-    copyLink: {
       copyLink: (attrs: DownloadImageCommandProps) => ReturnType;
-    };
-    toggleImage: {
       toggleImage: () => ReturnType;
     };
-  };
+  }
 }
 
 const handleError = (
@@ -98,13 +91,15 @@ const handleDataUrl = (src: string): { blob: Blob; extension: string } => {
   return { blob, extension };
 };
 
+const MIME_TYPE_REGEX = /\/|\+/;
+
 const handleImageUrl = async (
   src: string
 ): Promise<{ blob: Blob; extension: string }> => {
   const response = await fetch(src);
   if (!response.ok) throw new Error("Failed to fetch image");
   const blob = await response.blob();
-  const extension = blob.type.split(/\/|\+/)[1];
+  const extension = blob.type.split(MIME_TYPE_REGEX)[1];
   return { blob, extension };
 };
 
@@ -113,11 +108,7 @@ const fetchImageBlob = async (
 ): Promise<{ blob: Blob; extension: string }> =>
   src.startsWith("data:") ? handleDataUrl(src) : handleImageUrl(src);
 
-const saveImage = async (
-  blob: Blob,
-  name: string,
-  extension: string
-): Promise<void> => {
+const saveImage = (blob: Blob, name: string, extension: string): void => {
   const imageURL = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = imageURL;
@@ -137,7 +128,7 @@ const downloadImage = async (
 
   try {
     const { blob, extension } = await fetchImageBlob(src);
-    await saveImage(blob, potentialName, extension);
+    saveImage(blob, potentialName, extension);
     options.onActionSuccess?.({ ...props, action: "download" });
   } catch (error) {
     handleError(error, { ...props, action: "download" }, options.onActionError);
@@ -192,6 +183,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
       inline: false,
       allowBase64: false,
       HTMLAttributes: {},
+      resize: false,
     };
   },
 
@@ -224,8 +216,8 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
   addCommands() {
     return {
       setImages:
-        (attrs) =>
-        ({ commands }) => {
+        (attrs: { src: string | File; alt?: string; title?: string }[]) =>
+        ({ commands }: { commands: SingleCommands }) => {
           const [validImages, errors] = filterFiles(attrs, {
             allowedMimeTypes: this.options.allowedMimeTypes,
             maxFileSize: this.options.maxFileSize,
@@ -239,8 +231,12 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
           if (validImages.length > 0) {
             return commands.insertContent(
               validImages.map((image) => {
-                if (image.src instanceof File) {
-                  const blobUrl = URL.createObjectURL(image.src);
+                const imageSrc = "src" in image ? image.src : image;
+                const imageAlt = "alt" in image ? image.alt : undefined;
+                const imageTitle = "title" in image ? image.title : undefined;
+
+                if (imageSrc instanceof File) {
+                  const blobUrl = URL.createObjectURL(imageSrc);
                   const id = randomId();
 
                   return {
@@ -248,9 +244,9 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                     attrs: {
                       id,
                       src: blobUrl,
-                      alt: image.alt,
-                      title: image.title,
-                      fileName: image.src.name,
+                      alt: imageAlt,
+                      title: imageTitle,
+                      fileName: imageSrc.name,
                     },
                   };
                 }
@@ -258,9 +254,9 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                   type: this.type.name,
                   attrs: {
                     id: randomId(),
-                    src: image.src,
-                    alt: image.alt,
-                    title: image.title,
+                    src: imageSrc,
+                    alt: imageAlt,
+                    title: imageTitle,
                     fileName: null,
                   },
                 };
@@ -271,27 +267,27 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
           return false;
         },
 
-      downloadImage: (attrs) => () => {
+      downloadImage: (attrs: DownloadImageCommandProps) => () => {
         const downloadFunc = this.options.downloadImage || downloadImage;
-        void downloadFunc({ ...attrs, action: "download" }, this.options);
+        downloadFunc({ ...attrs, action: "download" }, this.options);
         return true;
       },
 
-      copyImage: (attrs) => () => {
+      copyImage: (attrs: DownloadImageCommandProps) => () => {
         const copyImageFunc = this.options.copyImage || copyImage;
-        void copyImageFunc({ ...attrs, action: "copyImage" }, this.options);
+        copyImageFunc({ ...attrs, action: "copyImage" }, this.options);
         return true;
       },
 
-      copyLink: (attrs) => () => {
+      copyLink: (attrs: DownloadImageCommandProps) => () => {
         const copyLinkFunc = this.options.copyLink || copyLink;
-        void copyLinkFunc({ ...attrs, action: "copyLink" }, this.options);
+        copyLinkFunc({ ...attrs, action: "copyLink" }, this.options);
         return true;
       },
 
       toggleImage:
         () =>
-        ({ editor }) => {
+        ({ editor }: { editor: Editor }) => {
           const input = document.createElement("input");
           input.type = "file";
           input.accept = this.options.allowedMimeTypes.join(",");
@@ -330,11 +326,12 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
   },
 
   onTransaction({ transaction }) {
-    transaction.steps.forEach((step) => {
+    for (const step of transaction.steps) {
       if (step instanceof ReplaceStep && step.slice.size === 0) {
         const deletedPages = transaction.before.content.cut(step.from, step.to);
 
-        deletedPages.forEach((node) => {
+        for (let i = 0; i < deletedPages.childCount; i++) {
+          const node = deletedPages.child(i);
           if (node.type.name === "image") {
             const attrs = node.attrs;
 
@@ -344,9 +341,9 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
 
             this.options.onImageRemoved?.(attrs);
           }
-        });
+        }
       }
-    });
+    }
   },
 
   addNodeView() {

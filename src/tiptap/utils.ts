@@ -54,6 +54,8 @@ export const getOutput = (
   }
 };
 
+const BASE64_IMAGE_REGEX = /^data:image\/[a-z]+;base64,/;
+
 export const isUrl = (
   text: string,
   options: { requireHostname: boolean; allowBase64?: boolean } = {
@@ -73,7 +75,7 @@ export const isUrl = (
 
     if (blockedProtocols.includes(url.protocol)) return false;
     if (options.allowBase64 && url.protocol === "data:")
-      return /^data:image\/[a-z]+;base64,/.test(text);
+      return BASE64_IMAGE_REGEX.test(text);
     if (url.hostname) return true;
 
     return (
@@ -85,6 +87,8 @@ export const isUrl = (
     return false;
   }
 };
+
+const URL_PROTOCOL_REGEX = /^(\/|#|mailto:|sms:|fax:|tel:)/;
 
 export const sanitizeUrl = (
   url: string | null | undefined,
@@ -101,7 +105,7 @@ export const sanitizeUrl = (
   return isUrl(url, {
     requireHostname: false,
     allowBase64: options.allowBase64,
-  }) || /^(\/|#|mailto:|sms:|fax:|tel:)/.test(url)
+  }) || URL_PROTOCOL_REGEX.test(url)
     ? url
     : `https://${url}`;
 };
@@ -140,13 +144,18 @@ export const fileToBase64 = (file: File | Blob): Promise<string> =>
     reader.readAsDataURL(file);
   });
 
+type ValidationContext<T extends FileInput> = {
+  input: File | string;
+  options: FileValidationOptions;
+  originalFile: T;
+  validFiles: T[];
+  errors: FileError[];
+};
+
 const validateFileOrBase64 = <T extends FileInput>(
-  input: File | string,
-  options: FileValidationOptions,
-  originalFile: T,
-  validFiles: T[],
-  errors: FileError[]
+  context: ValidationContext<T>
 ): void => {
+  const { input, options, originalFile, validFiles, errors } = context;
   const { isValidType, isValidSize } = checkTypeAndSize(input, options);
 
   if (isValidType && isValidSize) {
@@ -175,25 +184,29 @@ const checkTypeAndSize = (
   return { isValidType, isValidSize };
 };
 
+const MIME_TYPE_REGEX = /data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*/;
+
 const base64MimeType = (encoded: string): string => {
-  const result = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
+  const result = encoded.match(MIME_TYPE_REGEX);
   return result && result.length > 1 ? result[1] : "unknown";
 };
 
 const BASE64_REGEX = /^data:[^;]+;base64,(.+)$/;
 
 const isBase64 = (str: string): boolean => {
+  let base64Content = str;
+
   if (str.startsWith("data:")) {
     const matches = str.match(BASE64_REGEX);
     if (matches?.[1]) {
-      str = matches[1];
+      base64Content = matches[1];
     } else {
       return false;
     }
   }
 
   try {
-    return btoa(atob(str)) === str;
+    return btoa(atob(base64Content)) === base64Content;
   } catch {
     return false;
   }
@@ -210,11 +223,23 @@ export const filterFiles = <T extends FileInput>(
     const actualFile = "src" in file ? file.src : file;
 
     if (actualFile instanceof File) {
-      validateFileOrBase64(actualFile, options, file, validFiles, errors);
+      validateFileOrBase64({
+        input: actualFile,
+        options,
+        originalFile: file,
+        validFiles,
+        errors,
+      });
     } else if (typeof actualFile === "string") {
       if (isBase64(actualFile)) {
         if (options.allowBase64) {
-          validateFileOrBase64(actualFile, options, file, validFiles, errors);
+          validateFileOrBase64({
+            input: actualFile,
+            options,
+            originalFile: file,
+            validFiles,
+            errors,
+          });
         } else {
           errors.push({ file: actualFile, reason: "base64NotAllowed" });
         }

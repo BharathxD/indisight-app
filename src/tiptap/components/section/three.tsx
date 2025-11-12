@@ -125,12 +125,12 @@ const MemoizedColorPicker = React.memo<{
     type="single"
     value={selectedColor}
   >
-    {palette.colors.map((color, index) => (
+    {palette.colors.map((color) => (
       <MemoizedColorButton
         color={color}
         inverse={inverse}
         isSelected={selectedColor === color.cssVar}
-        key={index}
+        key={color.cssVar}
         onClick={onColorChange}
       />
     ))}
@@ -186,9 +186,11 @@ export const SectionThree: React.FC<SectionThreeProps> = ({
           variant={variant}
         >
           <svg
+            aria-label="Text color"
             className="size-5"
             fill="none"
             height="24"
+            role="img"
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -207,10 +209,10 @@ export const SectionThree: React.FC<SectionThreeProps> = ({
       </PopoverTrigger>
       <PopoverContent align="start" className="w-full">
         <div className="space-y-1.5">
-          {COLORS.map((palette, index) => (
+          {COLORS.map((palette) => (
             <MemoizedColorPicker
               inverse={palette.inverse}
-              key={index}
+              key={palette.label}
               onColorChange={handleColorChange}
               palette={palette}
               selectedColor={selectedColor}

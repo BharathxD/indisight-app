@@ -13,13 +13,9 @@ export const ShortcutKey = ({
   ...props
 }: ShortcutKeyProps) => {
   const modifiedKeys = keys.map((key) => getShortcutKey(key));
-  const ariaLabel = modifiedKeys
-    .map((shortcut) => shortcut.readable)
-    .join(" + ");
 
   return (
     <span
-      aria-label={ariaLabel}
       className={cn("inline-flex items-center gap-0.5", className)}
       {...props}
       ref={ref}

@@ -17,8 +17,10 @@ const formatActions: ListItem[] = [
     label: "Numbered list",
     icon: (
       <svg
+        aria-label="Numbered list"
         fill="currentColor"
         height="20px"
+        role="img"
         viewBox="0 -960 960 960"
         width="20px"
         xmlns="http://www.w3.org/2000/svg"

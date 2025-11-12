@@ -35,11 +35,12 @@ export const LinkEditBlock = ({
         if (isValid) {
           onSave(url, text, isNewTab);
         } else {
-          formRef.current.querySelectorAll("input").forEach((input) => {
+          const inputs = formRef.current.querySelectorAll("input");
+          for (const input of inputs) {
             if (!input.checkValidity()) {
               input.reportValidity();
             }
-          });
+          }
         }
       }
     },

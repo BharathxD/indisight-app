@@ -30,7 +30,9 @@
         "noMagicNumbers": "off",
         "noNestedTernary": "off",
         "useBlockStatements": "off",
-        "noNamespace": "off"
+        "noNamespace": "off",
+        "useConsistentArrayType": "off",
+        "useShorthandFunctionType": "off"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"
@@ -40,7 +42,8 @@
         "noConsole": "off"
       },
       "performance": {
-        "noNamespaceImport": "off"
+        "noNamespaceImport": "off",
+        "noBarrelFile": "off"
       }
     },
     "domains": {

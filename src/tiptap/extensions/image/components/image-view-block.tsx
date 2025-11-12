@@ -263,6 +263,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
                   setImageState((prev) => ({ ...prev, isZoomed: false }))
                 }
               >
+                {/* biome-ignore lint/performance/noImgElement: using controlled zoom library */}
                 <img
                   alt={node.attrs.alt || ""}
                   className={cn(
