@@ -8,6 +8,7 @@ import {
   LogOut,
   User,
   Users,
+  Users2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -53,6 +54,12 @@ const primaryNavItems = [
     href: "/admin/authors",
     icon: Users,
   },
+  {
+    title: "Users",
+    href: "/admin/users",
+    icon: Users2,
+    superAdminOnly: true,
+  },
 ];
 
 const taxonomyNavItems = [
@@ -70,6 +77,7 @@ const taxonomyNavItems = [
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <SidebarPrimitive collapsible="icon">
@@ -85,6 +93,12 @@ export const Sidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {primaryNavItems.map((item) => {
+                if (
+                  item.superAdminOnly &&
+                  session?.user?.role !== "SUPER_ADMIN"
+                ) {
+                  return null;
+                }
                 const isActive = pathname === item.href;
                 return (
                   <SidebarMenuItem key={item.title}>

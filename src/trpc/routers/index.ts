@@ -4,12 +4,14 @@ import { cmsRouter } from "@/trpc/routers/cms";
 import { fileRouter } from "@/trpc/routers/file";
 import { healthRouter } from "@/trpc/routers/health";
 import { router } from "@/trpc/server";
+import { userRouter } from "./cms/user";
 
 export const appRouter = router({
   health: healthRouter,
   cms: cmsRouter,
   file: fileRouter,
   analytics: analyticsRouter,
+  user: userRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -30,11 +30,16 @@ export const useTrpcInvalidations = () => {
     await utils.cms.tag.invalidate();
   };
 
+  const invalidateUserGraph = async () => {
+    await utils.cms.user.invalidate();
+  };
+
   return {
     invalidateArticleGraph,
     invalidateCategoryGraph,
     invalidateAuthorGraph,
     invalidateTagGraph,
+    invalidateUserGraph,
     utils,
   };
 };
