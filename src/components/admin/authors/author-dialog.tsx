@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImageUploadDropzone } from "@/components/admin/articles/image-upload-dropzone";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -101,6 +102,7 @@ export const AuthorDialog = ({
 
   const name = watch("name");
   const isFeatured = watch("isFeatured");
+  const profileImageUrl = watch("profileImageUrl");
 
   useEffect(() => {
     if (isAutoSlug && name) {
@@ -281,22 +283,14 @@ export const AuthorDialog = ({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="profileImageUrl">Profile Image URL</Label>
-            <Input
-              id="profileImageUrl"
-              placeholder="https://example.com/image.jpg"
-              type="url"
-              {...register("profileImageUrl")}
-              aria-invalid={!!errors.profileImageUrl}
-              disabled={isPending}
-            />
-            {errors.profileImageUrl && (
-              <p className="text-destructive text-sm">
-                {errors.profileImageUrl.message}
-              </p>
-            )}
-          </div>
+          <ImageUploadDropzone
+            disabled={isPending}
+            folder="authors"
+            label="Profile Image"
+            onChange={(url) => setValue("profileImageUrl", url)}
+            recommendedDimensions="400x400px"
+            value={profileImageUrl}
+          />
 
           <div className="space-y-3">
             <Label>Social Links</Label>

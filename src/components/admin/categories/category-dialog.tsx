@@ -1,19 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ChevronDown,
-  ChevronRight,
-  Folder,
-  Image,
-  Sparkles,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, Folder, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { toast } from "sonner";
 import { z } from "zod";
 import { EntitySelector } from "@/components/admin/articles/entity-selector";
+import { ImageUploadDropzone } from "@/components/admin/articles/image-upload-dropzone";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -118,6 +113,7 @@ export const CategoryDialog = ({
   const name = watch("name");
   const isActive = watch("isActive");
   const parentId = watch("parentId");
+  const imageUrl = watch("imageUrl");
 
   useEffect(() => {
     if (isAutoSlug && name) {
@@ -319,36 +315,26 @@ export const CategoryDialog = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
-            <div className="relative">
-              <Image className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+          <ImageUploadDropzone
+            disabled={isPending}
+            folder="categories"
+            label="Category Image"
+            onChange={(url) => setValue("imageUrl", url)}
+            recommendedDimensions="1200x630px"
+            value={imageUrl}
+          />
+
+          {imageUrl && (
+            <div className="space-y-2">
+              <Label htmlFor="imageAlt">Image Alt Text</Label>
               <Input
-                className="pl-9"
-                id="imageUrl"
-                placeholder="https://example.com/image.jpg"
-                type="url"
-                {...register("imageUrl")}
-                aria-invalid={!!errors.imageUrl}
+                id="imageAlt"
+                placeholder="Description for accessibility"
+                {...register("imageAlt")}
                 disabled={isPending}
               />
             </div>
-            {errors.imageUrl && (
-              <p className="text-destructive text-sm">
-                {errors.imageUrl.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="imageAlt">Image Alt Text</Label>
-            <Input
-              id="imageAlt"
-              placeholder="Description for accessibility"
-              {...register("imageAlt")}
-              disabled={isPending}
-            />
-          </div>
+          )}
 
           <div className="flex items-center justify-between rounded-md border p-3">
             <div className="flex items-center gap-2">
