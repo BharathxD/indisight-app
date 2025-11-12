@@ -7,6 +7,7 @@ import { StarterKit } from "@tiptap/starter-kit";
 import * as React from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
 import {
   CodeBlockLowlight,
   Color,
@@ -30,17 +31,18 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   uploader?: (file: File) => Promise<string>;
 }
 
-async function fakeuploader(file: File): Promise<string> {
-  // NOTE: This is a fake upload function. Replace this with your own upload logic.
-  // This function should return the uploaded image URL.
-
-  // wait 3s to simulate upload
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  const src = await fileToBase64(file);
-
-  return src;
-}
+const createR2Uploader =
+  (uploadMutation: ReturnType<typeof trpc.file.uploadFile.useMutation>) =>
+  async (file: File): Promise<string> => {
+    const base64 = await fileToBase64(file);
+    const { publicUrl } = await uploadMutation.mutateAsync({
+      filename: file.name,
+      contentType: file.type,
+      content: base64.split(",")[1],
+      folder: "articles",
+    });
+    return publicUrl;
+  };
 
 const createExtensions = ({
   placeholder,
@@ -83,8 +85,7 @@ const createExtensions = ({
     allowedMimeTypes: ["image/*"],
     maxFileSize: 5 * 1024 * 1024,
     allowBase64: true,
-    uploadFn: async (file) =>
-      uploader ? await uploader(file) : await fakeuploader(file),
+    uploadFn: uploader,
     onToggle(editor, files, pos) {
       editor.commands.insertContentAt(
         pos,
@@ -145,20 +146,68 @@ const createExtensions = ({
     maxFileSize: 5 * 1024 * 1024,
     onDrop: async (editor, files, pos) => {
       for (const file of files) {
-        const src = await fileToBase64(file);
+        const blobUrl = URL.createObjectURL(file);
+        const id = randomId();
+
         editor.commands.insertContentAt(pos, {
           type: "image",
-          attrs: { src },
+          attrs: {
+            id,
+            src: blobUrl,
+            alt: file.name,
+            title: file.name,
+            fileName: file.name,
+          },
         });
+
+        if (uploader) {
+          try {
+            const uploadedUrl = await uploader(file);
+            editor.commands.updateAttributes("image", {
+              src: uploadedUrl,
+            });
+            URL.revokeObjectURL(blobUrl);
+          } catch (error) {
+            toast.error("Upload failed", {
+              position: "bottom-right",
+              description:
+                error instanceof Error ? error.message : "Unknown error",
+            });
+          }
+        }
       }
     },
     onPaste: async (editor, files) => {
       for (const file of files) {
-        const src = await fileToBase64(file);
+        const blobUrl = URL.createObjectURL(file);
+        const id = randomId();
+
         editor.commands.insertContent({
           type: "image",
-          attrs: { src },
+          attrs: {
+            id,
+            src: blobUrl,
+            alt: file.name,
+            title: file.name,
+            fileName: file.name,
+          },
         });
+
+        if (uploader) {
+          try {
+            const uploadedUrl = await uploader(file);
+            editor.commands.updateAttributes("image", {
+              src: uploadedUrl,
+            });
+            URL.revokeObjectURL(blobUrl);
+          } catch (error) {
+            toast.error("Upload failed", {
+              position: "bottom-right",
+              description:
+                error instanceof Error ? error.message : "Unknown error",
+            });
+          }
+        }
       }
     },
     onValidationError: (errors) => {
@@ -192,6 +241,13 @@ export const useMinimalTiptapEditor = ({
   uploader,
   ...props
 }: UseMinimalTiptapEditorProps) => {
+  const uploadMutation = trpc.file.uploadFile.useMutation();
+
+  const r2Uploader = React.useMemo(
+    () => createR2Uploader(uploadMutation),
+    [uploadMutation]
+  );
+
   const throttledSetValue = useThrottle(
     (value: Content) => onUpdate?.(value),
     throttleDelay
@@ -218,7 +274,10 @@ export const useMinimalTiptapEditor = ({
 
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: createExtensions({ placeholder, uploader }),
+    extensions: createExtensions({
+      placeholder,
+      uploader: uploader || r2Uploader,
+    }),
     editorProps: {
       attributes: {
         autocomplete: "off",
