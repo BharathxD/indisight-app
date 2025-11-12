@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "ultracite check",
     "format": "ultracite fix --unsafe",
+    "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
