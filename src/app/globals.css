@@ -252,7 +252,7 @@
 }
 
 .minimal-tiptap-editor .ProseMirror p {
-  @apply break-words;
+  @apply wrap-break-word;
 }
 
 .minimal-tiptap-editor .ProseMirror li .text-node:has(+ .list-node),
@@ -272,7 +272,7 @@
 }
 
 .minimal-tiptap-editor .ProseMirror hr {
-  @apply my-3 h-0.5 w-full border-none bg-[var(--mt-hr)];
+  @apply my-3 h-0.5 w-full border-none bg-(--mt-hr);
 }
 
 .minimal-tiptap-editor .ProseMirror-focused hr.ProseMirror-selectednode {
@@ -309,17 +309,17 @@
 }
 
 .minimal-tiptap-editor .ProseMirror code.inline {
-  @apply rounded border border-[var(--mt-code-color)] bg-[var(--mt-code-background)] px-1 py-0.5 text-sm;
+  @apply rounded border border-(--mt-code-color) bg-(--mt-code-background) px-1 py-0.5 text-sm;
 }
 
 .minimal-tiptap-editor .ProseMirror pre {
   @apply relative overflow-auto rounded border font-mono text-sm;
-  @apply border-[var(--mt-pre-border)] bg-[var(--mt-pre-background)] text-[var(--mt-pre-color)];
+  @apply border-(--mt-pre-border) bg-(--mt-pre-background) text-(--mt-pre-color);
   @apply text-left hyphens-none whitespace-pre;
 }
 
 .minimal-tiptap-editor .ProseMirror code {
-  @apply leading-[1.7em] break-words;
+  @apply leading-[1.7em] wrap-break-word;
 }
 
 .minimal-tiptap-editor .ProseMirror pre code {
@@ -395,7 +395,7 @@
 
 .minimal-tiptap-editor .ProseMirror > p.is-editor-empty::before {
   content: attr(data-placeholder);
-  @apply pointer-events-none float-left h-0 text-[var(--mt-secondary)];
+  @apply pointer-events-none float-left h-0 text-(--mt-secondary);
 }
 
 .minimal-tiptap-editor .ProseMirror ol {
