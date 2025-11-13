@@ -20,7 +20,7 @@ export const StandaloneThemeToggle = () => {
     return (
       <button
         aria-label="Toggle theme"
-        className="flex size-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+        className="flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-muted"
         type="button"
       >
         <div className="size-4" />
@@ -32,7 +32,7 @@ export const StandaloneThemeToggle = () => {
       aria-label={
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
-      className="flex size-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+      className="flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-muted"
       onClick={toggleTheme}
       type="button"
     >

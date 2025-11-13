@@ -39,13 +39,13 @@ export const ArticleCardFeatured = ({
   return (
     <article
       className={cn(
-        "group hover:-translate-y-0.5 overflow-hidden border border-neutral-200 bg-white transition-all duration-200 hover:shadow-lg",
+        "group hover:-translate-y-0.5 overflow-hidden border border-border bg-background transition-all duration-200 hover:shadow-lg",
         className
       )}
     >
       <Link className="block" href={`/articles/${article.slug}`}>
         {article.featuredImageUrl && (
-          <div className="relative aspect-video w-full overflow-hidden bg-neutral-100">
+          <div className="relative aspect-video w-full overflow-hidden bg-muted">
             <Image
               alt={article.title}
               className="object-cover transition-opacity duration-200 group-hover:opacity-90"
@@ -61,11 +61,11 @@ export const ArticleCardFeatured = ({
               <CategoryBadge name={primaryCategory.category.name} />
             </div>
           )}
-          <h2 className="mb-4 font-semibold text-gray-900 text-xl leading-snug tracking-tight md:text-2xl">
+          <h2 className="mb-4 font-semibold text-foreground text-xl leading-snug tracking-tight md:text-2xl">
             {article.title}
           </h2>
           {article.excerpt && (
-            <p className="mb-5 line-clamp-2 text-base text-gray-700 leading-relaxed">
+            <p className="mb-5 line-clamp-2 text-base text-muted-foreground leading-relaxed">
               {article.excerpt}
             </p>
           )}

@@ -11,39 +11,39 @@ const CATEGORY_COLORS: Record<
   { bg: string; text: string; border: string }
 > = {
   "CXO Series": {
-    bg: "bg-purple-100/50",
-    text: "text-purple-700",
-    border: "border-purple-200",
+    bg: "bg-purple-100/50 dark:bg-purple-950/30",
+    text: "text-purple-700 dark:text-purple-400",
+    border: "border-purple-200 dark:border-purple-800",
   },
   "Quiet Architects": {
-    bg: "bg-blue-100/50",
-    text: "text-blue-700",
-    border: "border-blue-200",
+    bg: "bg-blue-100/50 dark:bg-blue-950/30",
+    text: "text-blue-700 dark:text-blue-400",
+    border: "border-blue-200 dark:border-blue-800",
   },
   "Editorial Archive": {
-    bg: "bg-orange-100/50",
-    text: "text-orange-700",
-    border: "border-orange-200",
+    bg: "bg-orange-100/50 dark:bg-orange-950/30",
+    text: "text-orange-700 dark:text-orange-400",
+    border: "border-orange-200 dark:border-orange-800",
   },
   Events: {
-    bg: "bg-red-100/50",
-    text: "text-red-700",
-    border: "border-red-200",
+    bg: "bg-red-100/50 dark:bg-red-950/30",
+    text: "text-red-700 dark:text-red-400",
+    border: "border-red-200 dark:border-red-800",
   },
   Technology: {
-    bg: "bg-green-100/50",
-    text: "text-green-700",
-    border: "border-green-200",
+    bg: "bg-green-100/50 dark:bg-green-950/30",
+    text: "text-green-700 dark:text-green-400",
+    border: "border-green-200 dark:border-green-800",
   },
   Business: {
-    bg: "bg-indigo-100/50",
-    text: "text-indigo-700",
-    border: "border-indigo-200",
+    bg: "bg-indigo-100/50 dark:bg-indigo-950/30",
+    text: "text-indigo-700 dark:text-indigo-400",
+    border: "border-indigo-200 dark:border-indigo-800",
   },
   default: {
-    bg: "bg-neutral-100/50",
-    text: "text-neutral-700",
-    border: "border-neutral-200",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
+    border: "border-border",
   },
 };
 

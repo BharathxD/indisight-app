@@ -34,17 +34,17 @@ const AllArticlesPage = async () => {
 
   return (
     <PublicLayout>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
-          <div className="mb-12 border-gray-200 border-b pb-8">
-            <h1 className="mb-4 font-bold text-4xl text-gray-900 tracking-tight md:text-5xl">
+          <div className="mb-12 border-border border-b pb-8">
+            <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight md:text-5xl">
               All Articles
             </h1>
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               Explore our complete collection of articles on leadership,
               innovation, and meaningful change.
             </p>
-            <p className="mt-4 text-gray-500 text-sm">
+            <p className="mt-4 text-muted-foreground text-sm">
               {articles.length} {articles.length === 1 ? "article" : "articles"}
             </p>
           </div>
@@ -72,10 +72,10 @@ const AllArticlesPage = async () => {
           {articles.length === 0 && (
             <div className="flex min-h-[400px] items-center justify-center">
               <div className="text-center">
-                <h2 className="mb-2 font-bold text-2xl text-gray-900">
+                <h2 className="mb-2 font-bold text-2xl text-foreground">
                   No articles yet
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Check back soon for new content.
                 </p>
               </div>

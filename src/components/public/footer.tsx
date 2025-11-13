@@ -26,14 +26,14 @@ const legalLinks = [
 ];
 
 export const Footer = () => (
-  <footer className="border-neutral-800 border-t bg-black">
+  <footer className="border-border border-t bg-background">
     <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-12 md:py-12">
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <h3 className="mb-3 font-medium text-lg text-white uppercase tracking-wider">
+          <h3 className="mb-3 font-medium text-foreground text-lg uppercase tracking-wider">
             {siteConfig.name}
           </h3>
-          <p className="max-w-sm text-neutral-400 text-sm leading-relaxed">
+          <p className="max-w-sm text-muted-foreground text-sm leading-relaxed">
             {siteConfig.name} captures the minds shaping meaningful change. We
             document people, institutions, and ideas through the lens of intent,
             resilience, and quiet conviction. Not for headlines — but for those
@@ -42,14 +42,14 @@ export const Footer = () => (
         </div>
 
         <div>
-          <h4 className="mb-3 font-medium text-sm text-white uppercase tracking-wide">
+          <h4 className="mb-3 font-medium text-foreground text-sm uppercase tracking-wide">
             Explore
           </h4>
           <ul className="space-y-2">
             {exploreLinks.map((link) => (
               <li key={link.href}>
                 <Link
-                  className="text-neutral-400 text-sm transition-colors hover:text-white"
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href={link.href}
                 >
                   {link.label}
@@ -60,14 +60,14 @@ export const Footer = () => (
         </div>
 
         <div>
-          <h4 className="mb-3 font-medium text-sm text-white uppercase tracking-wide">
+          <h4 className="mb-3 font-medium text-foreground text-sm uppercase tracking-wide">
             Connect
           </h4>
           <ul className="space-y-2">
             {connectLinks.map((link) => (
               <li key={link.href}>
                 <Link
-                  className="text-neutral-400 text-sm transition-colors hover:text-white"
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href={link.href}
                 >
                   {link.label}
@@ -78,14 +78,14 @@ export const Footer = () => (
         </div>
 
         <div>
-          <h4 className="mb-3 font-medium text-sm text-white uppercase tracking-wide">
+          <h4 className="mb-3 font-medium text-foreground text-sm uppercase tracking-wide">
             Legal
           </h4>
           <ul className="space-y-2">
             {legalLinks.map((link) => (
               <li key={link.href}>
                 <Link
-                  className="text-neutral-400 text-sm transition-colors hover:text-white"
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href={link.href}
                 >
                   {link.label}
@@ -96,12 +96,12 @@ export const Footer = () => (
         </div>
       </div>
 
-      <div className="mt-10 border-neutral-800 border-t pt-6">
+      <div className="mt-10 border-border border-t pt-6">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-center gap-3">
             <Link
               aria-label="LinkedIn"
-              className="text-neutral-500 transition-colors hover:text-white"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               href="https://linkedin.com"
               rel="noopener noreferrer"
               target="_blank"
@@ -117,7 +117,7 @@ export const Footer = () => (
             </Link>
             <Link
               aria-label="YouTube"
-              className="text-neutral-500 transition-colors hover:text-white"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               href="https://youtube.com"
               rel="noopener noreferrer"
               target="_blank"
@@ -133,7 +133,7 @@ export const Footer = () => (
             </Link>
             <Link
               aria-label="Instagram"
-              className="text-neutral-500 transition-colors hover:text-white"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               href="https://instagram.com"
               rel="noopener noreferrer"
               target="_blank"
@@ -150,12 +150,12 @@ export const Footer = () => (
           </div>
 
           <div className="flex flex-col gap-1.5 md:items-end">
-            <p className="text-neutral-500 text-xs leading-relaxed">
+            <p className="text-muted-foreground text-xs leading-relaxed">
               All content on {siteConfig.name} is protected by intellectual
               property rights. Written permission is required to republish,
               redistribute, or repurpose any content for commercial use.
             </p>
-            <p className="text-neutral-500 text-xs">
+            <p className="text-muted-foreground text-xs">
               © {new Date().getFullYear()} {siteConfig.name}. All rights
               reserved.
             </p>

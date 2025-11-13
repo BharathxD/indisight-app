@@ -39,13 +39,13 @@ export const ArticleCardHero = ({
   return (
     <article
       className={cn(
-        "group relative overflow-hidden border border-neutral-200 bg-white",
+        "group relative overflow-hidden border border-border bg-background",
         className
       )}
     >
       <Link className="block" href={`/articles/${article.slug}`}>
         {article.featuredImageUrl && (
-          <div className="relative h-[480px] w-full overflow-hidden bg-neutral-100 md:h-[560px]">
+          <div className="relative h-[480px] w-full overflow-hidden bg-muted md:h-[560px]">
             <Image
               alt={article.title}
               className="object-cover transition-opacity duration-300 group-hover:opacity-90"
@@ -63,11 +63,11 @@ export const ArticleCardHero = ({
               <CategoryBadge name={primaryCategory.category.name} />
             </div>
           )}
-          <h1 className="mb-5 font-bold text-3xl text-gray-900 leading-tight tracking-tight md:text-5xl md:leading-tight">
+          <h1 className="mb-5 font-bold text-3xl text-foreground leading-tight tracking-tight md:text-5xl md:leading-tight">
             {article.title}
           </h1>
           {article.excerpt && (
-            <p className="mb-8 line-clamp-3 text-base text-gray-700 leading-relaxed md:text-lg md:leading-relaxed">
+            <p className="mb-8 line-clamp-3 text-base text-muted-foreground leading-relaxed md:text-lg md:leading-relaxed">
               {article.excerpt}
             </p>
           )}

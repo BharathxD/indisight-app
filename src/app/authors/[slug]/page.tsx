@@ -82,33 +82,33 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
 
   return (
     <PublicLayout>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
-          <div className="mb-12 border-gray-200 border-b pb-8">
+          <div className="mb-12 border-border border-b pb-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-start">
               {author.profileImageUrl ? (
                 <Image
                   alt={author.name}
-                  className="size-[120px] flex-shrink-0 object-cover"
+                  className="size-[120px] shrink-0 object-cover"
                   height={120}
                   src={author.profileImageUrl}
                   width={120}
                 />
               ) : (
-                <div className="flex size-[120px] flex-shrink-0 items-center justify-center bg-gray-200 font-semibold text-3xl text-gray-600">
+                <div className="flex size-[120px] shrink-0 items-center justify-center bg-muted font-semibold text-3xl text-muted-foreground">
                   {author.name.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-1">
-                <h1 className="mb-4 font-bold text-4xl text-gray-900 tracking-tight">
+                <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight">
                   {author.name}
                 </h1>
                 {author.bio && (
-                  <p className="mb-4 text-gray-600 text-lg leading-relaxed">
+                  <p className="mb-4 text-lg text-muted-foreground leading-relaxed">
                     {author.bio}
                   </p>
                 )}
-                <p className="mb-4 text-gray-500 text-sm">
+                <p className="mb-4 text-muted-foreground text-sm">
                   {author.articleCount}{" "}
                   {author.articleCount === 1 ? "article" : "articles"}
                 </p>
@@ -116,7 +116,7 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
                   <div className="flex gap-4">
                     {socialLinks.twitter && (
                       <Link
-                        className="font-medium text-gray-700 text-sm hover:text-gray-900"
+                        className="font-medium text-muted-foreground text-sm hover:text-foreground"
                         href={socialLinks.twitter}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -126,7 +126,7 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
                     )}
                     {socialLinks.linkedin && (
                       <Link
-                        className="font-medium text-gray-700 text-sm hover:text-gray-900"
+                        className="font-medium text-muted-foreground text-sm hover:text-foreground"
                         href={socialLinks.linkedin}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -136,7 +136,7 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
                     )}
                     {socialLinks.website && (
                       <Link
-                        className="font-medium text-gray-700 text-sm hover:text-gray-900"
+                        className="font-medium text-muted-foreground text-sm hover:text-foreground"
                         href={socialLinks.website}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -152,7 +152,7 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
 
           {articles.length > 0 ? (
             <section>
-              <h2 className="mb-6 font-bold text-2xl text-gray-900">
+              <h2 className="mb-6 font-bold text-2xl text-foreground">
                 Articles
               </h2>
               <div className="grid gap-6 md:grid-cols-2">
@@ -168,10 +168,10 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
           ) : (
             <div className="flex min-h-[400px] items-center justify-center">
               <div className="text-center">
-                <h2 className="mb-2 font-bold text-2xl text-gray-900">
+                <h2 className="mb-2 font-bold text-2xl text-foreground">
                   No articles yet
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Check back soon for articles by this author.
                 </p>
               </div>

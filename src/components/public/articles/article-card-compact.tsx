@@ -34,13 +34,13 @@ export const ArticleCardCompact = ({
 }: ArticleCardCompactProps) => (
   <article
     className={cn(
-      "group flex gap-4 border-neutral-200 border-b pb-4 last:border-0",
+      "group flex gap-4 border-border border-b pb-4 last:border-0",
       className
     )}
   >
     <Link className="flex flex-1 gap-4" href={`/articles/${article.slug}`}>
       {showImage && article.thumbnailUrl && (
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-neutral-100">
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-muted">
           <Image
             alt={article.title}
             className="object-cover transition-opacity duration-200 group-hover:opacity-90"
@@ -51,12 +51,12 @@ export const ArticleCardCompact = ({
         </div>
       )}
       <div className="flex flex-1 flex-col justify-center">
-        <h4 className="mb-1.5 line-clamp-2 font-semibold text-gray-900 text-sm leading-snug tracking-tight transition-colors group-hover:text-neutral-600">
+        <h4 className="mb-1.5 line-clamp-2 font-semibold text-foreground text-sm leading-snug tracking-tight transition-colors group-hover:text-muted-foreground">
           {article.title}
         </h4>
         {article.publishedAt && (
           <time
-            className="text-gray-500 text-sm opacity-80"
+            className="text-muted-foreground text-sm opacity-80"
             dateTime={
               typeof article.publishedAt === "string"
                 ? article.publishedAt

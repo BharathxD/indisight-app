@@ -42,13 +42,13 @@ export const ArticleCardStandard = ({
     return (
       <article
         className={cn(
-          "group overflow-hidden border border-neutral-200 bg-white transition-shadow duration-200 hover:shadow-lg",
+          "group overflow-hidden border border-border bg-background transition-shadow duration-200 hover:shadow-lg",
           className
         )}
       >
         <Link className="block" href={`/articles/${article.slug}`}>
           {article.thumbnailUrl && (
-            <div className="relative aspect-4/3 w-full overflow-hidden bg-neutral-100">
+            <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
               <Image
                 alt={article.title}
                 className="object-cover transition-opacity duration-200 group-hover:opacity-90"
@@ -64,11 +64,11 @@ export const ArticleCardStandard = ({
                 <CategoryBadge name={primaryCategory.category.name} />
               </div>
             )}
-            <h3 className="mb-3 font-semibold text-gray-900 text-lg leading-snug tracking-tight">
+            <h3 className="mb-3 font-semibold text-foreground text-lg leading-snug tracking-tight">
               {article.title}
             </h3>
             {article.excerpt && (
-              <p className="mb-4 line-clamp-2 text-gray-700 text-sm leading-relaxed">
+              <p className="mb-4 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
                 {article.excerpt}
               </p>
             )}
@@ -91,13 +91,13 @@ export const ArticleCardStandard = ({
   return (
     <article
       className={cn(
-        "group flex gap-6 border-neutral-200 border-b bg-white pb-6 last:border-0",
+        "group flex gap-6 border-border border-b bg-background pb-6 last:border-0",
         className
       )}
     >
       <Link className="flex flex-1 gap-6" href={`/articles/${article.slug}`}>
         {article.thumbnailUrl && (
-          <div className="relative h-[140px] w-[200px] shrink-0 overflow-hidden bg-neutral-100">
+          <div className="relative h-[140px] w-[200px] shrink-0 overflow-hidden bg-muted">
             <Image
               alt={article.title}
               className="object-cover transition-opacity duration-200 group-hover:opacity-90"
@@ -113,11 +113,11 @@ export const ArticleCardStandard = ({
               <CategoryBadge name={primaryCategory.category.name} />
             </div>
           )}
-          <h3 className="mb-3 font-semibold text-gray-900 text-lg leading-snug tracking-tight">
+          <h3 className="mb-3 font-semibold text-foreground text-lg leading-snug tracking-tight">
             {article.title}
           </h3>
           {article.excerpt && (
-            <p className="mb-4 line-clamp-2 text-gray-700 text-sm leading-relaxed">
+            <p className="mb-4 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
               {article.excerpt}
             </p>
           )}

@@ -18,34 +18,34 @@ const HomePage = async () => {
 
   return (
     <PublicLayout>
-      <div className="min-h-screen bg-white">
-        <section className="relative overflow-hidden border-neutral-200 border-b bg-linear-to-br from-white via-neutral-50 to-white">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[64px_64px]" />
+      <div className="min-h-screen bg-background">
+        <section className="relative overflow-hidden border-border border-b bg-background">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-50" />
 
           <div className="relative mx-auto max-w-[1280px] px-6 py-20 md:px-12 md:py-32 lg:py-40">
             <div className="mx-auto max-w-4xl text-center">
-              <div className="mb-6 inline-flex items-center gap-2 border border-neutral-200 bg-white px-4 py-2 text-neutral-600 text-sm shadow-sm">
+              <div className="mb-6 inline-flex items-center gap-2 border border-border bg-background px-4 py-2 text-muted-foreground text-sm shadow-sm">
                 <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-neutral-400 opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-neutral-500" />
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-muted-foreground/50 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-muted-foreground" />
                 </span>
                 Editorial Platform for Leaders & Innovators
               </div>
 
-              <h1 className="mb-6 font-bold text-5xl text-gray-900 leading-tight tracking-tight md:text-7xl md:leading-tight">
+              <h1 className="mb-6 font-bold text-5xl text-foreground leading-tight tracking-tight md:text-7xl md:leading-tight">
                 Capturing the minds shaping{" "}
-                <span className="bg-linear-to-r from-neutral-900 via-neutral-700 to-neutral-900 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                   meaningful change
                 </span>
               </h1>
 
-              <p className="mx-auto mb-10 max-w-2xl text-gray-600 text-lg leading-relaxed md:text-xl">
+              <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground leading-relaxed md:text-xl">
                 {siteConfig.description}
               </p>
 
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link
-                  className="inline-flex items-center justify-center border border-neutral-900 bg-neutral-900 px-8 py-3 font-medium text-sm text-white transition-all hover:bg-neutral-800"
+                  className="inline-flex items-center justify-center border border-foreground bg-foreground px-8 py-3 font-medium text-background text-sm transition-all hover:bg-muted-foreground"
                   href="/articles"
                 >
                   Explore Articles
@@ -65,7 +65,7 @@ const HomePage = async () => {
                   </svg>
                 </Link>
                 <Link
-                  className="inline-flex items-center justify-center border border-neutral-300 bg-white px-8 py-3 font-medium text-neutral-900 text-sm transition-all hover:border-neutral-400 hover:bg-neutral-50"
+                  className="inline-flex items-center justify-center border border-border bg-muted px-8 py-3 font-medium text-foreground text-sm transition-all hover:border-foreground hover:bg-background"
                   href="/about"
                 >
                   Learn More
@@ -75,22 +75,22 @@ const HomePage = async () => {
           </div>
         </section>
 
-        <section className="border-neutral-200 border-b bg-white py-12 md:py-16">
+        <section className="border-border border-b bg-background py-12 md:py-16">
           <div className="mx-auto max-w-[1280px] px-6 md:px-12">
             <div className="grid gap-8 md:grid-cols-3">
               {siteConfig.categories.slice(1, 4).map((category) => (
                 <Link
-                  className="group hover:-translate-y-1 border border-neutral-200 bg-white p-6 transition-all hover:shadow-lg"
+                  className="group hover:-translate-y-1 border border-border bg-muted p-6 transition-all hover:shadow-lg"
                   href={`/categories/${category.slug}`}
                   key={category.slug}
                 >
-                  <h3 className="mb-2 font-semibold text-gray-900 text-lg tracking-tight">
+                  <h3 className="mb-2 font-semibold text-foreground text-lg tracking-tight">
                     {category.name}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {category.description}
                   </p>
-                  <div className="mt-4 flex items-center font-medium text-neutral-600 text-sm transition-colors group-hover:text-neutral-900">
+                  <div className="mt-4 flex items-center font-medium text-muted-foreground text-sm transition-colors group-hover:text-foreground">
                     Explore
                     <svg
                       aria-hidden="true"
@@ -118,15 +118,15 @@ const HomePage = async () => {
             <section className="mb-20">
               <div className="mb-8 flex items-end justify-between">
                 <div>
-                  <h2 className="mb-2 font-bold text-3xl text-gray-900 tracking-tight">
+                  <h2 className="mb-2 font-bold text-3xl text-foreground tracking-tight">
                     Featured Stories
                   </h2>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Handpicked insights from industry leaders
                   </p>
                 </div>
                 <Link
-                  className="font-medium text-neutral-600 text-sm transition-colors hover:text-neutral-900"
+                  className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href="/articles"
                 >
                   View all →
@@ -144,15 +144,15 @@ const HomePage = async () => {
             <section>
               <div className="mb-8 flex items-end justify-between">
                 <div>
-                  <h2 className="mb-2 font-bold text-3xl text-gray-900 tracking-tight">
+                  <h2 className="mb-2 font-bold text-3xl text-foreground tracking-tight">
                     Latest Articles
                   </h2>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Fresh perspectives on leadership and innovation
                   </p>
                 </div>
                 <Link
-                  className="font-medium text-neutral-600 text-sm transition-colors hover:text-neutral-900"
+                  className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href="/articles"
                 >
                   View all →
@@ -173,10 +173,10 @@ const HomePage = async () => {
           {featuredArticles.length === 0 && latestArticles.length === 0 && (
             <div className="flex min-h-[400px] items-center justify-center">
               <div className="text-center">
-                <h2 className="mb-2 font-bold text-2xl text-gray-900">
+                <h2 className="mb-2 font-bold text-2xl text-foreground">
                   No articles yet
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Check back soon for new content.
                 </p>
               </div>

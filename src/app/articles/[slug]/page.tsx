@@ -143,7 +143,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
       />
-      <article className="bg-white">
+      <article className="bg-background">
         <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
           <div className="mx-auto max-w-[720px]">
             {primaryCategory && (
@@ -152,17 +152,17 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
               </div>
             )}
 
-            <h1 className="mb-6 font-bold text-4xl text-gray-900 leading-tight tracking-tight md:text-5xl md:leading-tight">
+            <h1 className="mb-6 font-bold text-4xl text-foreground leading-tight tracking-tight md:text-5xl md:leading-tight">
               {article.title}
             </h1>
 
             {article.excerpt && (
-              <p className="mb-8 text-gray-600 text-xl leading-relaxed">
+              <p className="mb-8 text-muted-foreground text-xl leading-relaxed">
                 {article.excerpt}
               </p>
             )}
 
-            <div className="mb-8 flex items-center gap-4 border-gray-200 border-t border-b py-4">
+            <div className="mb-8 flex items-center gap-4 border-border border-t border-b py-4">
               {primaryAuthor && (
                 <Link
                   className="flex items-center gap-3"
@@ -177,15 +177,15 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
                       width={48}
                     />
                   ) : (
-                    <div className="flex size-12 items-center justify-center bg-gray-200 font-semibold text-gray-600 text-sm">
+                    <div className="flex size-12 items-center justify-center bg-muted font-semibold text-muted-foreground text-sm">
                       {primaryAuthor.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <div className="font-semibold text-gray-900 hover:text-gray-600">
+                    <div className="font-semibold text-foreground hover:text-muted-foreground">
                       {primaryAuthor.name}
                     </div>
-                    <div className="text-gray-600 text-sm">
+                    <div className="text-muted-foreground text-sm">
                       {formatDate(article.publishedAt)}
                       {article.readTime && ` · ${article.readTime} min read`}
                     </div>
@@ -195,7 +195,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
             </div>
 
             {article.featuredImageUrl && (
-              <div className="relative mb-8 aspect-video w-full overflow-hidden bg-gray-100">
+              <div className="relative mb-8 aspect-video w-full overflow-hidden bg-muted">
                 <Image
                   alt={article.featuredImageAlt || article.title}
                   className="object-cover"
@@ -216,14 +216,14 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
             </div>
 
             {article.articleTags.length > 0 && (
-              <div className="mt-12 border-gray-200 border-t pt-8">
-                <h3 className="mb-4 font-semibold text-gray-900 text-sm uppercase tracking-wider">
+              <div className="mt-12 border-border border-t pt-8">
+                <h3 className="mb-4 font-semibold text-foreground text-sm uppercase tracking-wider">
                   Tags
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {article.articleTags.map(({ tag }) => (
                     <Link
-                      className="border border-gray-300 bg-white px-3 py-1 text-gray-700 text-sm transition-colors hover:border-gray-900 hover:text-gray-900"
+                      className="border border-border bg-muted px-3 py-1 text-foreground text-sm transition-colors hover:border-foreground hover:text-foreground"
                       href={`/tags/${tag.slug}`}
                       key={tag.id}
                     >
@@ -235,7 +235,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
             )}
 
             {primaryAuthor?.bio && (
-              <div className="mt-12 border border-gray-200 bg-gray-50 p-6">
+              <div className="mt-12 border border-border bg-muted p-6">
                 <div className="flex gap-4">
                   {primaryAuthor.profileImageUrl ? (
                     <Image
@@ -246,19 +246,19 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
                       width={80}
                     />
                   ) : (
-                    <div className="flex size-20 shrink-0 items-center justify-center bg-gray-200 font-semibold text-gray-600 text-xl">
+                    <div className="flex size-20 shrink-0 items-center justify-center bg-muted font-semibold text-muted-foreground text-xl">
                       {primaryAuthor.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <h3 className="mb-2 font-bold text-gray-900 text-lg">
+                    <h3 className="mb-2 font-bold text-foreground text-lg">
                       About {primaryAuthor.name}
                     </h3>
-                    <p className="mb-3 text-gray-600 text-sm leading-relaxed">
+                    <p className="mb-3 text-muted-foreground text-sm leading-relaxed">
                       {primaryAuthor.bio}
                     </p>
                     <Link
-                      className="font-medium text-gray-900 text-sm hover:text-gray-600"
+                      className="font-medium text-foreground text-sm hover:text-muted-foreground"
                       href={`/authors/${primaryAuthor.slug}`}
                     >
                       View all articles <ArrowRightIcon className="size-4" />
@@ -271,10 +271,10 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
 
           {relatedArticles.length > 0 && (
             <div className="mx-auto mt-16 max-w-[720px]">
-              <h2 className="mb-6 font-bold text-2xl text-gray-900">
+              <h2 className="mb-6 font-bold text-2xl text-foreground">
                 Related Articles
               </h2>
-              <div className="space-y-4 border-gray-200 border-t pt-6">
+              <div className="space-y-4 border-border border-t pt-6">
                 {relatedArticles.map((relatedArticle) => (
                   <ArticleCardCompact
                     article={relatedArticle}

@@ -17,12 +17,12 @@ export const Header = ({ categories = [] }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-gray-200 border-b bg-white">
+    <header className="sticky top-0 z-50 border-border border-b bg-background">
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
-              className="font-bold text-gray-900 text-xl tracking-tight transition-colors hover:text-gray-600"
+              className="font-bold text-foreground text-xl tracking-tight transition-colors hover:text-muted-foreground"
               href="/"
             >
               {siteConfig.name}
@@ -30,20 +30,20 @@ export const Header = ({ categories = [] }: HeaderProps) => {
 
             <nav className="hidden items-center gap-6 md:flex">
               <Link
-                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 href="/"
               >
                 Home
               </Link>
               <Link
-                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 href="/articles"
               >
                 All Articles
               </Link>
               {categories.slice(0, 5).map((category) => (
                 <Link
-                  className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                  className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href={`/categories/${category.slug}`}
                   key={category.slug}
                 >
@@ -58,31 +58,31 @@ export const Header = ({ categories = [] }: HeaderProps) => {
 
             <button
               aria-label="Toggle menu"
-              className="md:hidden"
+              className="text-foreground md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
             >
               {mobileMenuOpen ? (
-                <X className="size-6 text-gray-900" />
+                <X className="size-6" />
               ) : (
-                <Menu className="size-6 text-gray-900" />
+                <Menu className="size-6" />
               )}
             </button>
           </div>
         </div>
 
         {mobileMenuOpen && (
-          <nav className="border-gray-200 border-t py-4 md:hidden">
+          <nav className="border-border border-t py-4 md:hidden">
             <div className="flex flex-col gap-4">
               <Link
-                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
-                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 href="/articles"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -90,7 +90,7 @@ export const Header = ({ categories = [] }: HeaderProps) => {
               </Link>
               {categories.map((category) => (
                 <Link
-                  className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                  className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href={`/categories/${category.slug}`}
                   key={category.slug}
                   onClick={() => setMobileMenuOpen(false)}
@@ -99,7 +99,7 @@ export const Header = ({ categories = [] }: HeaderProps) => {
                 </Link>
               ))}
               <Link
-                className="font-medium text-gray-700 text-sm transition-colors hover:text-gray-900"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
               >
