@@ -44,7 +44,7 @@ const createR2Uploader =
     return publicUrl;
   };
 
-const createExtensions = ({
+export const createExtensions = ({
   placeholder,
   uploader,
 }: {
@@ -232,7 +232,7 @@ const createExtensions = ({
 
 export const useMinimalTiptapEditor = ({
   value,
-  output = "html",
+  output = "json",
   placeholder = "",
   editorClassName,
   throttleDelay = 0,

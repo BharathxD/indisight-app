@@ -146,26 +146,27 @@ export const ArticlesTable = ({ articles, pageCount }: ArticlesTableProps) => {
         <DataTableColumnHeader column={column} label="Title" />
       ),
       cell: ({ row }) => (
-        <div className="flex flex-col gap-1 py-1">
-          <div className="flex items-center gap-2">
-            <span className="line-clamp-1 font-medium">
+        <div className="flex min-w-0 max-w-md flex-col gap-1 py-1">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="line-clamp-1 min-w-0 truncate font-medium">
               {row.original.title}
             </span>
             {row.original.isFeatured && (
-              <Star className="size-3.5 fill-yellow-400 text-yellow-400" />
+              <Star className="size-3.5 shrink-0 fill-yellow-400 text-yellow-400" />
             )}
             {row.original.isTrending && (
-              <TrendingUp className="size-3.5 text-blue-500" />
+              <TrendingUp className="size-3.5 shrink-0 text-blue-500" />
             )}
           </div>
           {row.original.excerpt && (
-            <span className="line-clamp-1 text-muted-foreground text-xs">
+            <span className="line-clamp-1 min-w-0 truncate text-muted-foreground text-xs">
               {row.original.excerpt}
             </span>
           )}
         </div>
       ),
       minSize: 300,
+      maxSize: 500,
     },
     {
       id: "authors",

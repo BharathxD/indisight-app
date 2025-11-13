@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Article, WithContext } from "schema-dts";
 import {
   ArticleCardCompact,
   CategoryBadge,
 } from "@/components/public/articles";
 import { PublicLayout } from "@/components/public/public-layout";
 import { siteConfig } from "@/lib/config";
+import { jsonToHtml } from "@/lib/editor-utils";
 import { trpc } from "@/trpc/server-client";
 
 type ArticlePageProps = {
@@ -90,6 +92,8 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
     notFound();
   }
 
+  const htmlContent = await jsonToHtml(article.content);
+
   const primaryCategory = article.articleCategories.find((ac) => ac.isPrimary);
   const primaryAuthor = article.articleAuthors[0]?.author;
   const relatedArticles = await caller.cms.article.getRelated({
@@ -106,8 +110,38 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
     }).format(new Date(date));
   };
 
+  // Structured data for SEO (typed with schema-dts)
+  const structuredData: WithContext<Article> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt || undefined,
+    image: article.featuredImageUrl || undefined,
+    datePublished: article.publishedAt?.toISOString(),
+    dateModified: article.updatedAt.toISOString(),
+    author: article.articleAuthors.map((aa) => ({
+      "@type": "Person",
+      name: aa.author.name,
+      url: `${siteConfig.url}/authors/${aa.author.slug}`,
+    })),
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteConfig.url}/articles/${slug}`,
+    },
+  };
+
   return (
     <PublicLayout>
+      <script
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: content is trusted
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        type="application/ld+json"
+      />
       <article className="bg-white">
         <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
           <div className="mx-auto max-w-[720px]">
@@ -172,13 +206,13 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
               </div>
             )}
 
-            <div
-              className="prose prose-gray max-w-none"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: content is trusted
-              dangerouslySetInnerHTML={{
-                __html: article.content as string,
-              }}
-            />
+            <div className="minimal-tiptap-editor">
+              <div
+                className="ProseMirror"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: content is trusted
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+            </div>
 
             {article.articleTags.length > 0 && (
               <div className="mt-12 border-gray-200 border-t pt-8">
@@ -205,13 +239,13 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
                   {primaryAuthor.profileImageUrl ? (
                     <Image
                       alt={primaryAuthor.name}
-                      className="size-20 flex-shrink-0 object-cover"
+                      className="size-20 shrink-0 object-cover"
                       height={80}
                       src={primaryAuthor.profileImageUrl}
                       width={80}
                     />
                   ) : (
-                    <div className="flex size-20 flex-shrink-0 items-center justify-center bg-gray-200 font-semibold text-gray-600 text-xl">
+                    <div className="flex size-20 shrink-0 items-center justify-center bg-gray-200 font-semibold text-gray-600 text-xl">
                       {primaryAuthor.name.charAt(0).toUpperCase()}
                     </div>
                   )}

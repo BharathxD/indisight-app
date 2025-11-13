@@ -1,6 +1,8 @@
+import type { JSONContent } from "@tiptap/core";
 import type { Editor } from "@tiptap/react";
 
 const WORD_COUNT_REGEX = /\s+/;
+
 export const getWordCount = (editor: Editor | null): number => {
   if (!editor) return 0;
 
@@ -69,5 +71,96 @@ export const isValidImageUrl = (url: string): boolean => {
     );
   } catch {
     return false;
+  }
+};
+
+// Lazy-loaded extension factory with caching
+let cachedExtensions: Awaited<ReturnType<typeof createExtensions>> | null =
+  null;
+
+const createExtensions = async () => {
+  const [
+    staticRenderer,
+    { StarterKit },
+    { TextStyle },
+    { Typography },
+    { Color },
+    CodeBlockLowlight,
+    { HorizontalRule },
+    TiptapImage,
+    { common, createLowlight },
+  ] = await Promise.all([
+    import("@tiptap/static-renderer"),
+    import("@tiptap/starter-kit"),
+    import("@tiptap/extension-text-style"),
+    import("@tiptap/extension-typography"),
+    import("@tiptap/extension-color"),
+    import("@tiptap/extension-code-block-lowlight"),
+    import("@tiptap/extension-horizontal-rule"),
+    import("@tiptap/extension-image"),
+    import("lowlight"),
+  ]);
+
+  const lowlight = createLowlight(common);
+
+  return {
+    renderToHTMLString: staticRenderer.renderToHTMLString,
+    extensions: [
+      StarterKit.configure({
+        blockquote: { HTMLAttributes: { class: "block-node" } },
+        bulletList: { HTMLAttributes: { class: "list-node" } },
+        code: { HTMLAttributes: { class: "inline", spellcheck: "false" } },
+        codeBlock: false,
+        dropcursor: false,
+        heading: { HTMLAttributes: { class: "heading-node" } },
+        horizontalRule: false,
+        link: {
+          openOnClick: false,
+          HTMLAttributes: { class: "link" },
+        },
+        orderedList: { HTMLAttributes: { class: "list-node" } },
+        paragraph: { HTMLAttributes: { class: "text-node" } },
+      }),
+      TiptapImage.Image,
+      Color,
+      TextStyle,
+      Typography,
+      HorizontalRule,
+      CodeBlockLowlight.default.configure({ lowlight }),
+    ],
+  };
+};
+
+const getExtensions = async () => {
+  if (!cachedExtensions) {
+    cachedExtensions = await createExtensions();
+  }
+  return cachedExtensions;
+};
+
+export const jsonToHtml = async (
+  content: JSONContent | string | unknown
+): Promise<string> => {
+  // Handle string content (legacy/fallback)
+  if (typeof content === "string") {
+    return content;
+  }
+
+  // Validate content structure
+  if (!content || typeof content !== "object") {
+    console.error("Invalid content format:", content);
+    return "<p>Content unavailable</p>";
+  }
+
+  try {
+    const { renderToHTMLString, extensions } = await getExtensions();
+
+    return renderToHTMLString({
+      extensions,
+      content: content as JSONContent,
+    });
+  } catch (error) {
+    console.error("Failed to render content:", error);
+    return "<p>Failed to render content</p>";
   }
 };
