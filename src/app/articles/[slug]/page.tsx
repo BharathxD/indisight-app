@@ -1,3 +1,4 @@
+import { ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +20,7 @@ type ArticlePageProps = {
 export const revalidate = 60;
 
 export const generateStaticParams = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const slugs = await caller.cms.article.getAllPublishedSlugs();
   return slugs.map((slug) => ({ slug }));
 };
@@ -30,7 +31,7 @@ export const generateMetadata = async ({
   const { slug } = await params;
 
   try {
-    const caller = await trpc();
+    const caller = trpc();
     const article = await caller.cms.article.getBySlugPublic({ slug });
     const _primaryCategory = article.articleCategories.find(
       (ac) => ac.isPrimary
@@ -79,7 +80,7 @@ export const generateMetadata = async ({
 
 const ArticlePage = async ({ params }: ArticlePageProps) => {
   const { slug } = await params;
-  const caller = await trpc();
+  const caller = trpc();
 
   let article: Awaited<
     ReturnType<
@@ -260,7 +261,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
                       className="font-medium text-gray-900 text-sm hover:text-gray-600"
                       href={`/authors/${primaryAuthor.slug}`}
                     >
-                      View all articles →
+                      View all articles <ArrowRightIcon className="size-4" />
                     </Link>
                   </div>
                 </div>
