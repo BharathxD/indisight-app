@@ -138,15 +138,44 @@ const getExtensions = async () => {
   return cachedExtensions;
 };
 
+export type Heading = {
+  id: string;
+  level: 2 | 3;
+  text: string;
+};
+
+const slugify = (text: string): string => {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+};
+
+export const extractHeadings = (html: string): Heading[] => {
+  const headings: Heading[] = [];
+  const headingRegex = /<h([23])[^>]*id="([^"]*)"[^>]*>(.*?)<\/h\1>/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = Number.parseInt(match[1]) as 2 | 3;
+    const id = match[2];
+    const text = match[3].replace(/<[^>]*>/g, "").trim();
+
+    headings.push({ id, level, text });
+  }
+
+  return headings;
+};
+
 export const jsonToHtml = async (
   content: JSONContent | string | unknown
 ): Promise<string> => {
-  // Handle string content (legacy/fallback)
   if (typeof content === "string") {
     return content;
   }
 
-  // Validate content structure
   if (!content || typeof content !== "object") {
     console.error("Invalid content format:", content);
     return "<p>Content unavailable</p>";
@@ -155,10 +184,21 @@ export const jsonToHtml = async (
   try {
     const { renderToHTMLString, extensions } = await getExtensions();
 
-    return renderToHTMLString({
+    let html = renderToHTMLString({
       extensions,
       content: content as JSONContent,
     });
+
+    html = html.replace(
+      /<h([23])([^>]*)>(.*?)<\/h\1>/gi,
+      (match, level, attrs, text) => {
+        const plainText = text.replace(/<[^>]*>/g, "").trim();
+        const id = slugify(plainText);
+        return `<h${level}${attrs} id="${id}">${text}</h${level}>`;
+      }
+    );
+
+    return html;
   } catch (error) {
     console.error("Failed to render content:", error);
     return "<p>Failed to render content</p>";

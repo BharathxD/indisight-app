@@ -1,16 +1,15 @@
-import { ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
-import {
-  ArticleCardCompact,
-  CategoryBadge,
-} from "@/components/public/articles";
+import { ArticleAuthorBio } from "@/components/public/articles/detail/article-author-bio";
+import { ArticleContent } from "@/components/public/articles/detail/article-content";
+import { ArticleHeader } from "@/components/public/articles/detail/article-header";
+import { ArticleMeta } from "@/components/public/articles/detail/article-meta";
+import { ArticleSidebar } from "@/components/public/articles/detail/article-sidebar";
+import { ArticleTags } from "@/components/public/articles/detail/article-tags";
 import { PublicLayout } from "@/components/public/public-layout";
 import { siteConfig } from "@/lib/config";
-import { jsonToHtml } from "@/lib/editor-utils";
+import { extractHeadings, jsonToHtml } from "@/lib/editor-utils";
 import { trpc } from "@/trpc/server-client";
 
 type ArticlePageProps = {
@@ -94,6 +93,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
   }
 
   const htmlContent = await jsonToHtml(article.content);
+  const headings = extractHeadings(htmlContent);
 
   const primaryCategory = article.articleCategories.find((ac) => ac.isPrimary);
   const primaryAuthor = article.articleAuthors[0]?.author;
@@ -101,15 +101,11 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
     articleId: article.id,
     limit: 3,
   });
+  const popularCategories = await caller.cms.category.getTopByArticleCount({
+    limit: 8,
+  });
 
-  const formatDate = (date: Date | null) => {
-    if (!date) return "";
-    return new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }).format(new Date(date));
-  };
+  const articleUrl = `${siteConfig.url}/articles/${slug}`;
 
   // Structured data for SEO (typed with schema-dts)
   const structuredData: WithContext<Article> = {
@@ -144,146 +140,40 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
         type="application/ld+json"
       />
       <article className="bg-background">
-        <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
-          <div className="mx-auto max-w-[720px]">
-            {primaryCategory && (
-              <div className="mb-4">
-                <CategoryBadge name={primaryCategory.category.name} />
-              </div>
-            )}
+        <ArticleHeader
+          excerpt={article.excerpt}
+          featuredImageAlt={article.featuredImageAlt}
+          featuredImageUrl={article.featuredImageUrl}
+          primaryCategory={primaryCategory || null}
+          title={article.title}
+        />
 
-            <h1 className="mb-6 font-bold text-4xl text-foreground leading-tight tracking-tight md:text-5xl md:leading-tight">
-              {article.title}
-            </h1>
-
-            {article.excerpt && (
-              <p className="mb-8 text-muted-foreground text-xl leading-relaxed">
-                {article.excerpt}
-              </p>
-            )}
-
-            <div className="mb-8 flex items-center gap-4 border-border border-t border-b py-4">
+        <div className="mx-auto max-w-[1400px] px-6 py-12 md:px-12 md:py-16 lg:py-20">
+          <div className="article-grid grid grid-cols-1 gap-10 md:gap-12 xl:gap-16">
+            <div className="min-w-0">
               {primaryAuthor && (
-                <Link
-                  className="flex items-center gap-3"
-                  href={`/authors/${primaryAuthor.slug}`}
-                >
-                  {primaryAuthor.profileImageUrl ? (
-                    <Image
-                      alt={primaryAuthor.name}
-                      className="size-12 object-cover"
-                      height={48}
-                      src={primaryAuthor.profileImageUrl}
-                      width={48}
-                    />
-                  ) : (
-                    <div className="flex size-12 items-center justify-center bg-muted font-semibold text-muted-foreground text-sm">
-                      {primaryAuthor.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-semibold text-foreground hover:text-muted-foreground">
-                      {primaryAuthor.name}
-                    </div>
-                    <div className="text-muted-foreground text-sm">
-                      {formatDate(article.publishedAt)}
-                      {article.readTime && ` · ${article.readTime} min read`}
-                    </div>
-                  </div>
-                </Link>
-              )}
-            </div>
-
-            {article.featuredImageUrl && (
-              <div className="relative mb-8 aspect-video w-full overflow-hidden bg-muted">
-                <Image
-                  alt={article.featuredImageAlt || article.title}
-                  className="object-cover"
-                  fill
-                  priority
-                  sizes="(max-width: 720px) 100vw, 720px"
-                  src={article.featuredImageUrl}
+                <ArticleMeta
+                  author={primaryAuthor}
+                  publishedAt={article.publishedAt}
+                  readTime={article.readTime}
                 />
-              </div>
-            )}
+              )}
 
-            <div className="minimal-tiptap-editor">
-              <div
-                className="ProseMirror"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: content is trusted
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-              />
+              <ArticleContent htmlContent={htmlContent} />
+
+              <ArticleTags tags={article.articleTags} />
+
+              {primaryAuthor && <ArticleAuthorBio author={primaryAuthor} />}
             </div>
 
-            {article.articleTags.length > 0 && (
-              <div className="mt-12 border-border border-t pt-8">
-                <h3 className="mb-4 font-semibold text-foreground text-sm uppercase tracking-wider">
-                  Tags
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {article.articleTags.map(({ tag }) => (
-                    <Link
-                      className="border border-border bg-muted px-3 py-1 text-foreground text-sm transition-colors hover:border-foreground hover:text-foreground"
-                      href={`/tags/${tag.slug}`}
-                      key={tag.id}
-                    >
-                      {tag.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {primaryAuthor?.bio && (
-              <div className="mt-12 border border-border bg-muted p-6">
-                <div className="flex gap-4">
-                  {primaryAuthor.profileImageUrl ? (
-                    <Image
-                      alt={primaryAuthor.name}
-                      className="size-20 shrink-0 object-cover"
-                      height={80}
-                      src={primaryAuthor.profileImageUrl}
-                      width={80}
-                    />
-                  ) : (
-                    <div className="flex size-20 shrink-0 items-center justify-center bg-muted font-semibold text-muted-foreground text-xl">
-                      {primaryAuthor.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="mb-2 font-bold text-foreground text-lg">
-                      About {primaryAuthor.name}
-                    </h3>
-                    <p className="mb-3 text-muted-foreground text-sm leading-relaxed">
-                      {primaryAuthor.bio}
-                    </p>
-                    <Link
-                      className="font-medium text-foreground text-sm hover:text-muted-foreground"
-                      href={`/authors/${primaryAuthor.slug}`}
-                    >
-                      View all articles <ArrowRightIcon className="size-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
+            <ArticleSidebar
+              headings={headings}
+              popularCategories={popularCategories}
+              relatedArticles={relatedArticles}
+              shareTitle={article.title}
+              shareUrl={articleUrl}
+            />
           </div>
-
-          {relatedArticles.length > 0 && (
-            <div className="mx-auto mt-16 max-w-[720px]">
-              <h2 className="mb-6 font-bold text-2xl text-foreground">
-                Related Articles
-              </h2>
-              <div className="space-y-4 border-border border-t pt-6">
-                {relatedArticles.map((relatedArticle) => (
-                  <ArticleCardCompact
-                    article={relatedArticle}
-                    key={relatedArticle.id}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </article>
     </PublicLayout>

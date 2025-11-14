@@ -18,7 +18,7 @@ export const Header = ({ categories = [] }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 border-border border-b bg-background">
-      <div className="mx-auto max-w-[1280px] px-6 md:px-12">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link

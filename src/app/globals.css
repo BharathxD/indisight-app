@@ -230,12 +230,12 @@
 .minimal-tiptap-editor .ProseMirror .block-node:not(:last-child),
 .minimal-tiptap-editor .ProseMirror .list-node:not(:last-child),
 .minimal-tiptap-editor .ProseMirror .text-node:not(:last-child) {
-  @apply mb-2.5;
+  @apply mb-6;
 }
 
 .minimal-tiptap-editor .ProseMirror ol,
 .minimal-tiptap-editor .ProseMirror ul {
-  @apply pl-6;
+  @apply pl-8;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote,
@@ -248,31 +248,33 @@
 }
 
 .minimal-tiptap-editor .ProseMirror li {
-  @apply leading-7;
+  @apply leading-[1.8] mb-3;
 }
 
 .minimal-tiptap-editor .ProseMirror p {
-  @apply wrap-break-word;
+  @apply wrap-break-word text-[1.25rem] leading-[1.75] mb-[1.5em];
 }
 
 .minimal-tiptap-editor .ProseMirror li .text-node:has(+ .list-node),
 .minimal-tiptap-editor .ProseMirror li > .list-node,
 .minimal-tiptap-editor .ProseMirror li > .text-node,
-.minimal-tiptap-editor .ProseMirror li p {
+.minimal-tiptap-editor .ProseMirror li p,
+.minimal-tiptap-editor .ProseMirror blockquote > .text-node,
+.minimal-tiptap-editor .ProseMirror blockquote p {
   @apply mb-0;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote {
-  @apply relative pl-3.5;
+  @apply relative pl-7 my-8 text-[1.25rem] leading-[1.8] italic;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote::before,
 .minimal-tiptap-editor .ProseMirror blockquote.is-empty::before {
-  @apply bg-accent-foreground/15 absolute top-0 bottom-0 left-0 h-full w-1 rounded-sm content-[''];
+  @apply bg-accent-foreground/20 absolute top-0 bottom-0 left-0 h-full w-[3px] rounded-sm content-[''];
 }
 
 .minimal-tiptap-editor .ProseMirror hr {
-  @apply my-3 h-0.5 w-full border-none bg-(--mt-hr);
+  @apply my-12 h-0.5 w-full border-none bg-(--mt-hr);
 }
 
 .minimal-tiptap-editor .ProseMirror-focused hr.ProseMirror-selectednode {
@@ -309,21 +311,21 @@
 }
 
 .minimal-tiptap-editor .ProseMirror code.inline {
-  @apply rounded border border-(--mt-code-color) bg-(--mt-code-background) px-1 py-0.5 text-sm;
+  @apply rounded border border-(--mt-code-color) bg-(--mt-code-background) px-[0.4em] py-[0.2em] text-[0.9em];
 }
 
 .minimal-tiptap-editor .ProseMirror pre {
-  @apply relative overflow-auto rounded border font-mono text-sm;
+  @apply relative overflow-auto rounded-lg border font-mono text-[0.9375rem] shadow-sm;
   @apply border-(--mt-pre-border) bg-(--mt-pre-background) text-(--mt-pre-color);
-  @apply text-left hyphens-none whitespace-pre;
+  @apply text-left hyphens-none whitespace-pre my-6;
 }
 
 .minimal-tiptap-editor .ProseMirror code {
-  @apply leading-[1.7em] wrap-break-word;
+  @apply leading-[1.6] wrap-break-word;
 }
 
 .minimal-tiptap-editor .ProseMirror pre code {
-  @apply block overflow-x-auto p-3.5;
+  @apply block overflow-x-auto p-6;
 }
 
 .minimal-tiptap-editor .ProseMirror pre .hljs-keyword,
@@ -431,31 +433,102 @@
 }
 
 .minimal-tiptap-editor .ProseMirror h1 {
-  @apply mt-[46px] mb-4 text-[1.375rem] leading-7 tracking-[-0.004375rem];
+  @apply mt-[60px] mb-6 text-[2.5rem] leading-[1.2] tracking-[-0.02em] font-bold;
 }
 
 .minimal-tiptap-editor .ProseMirror h2 {
-  @apply mt-8 mb-3.5 text-[1.1875rem] leading-7 tracking-[0.003125rem];
+  @apply mt-12 mb-5 text-[2rem] leading-[1.3] tracking-[-0.015em] font-bold;
 }
 
 .minimal-tiptap-editor .ProseMirror h3 {
-  @apply mt-6 mb-3 text-[1.0625rem] leading-6 tracking-[0.00625rem];
+  @apply mt-8 mb-4 text-[1.5rem] leading-[1.4] tracking-[-0.01em] font-semibold;
 }
 
 .minimal-tiptap-editor .ProseMirror h4 {
-  @apply mt-4 mb-2 text-[0.9375rem] leading-6;
+  @apply mt-6 mb-3 text-[1.25rem] leading-[1.5] font-medium;
 }
 
 .minimal-tiptap-editor .ProseMirror h5 {
-  @apply mt-4 mb-2 text-sm;
+  @apply mt-6 mb-3 text-[1.125rem] leading-[1.5] font-medium;
 }
 
 .minimal-tiptap-editor .ProseMirror a.link {
-  @apply text-primary underline;
+  @apply text-primary underline underline-offset-2 transition-colors;
 }
 
 .minimal-tiptap-editor .ProseMirror a.link:hover {
-  @apply underline;
+  @apply text-primary/80 underline;
+}
+
+.minimal-tiptap-editor .ProseMirror strong {
+  @apply font-bold;
+}
+
+.minimal-tiptap-editor .ProseMirror em {
+  @apply italic;
+}
+
+.minimal-tiptap-editor .ProseMirror u {
+  @apply underline underline-offset-2;
+}
+
+.minimal-tiptap-editor .ProseMirror img {
+  @apply max-w-full h-auto rounded-lg my-8;
+}
+
+.minimal-tiptap-editor .ProseMirror figure {
+  @apply my-8;
+}
+
+.minimal-tiptap-editor .ProseMirror figure img {
+  @apply my-0;
+}
+
+.minimal-tiptap-editor .ProseMirror figcaption {
+  @apply mt-3 text-center text-[0.875rem] text-muted-foreground italic;
+}
+
+@media (max-width: 767px) {
+  .minimal-tiptap-editor .ProseMirror p {
+    @apply text-[1.125rem] leading-[1.7];
+  }
+
+  .minimal-tiptap-editor .ProseMirror h1 {
+    @apply text-[2rem] mt-10 mb-5;
+  }
+
+  .minimal-tiptap-editor .ProseMirror h2 {
+    @apply text-[1.625rem] mt-8 mb-4;
+  }
+
+  .minimal-tiptap-editor .ProseMirror h3 {
+    @apply text-[1.25rem] mt-6 mb-3;
+  }
+
+  .minimal-tiptap-editor .ProseMirror h4 {
+    @apply text-[1.125rem] mt-5 mb-2.5;
+  }
+
+  .minimal-tiptap-editor .ProseMirror h5 {
+    @apply text-[1rem] mt-5 mb-2.5;
+  }
+
+  .minimal-tiptap-editor .ProseMirror blockquote {
+    @apply text-[1.125rem] my-6 pl-5;
+  }
+
+  .minimal-tiptap-editor .ProseMirror pre {
+    @apply text-[0.875rem] my-5;
+  }
+
+  .minimal-tiptap-editor .ProseMirror pre code {
+    @apply p-4;
+  }
+
+  .minimal-tiptap-editor .ProseMirror img,
+  .minimal-tiptap-editor .ProseMirror figure {
+    @apply my-6;
+  }
 }
 
 [data-rmiz-ghost] {
@@ -561,5 +634,15 @@
   [data-rmiz-modal-overlay],
   [data-rmiz-modal-img] {
     transition-duration: 0.01ms !important;
+  }
+}
+
+.article-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .article-grid {
+    grid-template-columns: 1fr 280px;
   }
 }
