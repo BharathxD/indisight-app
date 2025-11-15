@@ -84,7 +84,7 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
   return (
     <PublicLayout>
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
+        <div className="mx-auto max-w-[1400px] px-6 py-8 md:px-12 md:py-12">
           <div className="mb-12 border-border border-b pb-8">
             <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight md:text-5xl">
               {category.name}

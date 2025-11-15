@@ -27,7 +27,7 @@ const legalLinks = [
 
 export const Footer = () => (
   <footer className="border-border border-t bg-background">
-    <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-12 md:py-12">
+    <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-12 md:py-12">
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <h3 className="mb-3 font-medium text-foreground text-lg uppercase tracking-wider">

@@ -646,3 +646,24 @@
     grid-template-columns: 1fr 280px;
   }
 }
+
+@keyframes scroll-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -33.333%, 0);
+  }
+}
+
+.animate-scroll-up {
+  animation: scroll-up 60s linear infinite;
+  transform: translate3d(0, -33.333%, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.animate-scroll-up:hover {
+  animation-play-state: paused;
+}

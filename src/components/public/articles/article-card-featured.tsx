@@ -73,6 +73,7 @@ export const ArticleCardFeatured = ({
             <AuthorInfo
               author={primaryAuthor}
               date={article.publishedAt}
+              disableLinks
               readTime={article.readTime}
               showAvatar={false}
             />

@@ -12,19 +12,19 @@ type ArticleCardHeroProps = {
     featuredImageUrl?: string | null;
     publishedAt?: Date | null;
     readTime?: number | null;
-    articleAuthors: Array<{
+    articleAuthors: {
       author: {
         name: string;
         slug: string;
         profileImageUrl?: string | null;
       };
-    }>;
-    articleCategories: Array<{
+    }[];
+    articleCategories: {
       isPrimary: boolean;
       category: {
         name: string;
       };
-    }>;
+    }[];
   };
   className?: string;
 };
@@ -54,7 +54,7 @@ export const ArticleCardHero = ({
               sizes="(max-width: 1280px) 100vw, 1280px"
               src={article.featuredImageUrl}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
           </div>
         )}
         <div className="p-8 md:p-12">
@@ -75,6 +75,7 @@ export const ArticleCardHero = ({
             <AuthorInfo
               author={primaryAuthor}
               date={article.publishedAt}
+              disableLinks
               readTime={article.readTime}
             />
           )}

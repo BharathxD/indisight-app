@@ -4,6 +4,7 @@ import {
   ArticleCardStandard,
 } from "@/components/public/articles";
 import { PublicLayout } from "@/components/public/public-layout";
+import { ScatteredPortraits } from "@/components/public/scattered-portraits";
 import { siteConfig } from "@/lib/config";
 import { trpc } from "@/trpc/server-client";
 
@@ -20,9 +21,10 @@ const HomePage = async () => {
     <PublicLayout>
       <div className="min-h-screen bg-background">
         <section className="relative overflow-hidden border-border border-b bg-background">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-50" />
+          <ScatteredPortraits />
+          <div className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-50" />
 
-          <div className="relative mx-auto max-w-[1280px] px-6 py-20 md:px-12 md:py-32 lg:py-40">
+          <div className="relative z-10 mx-auto max-w-[1400px] px-6 py-20 md:px-12 md:py-32 lg:py-40">
             <div className="mx-auto max-w-4xl text-center">
               <div className="mb-6 inline-flex items-center gap-2 border border-border bg-background px-4 py-2 text-muted-foreground text-sm shadow-sm">
                 <span className="relative flex size-2">
@@ -76,7 +78,7 @@ const HomePage = async () => {
         </section>
 
         <section className="border-border border-b bg-background py-12 md:py-16">
-          <div className="mx-auto max-w-[1280px] px-6 md:px-12">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-12">
             <div className="grid gap-8 md:grid-cols-3">
               {siteConfig.categories.slice(1, 4).map((category) => (
                 <Link
@@ -113,7 +115,7 @@ const HomePage = async () => {
           </div>
         </section>
 
-        <main className="mx-auto max-w-[1280px] px-6 py-16 md:px-12 md:py-20">
+        <main className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
           {featuredArticles.length > 0 && (
             <section className="mb-20">
               <div className="mb-8 flex items-end justify-between">

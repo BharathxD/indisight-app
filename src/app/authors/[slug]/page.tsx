@@ -83,7 +83,7 @@ const AuthorPage = async ({ params }: AuthorPageProps) => {
   return (
     <PublicLayout>
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-[1280px] px-6 py-8 md:px-12 md:py-12">
+        <div className="mx-auto max-w-[1400px] px-6 py-8 md:px-12 md:py-12">
           <div className="mb-12 border-border border-b pb-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-start">
               {author.profileImageUrl ? (
