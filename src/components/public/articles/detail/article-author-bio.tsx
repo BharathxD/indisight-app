@@ -49,4 +49,3 @@ export const ArticleAuthorBio = ({ author }: ArticleAuthorBioProps) => {
     </div>
   );
 };
-

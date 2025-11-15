@@ -40,6 +40,51 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     priority: 0.5,
   }));
 
+  const staticPages: MetadataRoute.Sitemap = [
+    {
+      url: `${siteConfig.url}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${siteConfig.url}/research`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${siteConfig.url}/why`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteConfig.url}/nominate`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteConfig.url}/attribution`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteConfig.url}/press`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteConfig.url}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+  ];
+
   return [
     {
       url: siteConfig.url,
@@ -47,6 +92,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       changeFrequency: "daily",
       priority: 1,
     },
+    ...staticPages,
     ...articles,
     ...categories,
     ...authors,

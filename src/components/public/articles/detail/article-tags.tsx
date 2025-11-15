@@ -32,4 +32,3 @@ export const ArticleTags = ({ tags }: ArticleTagsProps) => {
     </div>
   );
 };
-

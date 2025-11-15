@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleCardStandard } from "@/components/public/articles";
 import { PublicLayout } from "@/components/public/public-layout";
@@ -112,6 +113,38 @@ const TagPage = async ({ params }: TagPageProps) => {
               </div>
             </div>
           )}
+
+          <section className="mt-16 border-border border-t pt-16">
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="border border-border bg-muted p-8 md:p-12">
+                <h2 className="mb-4 font-bold text-3xl text-foreground tracking-tight">
+                  Stay in the Loop
+                </h2>
+                <p className="mb-8 text-lg text-muted-foreground leading-relaxed">
+                  Get weekly articles and insights on topics you care about
+                  delivered to your inbox.
+                </p>
+                <Link
+                  className="inline-flex items-center justify-center gap-2 border border-border bg-foreground px-8 py-4 font-medium text-background transition-colors hover:bg-foreground/90"
+                  href="https://tally.so/r/w2YgzD"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Subscribe to Newsletter
+                  <svg
+                    aria-hidden="true"
+                    className="size-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </PublicLayout>

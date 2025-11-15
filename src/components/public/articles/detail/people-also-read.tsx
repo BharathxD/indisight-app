@@ -40,4 +40,3 @@ export const PeopleAlsoRead = ({ articles }: PeopleAlsoReadProps) => {
     </div>
   );
 };
-

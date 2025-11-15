@@ -1,6 +1,12 @@
 "use client";
 
-import { Facebook, Linkedin, Mail, Twitter, Link as LinkIcon } from "lucide-react";
+import {
+  Facebook,
+  Linkedin,
+  Link as LinkIcon,
+  Mail,
+  Twitter,
+} from "lucide-react";
 import { useState } from "react";
 
 type SocialShareProps = {
@@ -85,4 +91,3 @@ export const SocialShare = ({ url, title }: SocialShareProps) => {
     </div>
   );
 };
-

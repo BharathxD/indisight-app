@@ -37,4 +37,3 @@ export const PopularCategories = ({ categories }: PopularCategoriesProps) => {
     </div>
   );
 };
-

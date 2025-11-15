@@ -91,20 +91,21 @@ export const categoryRouter = router({
 
   getTopByArticleCount: publicProcedure
     .input(z.object({ limit: z.number().default(8) }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.category.findMany({
-        where: { isActive: true, articleCount: { gt: 0 } },
-        orderBy: { articleCount: "desc" },
-        take: input.limit,
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          articleCount: true,
-          icon: true,
-        },
-      });
-    }),
+    .query(
+      async ({ ctx, input }) =>
+        await ctx.db.category.findMany({
+          where: { isActive: true, articleCount: { gt: 0 } },
+          orderBy: { articleCount: "desc" },
+          take: input.limit,
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            articleCount: true,
+            icon: true,
+          },
+        })
+    ),
 
   list: adminProcedure.input(listCategoriesSchema).query(({ input, ctx }) => {
     const { isActive, parentId, search } = input;

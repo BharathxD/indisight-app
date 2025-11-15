@@ -8,4 +8,3 @@ export { PeopleAlsoRead } from "./people-also-read";
 export { PopularCategories } from "./popular-categories";
 export { SocialShare } from "./social-share";
 export { TableOfContents } from "./table-of-contents";
-

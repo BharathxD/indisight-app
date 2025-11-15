@@ -445,11 +445,11 @@
 }
 
 .minimal-tiptap-editor .ProseMirror h4 {
-  @apply mt-6 mb-3 text-[1.25rem] leading-[1.5] font-medium;
+  @apply mt-6 mb-3 text-[1.25rem] leading-normal font-medium;
 }
 
 .minimal-tiptap-editor .ProseMirror h5 {
-  @apply mt-6 mb-3 text-[1.125rem] leading-[1.5] font-medium;
+  @apply mt-6 mb-3 text-[1.125rem] leading-normal font-medium;
 }
 
 .minimal-tiptap-editor .ProseMirror a.link {
@@ -470,6 +470,13 @@
 
 .minimal-tiptap-editor .ProseMirror u {
   @apply underline underline-offset-2;
+}
+
+[data-rmiz-content="found"] img,
+[data-rmiz-content="found"] svg,
+[data-rmiz-content="found"] [role="img"],
+[data-rmiz-content="found"] [data-zoom] {
+  cursor: inherit;
 }
 
 .minimal-tiptap-editor .ProseMirror img {
@@ -576,13 +583,6 @@
   inset: 20px 20px auto auto;
   cursor: zoom-out;
   z-index: 1;
-}
-
-[data-rmiz-content="found"] img,
-[data-rmiz-content="found"] svg,
-[data-rmiz-content="found"] [role="img"],
-[data-rmiz-content="found"] [data-zoom] {
-  cursor: inherit;
 }
 
 [data-rmiz-modal]::backdrop {

@@ -31,7 +31,9 @@ const MasonryColumn = ({ items }: { items: Portrait[] }) => {
             key={`${portrait.id}-${index}`}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
+            role="button"
             style={{ height: `${portrait.height * 0.7}px` }}
+            tabIndex={0}
           >
             <div
               className="relative size-full transition-all duration-500 ease-out will-change-[transform,filter,opacity]"

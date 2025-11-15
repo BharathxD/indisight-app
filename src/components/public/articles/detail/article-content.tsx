@@ -13,4 +13,3 @@ export const ArticleContent = ({ htmlContent }: ArticleContentProps) => {
     </div>
   );
 };
-

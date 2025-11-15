@@ -5,17 +5,17 @@ import { siteConfig } from "@/lib/config";
 
 const exploreLinks = [
   { label: "All Articles", href: "/" },
-  { label: "Research Hub", href: "/categories/research" },
   { label: "Editorial Archive", href: "/articles" },
+  { label: "Research Hub", href: "/research" },
   { label: "Attribution & Embeds", href: "/attribution" },
-  { label: "Why we do what we do", href: "/about" },
+  { label: "Why we do what we do", href: "/why" },
   { label: "RSS Feed", href: "/feed.xml" },
   { label: "Press Kit", href: "/press" },
 ];
 
 const connectLinks = [
-  { label: "About IndiSight", href: "/about" },
-  { label: "Write for Us", href: "/write" },
+  { label: "About IndiSight", href: "/contact#our-mission" },
+  { label: "Write for Us", href: "/nominate" },
   { label: "Contact", href: "/contact" },
   { label: "Newsletter", href: "/newsletter" },
 ];

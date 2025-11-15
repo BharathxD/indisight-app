@@ -144,26 +144,26 @@ export type Heading = {
   text: string;
 };
 
-const slugify = (text: string): string => {
-  return text
+const slugify = (text: string): string =>
+  text
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim();
-};
 
 export const extractHeadings = (html: string): Heading[] => {
   const headings: Heading[] = [];
   const headingRegex = /<h([23])[^>]*id="([^"]*)"[^>]*>(.*?)<\/h\1>/gi;
-  let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null = headingRegex.exec(html);
 
-  while ((match = headingRegex.exec(html)) !== null) {
-    const level = Number.parseInt(match[1]) as 2 | 3;
+  while (match !== null) {
+    const level = Number.parseInt(match[1], 10) as 2 | 3;
     const id = match[2];
     const text = match[3].replace(/<[^>]*>/g, "").trim();
 
     headings.push({ id, level, text });
+    match = headingRegex.exec(html);
   }
 
   return headings;
@@ -191,7 +191,7 @@ export const jsonToHtml = async (
 
     html = html.replace(
       /<h([23])([^>]*)>(.*?)<\/h\1>/gi,
-      (match, level, attrs, text) => {
+      (_match, level, attrs, text) => {
         const plainText = text.replace(/<[^>]*>/g, "").trim();
         const id = slugify(plainText);
         return `<h${level}${attrs} id="${id}">${text}</h${level}>`;

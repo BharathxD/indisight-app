@@ -32,7 +32,7 @@ export const StandaloneThemeToggle = () => {
       aria-label={
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
-      className="flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-muted"
+      className="flex size-9 items-center justify-center border border-border bg-background text-foreground transition-colors hover:bg-muted"
       onClick={toggleTheme}
       type="button"
     >

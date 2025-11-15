@@ -42,7 +42,7 @@ export const ArticleCardStandard = ({
     return (
       <article
         className={cn(
-          "group overflow-hidden border border-border bg-background transition-shadow duration-200 hover:shadow-lg",
+          "group overflow-hidden border border-border bg-background transition-colors hover:border-foreground",
           className
         )}
       >
