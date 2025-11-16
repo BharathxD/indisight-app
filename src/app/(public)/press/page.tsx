@@ -33,7 +33,7 @@ export const metadata = {
 const PressPage = () => (
   <>
     <div className="min-h-screen bg-background">
-      <section className="border-border border-b bg-gradient-to-b from-muted/50 to-background py-20">
+      <section className="border-border border-b bg-linear-to-b from-muted/50 to-background py-20">
         <div className="mx-auto max-w-4xl px-6 text-center md:px-12">
           <h1 className="mb-6 font-bold text-5xl text-foreground leading-tight tracking-tight lg:text-6xl">
             Press & Media Kit
