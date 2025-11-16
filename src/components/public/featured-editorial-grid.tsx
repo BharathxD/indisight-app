@@ -82,7 +82,7 @@ export const FeaturedEditorialGrid = ({
           return (
             <motion.article key={article.slug} variants={item}>
               <Link
-                className="group flex size-full flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-foreground hover:shadow-lg"
+                className="group flex size-full flex-col overflow-hidden border border-border bg-background transition-all hover:border-foreground hover:shadow-lg"
                 href={`/articles/${article.slug}`}
               >
                 {article.featuredImageUrl && (
@@ -146,7 +146,7 @@ export const FeaturedEditorialGrid = ({
             return (
               <motion.article key={article.slug} variants={item}>
                 <Link
-                  className="group flex size-full flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-foreground hover:shadow-lg"
+                  className="group flex size-full flex-col overflow-hidden border border-border bg-background transition-all hover:border-foreground hover:shadow-lg"
                   href={`/articles/${article.slug}`}
                 >
                   {article.featuredImageUrl && (
