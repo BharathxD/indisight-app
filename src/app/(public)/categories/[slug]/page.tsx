@@ -14,7 +14,7 @@ type CategoryPageProps = {
 export const revalidate = 300;
 
 export const generateStaticParams = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const slugs = await caller.cms.category.getAllSlugs();
   return slugs.map((slug) => ({ slug }));
 };
@@ -25,8 +25,10 @@ export const generateMetadata = async ({
   const { slug } = await params;
 
   try {
-    const caller = await trpc();
+    const caller = trpc();
     const category = await caller.cms.category.getBySlugPublic({ slug });
+
+    const ogImageUrl = `${siteConfig.url}/api/og?type=category&title=${encodeURIComponent(category.name)}${category.description ? `&subtitle=${encodeURIComponent(category.description)}` : ""}${category.imageUrl ? `&image=${encodeURIComponent(category.imageUrl)}` : ""}&metadata=${category.articleCount}`;
 
     return {
       title: category.seoMetaTitle || `${category.name} Articles`,
@@ -39,7 +41,14 @@ export const generateMetadata = async ({
         description: category.description || undefined,
         type: "website",
         siteName: siteConfig.name,
-        images: category.imageUrl ? [category.imageUrl] : undefined,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: category.name,
+          },
+        ],
       },
       alternates: {
         canonical: `${siteConfig.url}/categories/${slug}`,
@@ -54,7 +63,7 @@ export const generateMetadata = async ({
 
 const CategoryPage = async ({ params }: CategoryPageProps) => {
   const { slug } = await params;
-  const caller = await trpc();
+  const caller = trpc();
 
   let category: Awaited<
     ReturnType<

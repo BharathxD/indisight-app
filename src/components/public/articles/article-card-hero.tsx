@@ -10,6 +10,7 @@ type ArticleCardHeroProps = {
     title: string;
     excerpt?: string | null;
     featuredImageUrl?: string | null;
+    thumbnailUrl?: string | null;
     publishedAt?: Date | null;
     readTime?: number | null;
     articleAuthors: {
@@ -47,7 +48,7 @@ export const ArticleCardHero = ({
         className="flex flex-col md:flex-row"
         href={`/articles/${article.slug}`}
       >
-        {article.featuredImageUrl && (
+        {(article.thumbnailUrl || article.featuredImageUrl) && (
           <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-muted md:w-[480px]">
             <Image
               alt={article.title}
@@ -55,7 +56,7 @@ export const ArticleCardHero = ({
               fill
               priority
               sizes="(max-width: 768px) 100vw, 480px"
-              src={article.featuredImageUrl}
+              src={(article.thumbnailUrl || article.featuredImageUrl) as string}
             />
           </div>
         )}

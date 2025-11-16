@@ -32,10 +32,10 @@ export const generateMetadata = async ({
   try {
     const caller = trpc();
     const article = await caller.cms.article.getBySlugPublic({ slug });
-    const _primaryCategory = article.articleCategories.find(
-      (ac) => ac.isPrimary
-    );
     const authors = article.articleAuthors.map((aa) => aa.author.name);
+    const primaryAuthor = article.articleAuthors[0]?.author;
+
+    const ogImageUrl = `${siteConfig.url}/api/og?type=article&title=${encodeURIComponent(article.title)}${article.excerpt ? `&subtitle=${encodeURIComponent(article.excerpt)}` : ""}${article.thumbnailUrl ? `&image=${encodeURIComponent(article.thumbnailUrl)}` : ""}${primaryAuthor?.name ? `&metadata=${encodeURIComponent(primaryAuthor.name)}` : ""}`;
 
     return {
       title: article.seoMetaTitle || article.title,
@@ -48,23 +48,21 @@ export const generateMetadata = async ({
         type: "article",
         publishedTime: article.publishedAt?.toISOString(),
         authors,
-        images: article.featuredImageUrl
-          ? [
-              {
-                url: article.featuredImageUrl,
-                alt: article.featuredImageAlt || article.title,
-              },
-            ]
-          : undefined,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: article.title,
+          },
+        ],
         siteName: siteConfig.name,
       },
       twitter: {
         card: "summary_large_image",
         title: article.title,
         description: article.excerpt || undefined,
-        images: article.featuredImageUrl
-          ? [article.featuredImageUrl]
-          : undefined,
+        images: [ogImageUrl],
       },
       alternates: {
         canonical: `${siteConfig.url}/articles/${slug}`,
@@ -113,7 +111,7 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
     "@type": "Article",
     headline: article.title,
     description: article.excerpt || undefined,
-    image: article.featuredImageUrl || undefined,
+    image: article.thumbnailUrl || undefined,
     datePublished: article.publishedAt?.toISOString(),
     dateModified: article.updatedAt.toISOString(),
     author: article.articleAuthors.map((aa) => ({
@@ -142,8 +140,8 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
       <article className="bg-background">
         <ArticleHeader
           excerpt={article.excerpt}
-          featuredImageAlt={article.featuredImageAlt}
-          featuredImageUrl={article.featuredImageUrl}
+          featuredImageAlt={article.thumbnailAlt}
+          featuredImageUrl={article.thumbnailUrl}
           primaryCategory={primaryCategory || null}
           title={article.title}
         />

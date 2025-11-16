@@ -12,7 +12,7 @@ type TagPageProps = {
 export const revalidate = 300;
 
 export const generateStaticParams = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const slugs = await caller.cms.tag.getAllSlugs();
   return slugs.map((slug) => ({ slug }));
 };
@@ -23,8 +23,10 @@ export const generateMetadata = async ({
   const { slug } = await params;
 
   try {
-    const caller = await trpc();
+    const caller = trpc();
     const tag = await caller.cms.tag.getBySlugPublic({ slug });
+
+    const ogImageUrl = `${siteConfig.url}/api/og?type=tag&title=${encodeURIComponent(tag.name)}${tag.description ? `&subtitle=${encodeURIComponent(tag.description)}` : ""}&metadata=${tag.usageCount}`;
 
     return {
       title: `${tag.name} - Tag`,
@@ -34,6 +36,14 @@ export const generateMetadata = async ({
         description: tag.description || undefined,
         type: "website",
         siteName: siteConfig.name,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: tag.name,
+          },
+        ],
       },
       alternates: {
         canonical: `${siteConfig.url}/tags/${slug}`,
@@ -48,7 +58,7 @@ export const generateMetadata = async ({
 
 const TagPage = async ({ params }: TagPageProps) => {
   const { slug } = await params;
-  const caller = await trpc();
+  const caller = trpc();
 
   let tag: Awaited<
     ReturnType<

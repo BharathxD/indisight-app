@@ -14,7 +14,7 @@ import { trpc } from "@/trpc/server-client";
 export const revalidate = 30;
 
 const HomePage = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const [featuredArticles, latestArticles, categories, analytics] =
     await Promise.all([
       caller.cms.article.getFeatured({ limit: 6 }),
@@ -24,7 +24,7 @@ const HomePage = async () => {
     ]);
 
   const categoriesWithImages = categories.filter(
-    (cat) => cat.imageUrl && cat.articleCount > 0
+    (cat: (typeof categories)[number]) => cat.imageUrl && cat.articleCount > 0
   );
 
   const stats = [

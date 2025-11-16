@@ -13,7 +13,7 @@ type AuthorPageProps = {
 export const revalidate = 300;
 
 export const generateStaticParams = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const slugs = await caller.cms.author.getAllSlugs();
   return slugs.map((slug) => ({ slug }));
 };
@@ -24,8 +24,10 @@ export const generateMetadata = async ({
   const { slug } = await params;
 
   try {
-    const caller = await trpc();
+    const caller = trpc();
     const author = await caller.cms.author.getBySlugPublic({ slug });
+
+    const ogImageUrl = `${siteConfig.url}/api/og?type=author&title=${encodeURIComponent(author.name)}${author.bio ? `&subtitle=${encodeURIComponent(author.bio)}` : ""}${author.profileImageUrl ? `&image=${encodeURIComponent(author.profileImageUrl)}` : ""}&metadata=${author.articleCount}`;
 
     return {
       title: `${author.name} - Author`,
@@ -35,7 +37,14 @@ export const generateMetadata = async ({
         description: author.bio || undefined,
         type: "profile",
         siteName: siteConfig.name,
-        images: author.profileImageUrl ? [author.profileImageUrl] : undefined,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: author.name,
+          },
+        ],
       },
       alternates: {
         canonical: `${siteConfig.url}/authors/${slug}`,
@@ -50,7 +59,7 @@ export const generateMetadata = async ({
 
 const AuthorPage = async ({ params }: AuthorPageProps) => {
   const { slug } = await params;
-  const caller = await trpc();
+  const caller = trpc();
 
   let author: Awaited<
     ReturnType<

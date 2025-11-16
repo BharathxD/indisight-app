@@ -5,7 +5,7 @@ import { trpc } from "@/trpc/server-client";
 export const revalidate = 3600;
 
 export const GET = async () => {
-  const caller = await trpc();
+  const caller = trpc();
   const articles = await caller.cms.article.getLatest({ limit: 50 });
 
   const feed = new RSS({
@@ -33,9 +33,9 @@ export const GET = async () => {
       categories: article.articleCategories.map((ac) => ac.category.name),
       author: primaryAuthor?.name,
       date: article.publishedAt || article.createdAt,
-      enclosure: article.featuredImageUrl
+      enclosure: article.thumbnailUrl
         ? {
-            url: article.featuredImageUrl,
+            url: article.thumbnailUrl,
             type: "image/jpeg",
           }
         : undefined,
