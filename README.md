@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IndiSight Article Management Platform
 
-## Getting Started
+A modern CMS platform for managing editorial content, built with Next.js, TypeScript, and PostgreSQL.
 
-First, run the development server:
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+pnpm db:push
+pnpm db:seed
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-## Learn More
+- **[README.md](./docs/README.md)** - Documentation index and quick start
+- **[PRD.md](./docs/PRD.md)** - Product Requirements Document
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Technical architecture
+- **[API.md](./docs/API.md)** - API documentation
+- **[DEVELOPMENT.md](./docs/DEVELOPMENT.md)** - Development guide
+- **[DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - Deployment guide
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Database:** PostgreSQL with Prisma ORM
+- **API:** tRPC for type-safe APIs
+- **Authentication:** Better Auth
+- **File Storage:** Cloudflare R2
+- **UI:** shadcn/ui + Radix UI + Tailwind CSS
+- **Rich Text Editor:** Tiptap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
 
-## Deploy on Vercel
+- ✅ Article management with rich text editor
+- ✅ Author profiles and management
+- ✅ Category and tag system
+- ✅ Featured and trending articles
+- ✅ SEO optimization
+- ✅ Search functionality
+- ✅ Role-based access control
+- ✅ Media library with Cloudflare R2
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a `.env` file:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/indisight"
+BETTER_AUTH_SECRET="your-secret-key-min-32-chars"
+CLOUDFLARE_ACCOUNT_ID="your-account-id"
+CLOUDFLARE_R2_BUCKET="your-bucket-name"
+CLOUDFLARE_ACCESS_KEY_ID="your-access-key"
+CLOUDFLARE_SECRET_ACCESS_KEY="your-secret-key"
+NEXT_PUBLIC_CLOUDFLARE_R2_URL="https://your-bucket.r2.cloudflarestorage.com"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+SIGNUP_ENABLED="false"
+```
+
+## Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run linter
+- `pnpm format` - Format code
+- `pnpm typecheck` - Type check
+- `pnpm db:push` - Push database schema
+- `pnpm db:migrate` - Run migrations
+- `pnpm db:seed` - Seed database
+- `pnpm db:studio` - Open Prisma Studio
+
+## Project Structure
+
+```
+indisight-app/
+├── docs/                    # Documentation
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   │   ├── (public)/        # Public-facing pages
+│   │   ├── admin/           # Admin panel pages
+│   │   └── api/             # API routes
+│   ├── components/          # React components
+│   │   ├── admin/          # Admin components
+│   │   ├── public/         # Public components
+│   │   └── ui/             # shadcn/ui components
+│   ├── db/                 # Database schema and migrations
+│   ├── trpc/               # tRPC routers and procedures
+│   ├── lib/                # Utility functions
+│   └── auth/               # Authentication configuration
+├── public/                  # Static assets
+└── prisma.config.ts        # Prisma configuration
+```
+
+## License
+
+Private - IndiSight Platform

@@ -115,8 +115,8 @@ const WhyPage = () => (
       type="application/ld+json"
     />
     <div className="min-h-screen bg-background">
-      <section className="relative overflow-hidden border-border border-b bg-gradient-to-b from-muted/50 to-background py-20">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-[size:64px_64px] opacity-20" />
+      <section className="relative overflow-hidden border-border border-b bg-linear-to-b from-muted/50 to-background py-20">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-20" />
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center md:px-12">
           <div className="mb-6 inline-flex items-center gap-2 border border-border bg-muted px-3 py-1 font-medium text-muted-foreground text-xs uppercase tracking-wider">
             <span className="relative flex size-2">
@@ -127,7 +127,7 @@ const WhyPage = () => (
           </div>
           <h1 className="mb-6 font-bold text-5xl text-foreground leading-tight tracking-tight lg:text-6xl">
             Why We Do{" "}
-            <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
               What We Do
             </span>
           </h1>
