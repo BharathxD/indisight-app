@@ -34,6 +34,7 @@ const createArticleSchema = z.object({
   categoryIds: z.array(z.string()).min(1),
   primaryCategoryId: z.string(),
   tagIds: z.array(z.string()).default([]),
+  personIds: z.array(z.string()).default([]),
 });
 
 const updateArticleSchema = z.object({
@@ -60,6 +61,7 @@ const updateArticleSchema = z.object({
   categoryIds: z.array(z.string()).optional(),
   primaryCategoryId: z.string().optional(),
   tagIds: z.array(z.string()).optional(),
+  personIds: z.array(z.string()).optional(),
 });
 
 const listArticlesSchema = z.object({
@@ -167,24 +169,54 @@ export const articleRouter = router({
   getLatest: publicProcedure
     .input(
       z.object({
-        limit: z.number().min(1).max(50).default(10),
+        limit: z.number().min(1).max(100).default(50),
         categoryId: z.string().optional(),
         excludeIds: z.array(z.string()).optional(),
+        search: z.string().optional(),
+        isFeatured: z.boolean().optional(),
+        isTrending: z.boolean().optional(),
+        sortBy: z.enum(["newest", "oldest"]).default("newest"),
       })
     )
     .query(async ({ input, ctx }) => {
+      const where = {
+        status: ArticleStatus.PUBLISHED,
+        ...(input.categoryId && {
+          articleCategories: { some: { categoryId: input.categoryId } },
+        }),
+        ...(input.excludeIds && {
+          id: { notIn: input.excludeIds },
+        }),
+        ...(input.isFeatured !== undefined && { isFeatured: input.isFeatured }),
+        ...(input.isTrending !== undefined && { isTrending: input.isTrending }),
+        ...(input.search && {
+          OR: [
+            { title: { contains: input.search, mode: "insensitive" as const } },
+            {
+              excerpt: { contains: input.search, mode: "insensitive" as const },
+            },
+            {
+              articleAuthors: {
+                some: {
+                  author: {
+                    name: { contains: input.search, mode: "insensitive" as const },
+                  },
+                },
+              },
+            },
+          ],
+        }),
+      };
+
+      const orderBy =
+        input.sortBy === "newest"
+          ? { publishedAt: "desc" as const }
+          : { publishedAt: "asc" as const };
+
       const articles = await ctx.db.article.findMany({
-        where: {
-          status: ArticleStatus.PUBLISHED,
-          ...(input.categoryId && {
-            articleCategories: { some: { categoryId: input.categoryId } },
-          }),
-          ...(input.excludeIds && {
-            id: { notIn: input.excludeIds },
-          }),
-        },
+        where,
         take: input.limit,
-        orderBy: { publishedAt: "desc" },
+        orderBy,
         include: {
           articleAuthors: {
             include: {
@@ -263,6 +295,23 @@ export const articleRouter = router({
               },
             },
           },
+          articlePeople: {
+            include: {
+              person: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  tagline: true,
+                  jobTitle: true,
+                  company: true,
+                  description: true,
+                  imageUrl: true,
+                  linkedinUrl: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -327,7 +376,13 @@ export const articleRouter = router({
         },
         take: input.limit,
         orderBy: { publishedAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          featuredImageUrl: true,
+          thumbnailUrl: true,
           articleAuthors: {
             include: {
               author: {
@@ -724,6 +779,7 @@ export const articleRouter = router({
         categoryIds,
         primaryCategoryId,
         tagIds,
+        personIds,
         scheduledAt,
         status,
         ...articleData
@@ -809,6 +865,20 @@ export const articleRouter = router({
         }
       }
 
+      if (personIds.length > 0) {
+        const people = await ctx.db.person.findMany({
+          where: { id: { in: personIds } },
+          select: { id: true },
+        });
+
+        if (people.length !== personIds.length) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "One or more people not found",
+          });
+        }
+      }
+
       return ctx.db.$transaction(async (tx) => {
         const article = await tx.article.create({
           data: {
@@ -847,6 +917,15 @@ export const articleRouter = router({
           });
         }
 
+        if (personIds.length > 0) {
+          await tx.articlePerson.createMany({
+            data: personIds.map((personId) => ({
+              articleId: article.id,
+              personId,
+            })),
+          });
+        }
+
         for (const authorId of authorIds) {
           await updateAuthorArticleCount(tx, authorId);
         }
@@ -873,6 +952,7 @@ export const articleRouter = router({
         categoryIds,
         primaryCategoryId,
         tagIds,
+        personIds,
         scheduledAt,
         status,
         ...articleData
@@ -1057,6 +1137,21 @@ export const articleRouter = router({
 
           for (const tagId of allAffectedTags) {
             await updateTagUsageCount(tx, tagId);
+          }
+        }
+
+        if (personIds) {
+          await tx.articlePerson.deleteMany({
+            where: { articleId: id },
+          });
+
+          if (personIds.length > 0) {
+            await tx.articlePerson.createMany({
+              data: personIds.map((personId) => ({
+                articleId: id,
+                personId,
+              })),
+            });
           }
         }
 

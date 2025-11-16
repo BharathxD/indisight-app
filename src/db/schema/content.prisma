@@ -1,110 +1,131 @@
 model Author {
-    id              String   @id @default(cuid())
-    name            String
-    slug            String   @unique
-    bio             String?  @db.Text
-    email           String?
-    profileImageUrl String?  @map("profile_image_url")
-    profileImageAlt String?  @map("profile_image_alt")
-    socialLinks     Json?    @map("social_links")
-    isFeatured      Boolean  @default(false) @map("is_featured")
-    articleCount    Int      @default(0) @map("article_count")
-    userId          String?  @map("user_id")
-    createdAt       DateTime @default(now()) @map("created_at")
-    updatedAt       DateTime @updatedAt @map("updated_at")
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  bio             String?  @db.Text
+  email           String?
+  profileImageUrl String?  @map("profile_image_url")
+  profileImageAlt String?  @map("profile_image_alt")
+  socialLinks     Json?    @map("social_links")
+  isFeatured      Boolean  @default(false) @map("is_featured")
+  articleCount    Int      @default(0) @map("article_count")
+  userId          String?  @map("user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-    user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
-    articleAuthors ArticleAuthor[]
+  user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  articleAuthors ArticleAuthor[]
 
-    @@index([slug])
-    @@index([userId])
-    @@index([isFeatured])
-    @@map("author")
+  @@index([slug])
+  @@index([userId])
+  @@index([isFeatured])
+  @@map("author")
 }
 
 model Article {
-    id                 String        @id @default(cuid())
-    title              String
-    slug               String        @unique
-    subtitle           String?
-    excerpt            String?       @db.Text
-    content            Json
-    featuredImageUrl   String?       @map("featured_image_url")
-    featuredImageAlt   String?       @map("featured_image_alt")
-    thumbnailUrl       String?       @map("thumbnail_url")
-    thumbnailAlt       String?       @map("thumbnail_alt")
-    isFeatured         Boolean       @default(false) @map("is_featured")
-    isTrending         Boolean       @default(false) @map("is_trending")
-    status             ArticleStatus @default(DRAFT)
-    viewCount          Int           @default(0) @map("view_count")
-    readTime           Int?          @map("read_time")
-    publishedAt        DateTime?     @map("published_at")
-    scheduledAt        DateTime?     @map("scheduled_at")
-    seoMetaTitle       String?       @map("seo_meta_title")
-    seoMetaDescription String?       @map("seo_meta_description") @db.Text
-    seoKeywords        String?       @map("seo_keywords")
-    likeCount          Int?          @default(0) @map("like_count")
-    commentCount       Int?          @default(0) @map("comment_count")
-    bookmarkCount      Int?          @default(0) @map("bookmark_count")
-    createdAt          DateTime      @default(now()) @map("created_at")
-    updatedAt          DateTime      @updatedAt @map("updated_at")
+  id                 String        @id @default(cuid())
+  title              String
+  slug               String        @unique
+  subtitle           String?
+  excerpt            String?       @db.Text
+  content            Json
+  featuredImageUrl   String?       @map("featured_image_url")
+  featuredImageAlt   String?       @map("featured_image_alt")
+  thumbnailUrl       String?       @map("thumbnail_url")
+  thumbnailAlt       String?       @map("thumbnail_alt")
+  isFeatured         Boolean       @default(false) @map("is_featured")
+  isTrending         Boolean       @default(false) @map("is_trending")
+  status             ArticleStatus @default(DRAFT)
+  viewCount          Int           @default(0) @map("view_count")
+  readTime           Int?          @map("read_time")
+  publishedAt        DateTime?     @map("published_at")
+  scheduledAt        DateTime?     @map("scheduled_at")
+  seoMetaTitle       String?       @map("seo_meta_title")
+  seoMetaDescription String?       @map("seo_meta_description") @db.Text
+  seoKeywords        String?       @map("seo_keywords")
+  likeCount          Int?          @default(0) @map("like_count")
+  commentCount       Int?          @default(0) @map("comment_count")
+  bookmarkCount      Int?          @default(0) @map("bookmark_count")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
 
-    articleAuthors    ArticleAuthor[]
-    articleCategories ArticleCategory[]
-    articleTags       ArticleTag[]
-    relatedArticles   ArticleRelated[]  @relation("ArticleToRelated")
-    relatedByArticles ArticleRelated[]  @relation("RelatedToArticle")
+  articleAuthors    ArticleAuthor[]
+  articleCategories ArticleCategory[]
+  articleTags       ArticleTag[]
+  articlePeople     ArticlePerson[]
+  relatedArticles   ArticleRelated[]  @relation("ArticleToRelated")
+  relatedByArticles ArticleRelated[]  @relation("RelatedToArticle")
 
-    @@index([slug])
-    @@index([status, publishedAt])
-    @@index([isFeatured])
-    @@index([isTrending])
-    @@index([publishedAt])
-    @@index([scheduledAt])
-    @@map("article")
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([isFeatured])
+  @@index([isTrending])
+  @@index([publishedAt])
+  @@index([scheduledAt])
+  @@map("article")
 }
 
 model Category {
-    id                 String   @id @default(cuid())
-    name               String
-    slug               String   @unique
-    description        String?  @db.Text
-    imageUrl           String?  @map("image_url")
-    imageAlt           String?  @map("image_alt")
-    icon               String?
-    isActive           Boolean  @default(true) @map("is_active")
-    displayOrder       Int      @default(0) @map("display_order")
-    articleCount       Int      @default(0) @map("article_count")
-    parentId           String?  @map("parent_id")
-    seoMetaTitle       String?  @map("seo_meta_title")
-    seoMetaDescription String?  @map("seo_meta_description") @db.Text
-    createdAt          DateTime @default(now()) @map("created_at")
-    updatedAt          DateTime @updatedAt @map("updated_at")
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  description        String?  @db.Text
+  imageUrl           String?  @map("image_url")
+  imageAlt           String?  @map("image_alt")
+  icon               String?
+  isActive           Boolean  @default(true) @map("is_active")
+  displayOrder       Int      @default(0) @map("display_order")
+  articleCount       Int      @default(0) @map("article_count")
+  parentId           String?  @map("parent_id")
+  seoMetaTitle       String?  @map("seo_meta_title")
+  seoMetaDescription String?  @map("seo_meta_description") @db.Text
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
-    parent            Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-    children          Category[]        @relation("CategoryHierarchy")
-    articleCategories ArticleCategory[]
+  parent            Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children          Category[]        @relation("CategoryHierarchy")
+  articleCategories ArticleCategory[]
 
-    @@index([slug])
-    @@index([parentId])
-    @@index([isActive, displayOrder])
-    @@map("category")
+  @@index([slug])
+  @@index([parentId])
+  @@index([isActive, displayOrder])
+  @@map("category")
 }
 
 model Tag {
-    id          String   @id @default(cuid())
-    name        String
-    slug        String   @unique
-    description String?  @db.Text
-    usageCount  Int      @default(0) @map("usage_count")
-    isTrending  Boolean  @default(false) @map("is_trending")
-    createdAt   DateTime @default(now()) @map("created_at")
-    updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  usageCount  Int      @default(0) @map("usage_count")
+  isTrending  Boolean  @default(false) @map("is_trending")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-    articleTags ArticleTag[]
+  articleTags ArticleTag[]
 
-    @@index([slug])
-    @@index([isTrending])
-    @@index([usageCount])
-    @@map("tag")
+  @@index([slug])
+  @@index([isTrending])
+  @@index([usageCount])
+  @@map("tag")
+}
+
+model Person {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  tagline     String?
+  jobTitle    String?  @map("job_title")
+  company     String?
+  description String?  @db.Text
+  imageUrl    String?  @map("image_url")
+  imageAlt    String?  @map("image_alt")
+  linkedinUrl String?  @map("linkedin_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  articlePeople ArticlePerson[]
+
+  @@index([slug])
+  @@map("person")
 }

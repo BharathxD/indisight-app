@@ -53,6 +53,7 @@ export const Sidebar = () => {
   const homeIconRef = useRef<HomeIconHandle>(null);
   const articlesIconRef = useRef<FileTextIconHandle>(null);
   const authorsIconRef = useRef<UsersIconHandle>(null);
+  const peopleIconRef = useRef<UsersIconHandle>(null);
   const categoriesIconRef = useRef<WorkflowIconHandle>(null);
   const tagsIconRef = useRef<HashIconHandle>(null);
   const usersIconRef = useRef<UsersIconHandle>(null);
@@ -124,6 +125,22 @@ export const Sidebar = () => {
                   >
                     <UsersIcon ref={authorsIconRef} size={18} />
                     <span>Authors</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/people"}
+                  tooltip="People"
+                >
+                  <Link
+                    href="/admin/people"
+                    onMouseEnter={() => peopleIconRef.current?.startAnimation()}
+                    onMouseLeave={() => peopleIconRef.current?.stopAnimation()}
+                  >
+                    <UsersIcon ref={peopleIconRef} size={18} />
+                    <span>People</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

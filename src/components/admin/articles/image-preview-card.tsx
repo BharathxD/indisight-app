@@ -86,7 +86,7 @@ export const ImagePreviewCard = ({
           >
             <Image
               alt="Preview"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-top"
               height={240}
               src={url}
               width={400}

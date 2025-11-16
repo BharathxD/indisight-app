@@ -30,7 +30,7 @@ export const ArticleHeader = ({
               </span>
             </div>
           )}
-          <h1 className="mb-6 font-bold text-[2.25rem] text-white leading-[1.15] tracking-[-0.03em] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[3.75rem] lg:leading-[1.1]">
+          <h1 className="mb-6 font-bold text-[1.75rem] text-white leading-[1.15] tracking-[-0.03em] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] lg:leading-[1.1]">
             {title}
           </h1>
           {excerpt && (
@@ -44,7 +44,7 @@ export const ArticleHeader = ({
             <div className="relative aspect-4/3 w-full overflow-hidden rounded-lg sm:aspect-square">
               <Image
                 alt={featuredImageAlt || title}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-top"
                 fill
                 priority
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 480px"

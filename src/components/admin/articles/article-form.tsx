@@ -25,6 +25,7 @@ import { AuthorSelector } from "@/components/admin/articles/author-selector";
 import { CategorySelector } from "@/components/admin/articles/category-selector";
 import { EditorStatusBar } from "@/components/admin/articles/editor-status-bar";
 import { ImageUploadDropzone } from "@/components/admin/articles/image-upload-dropzone";
+import { PersonSelector } from "@/components/admin/articles/person-selector";
 import { StickyActionBar } from "@/components/admin/articles/sticky-action-bar";
 import { TagSelector } from "@/components/admin/articles/tag-selector";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { animationVariants } from "@/lib/animation-variants";
 import { trpc } from "@/trpc/client";
@@ -67,6 +69,7 @@ const articleSchema = z.object({
   categoryIds: z.array(z.string()).min(1, "At least one category is required"),
   primaryCategoryId: z.string().min(1, "Primary category is required"),
   tagIds: z.array(z.string()),
+  personIds: z.array(z.string()),
   status: z.nativeEnum(ArticleStatus),
 });
 
@@ -90,6 +93,7 @@ export const ArticleForm = ({
   const internalEditorRef = useRef<Editor | null>(null);
   const editorRef = externalEditorRef || internalEditorRef;
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [useThumbnailAsFeatured, setUseThumbnailAsFeatured] = useState(false);
 
   const {
     register,
@@ -112,6 +116,7 @@ export const ArticleForm = ({
       categoryIds: initialData?.categoryIds || [],
       primaryCategoryId: initialData?.primaryCategoryId || "",
       tagIds: initialData?.tagIds || [],
+      personIds: initialData?.personIds || [],
       status: initialData?.status || ArticleStatus.DRAFT,
     },
   });
@@ -123,6 +128,7 @@ export const ArticleForm = ({
   const categoryIds = watch("categoryIds");
   const primaryCategoryId = watch("primaryCategoryId");
   const tagIds = watch("tagIds");
+  const personIds = watch("personIds");
   const featuredImageUrl = watch("featuredImageUrl");
   const thumbnailUrl = watch("thumbnailUrl");
 
@@ -132,6 +138,12 @@ export const ArticleForm = ({
       setValue("slug", generatedSlug);
     }
   }, [title, mode, initialData?.slug, setValue]);
+
+  useEffect(() => {
+    if (useThumbnailAsFeatured && thumbnailUrl) {
+      setValue("featuredImageUrl", thumbnailUrl);
+    }
+  }, [useThumbnailAsFeatured, thumbnailUrl, setValue]);
 
   const createArticle = trpc.cms.article.create.useMutation({
     onSuccess: async () => {
@@ -170,6 +182,7 @@ export const ArticleForm = ({
       categoryIds: data.categoryIds,
       primaryCategoryId: data.primaryCategoryId,
       tagIds: data.tagIds,
+      personIds: data.personIds,
       status: data.status,
     };
 
@@ -407,27 +420,24 @@ export const ArticleForm = ({
           <Card className="py-4">
             <CardContent className="space-y-4 px-4">
               <h3 className="flex items-center gap-2 font-medium text-base">
+                <Users className="size-4" />
+                Featured People
+              </h3>
+              <PersonSelector
+                onChange={(ids) => setValue("personIds", ids)}
+                value={personIds}
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
                 <ImageIcon className="size-4" />
                 Media
               </h3>
-
-              <ImageUploadDropzone
-                disabled={isPending}
-                folder="articles/featured"
-                label="Featured Image"
-                onChange={(url) => setValue("featuredImageUrl", url)}
-                recommendedDimensions="1200 × 628px"
-                value={featuredImageUrl}
-              />
-              {errors.featuredImageUrl && (
-                <motion.p
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-destructive text-sm"
-                  initial={{ opacity: 0, y: -4 }}
-                >
-                  {errors.featuredImageUrl.message}
-                </motion.p>
-              )}
 
               <ImageUploadDropzone
                 disabled={isPending}
@@ -444,6 +454,40 @@ export const ArticleForm = ({
                   initial={{ opacity: 0, y: -4 }}
                 >
                   {errors.thumbnailUrl.message}
+                </motion.p>
+              )}
+
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label className="font-medium text-sm">
+                    Use thumbnail as featured image
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    Automatically sync thumbnail to featured image
+                  </p>
+                </div>
+                <Switch
+                  checked={useThumbnailAsFeatured}
+                  disabled={isPending || !thumbnailUrl}
+                  onCheckedChange={setUseThumbnailAsFeatured}
+                />
+              </div>
+
+              <ImageUploadDropzone
+                disabled={isPending || useThumbnailAsFeatured}
+                folder="articles/featured"
+                label="Featured Image"
+                onChange={(url) => setValue("featuredImageUrl", url)}
+                recommendedDimensions="1200 × 628px"
+                value={featuredImageUrl}
+              />
+              {errors.featuredImageUrl && (
+                <motion.p
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-destructive text-sm"
+                  initial={{ opacity: 0, y: -4 }}
+                >
+                  {errors.featuredImageUrl.message}
                 </motion.p>
               )}
             </CardContent>

@@ -48,7 +48,7 @@ export const ArticleCardFeatured = ({
           <div className="relative aspect-video w-full overflow-hidden bg-muted">
             <Image
               alt={article.title}
-              className="object-cover transition-opacity duration-200 group-hover:opacity-90"
+              className="object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               src={article.featuredImageUrl}

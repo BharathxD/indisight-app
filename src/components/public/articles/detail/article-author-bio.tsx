@@ -20,7 +20,7 @@ export const ArticleAuthorBio = ({ author }: ArticleAuthorBioProps) => {
         {author.profileImageUrl ? (
           <Image
             alt={author.name}
-            className="size-20 shrink-0 rounded-full object-cover"
+            className="size-20 shrink-0 rounded-full object-cover object-top"
             height={80}
             src={author.profileImageUrl}
             width={80}

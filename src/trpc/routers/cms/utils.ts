@@ -17,7 +17,7 @@ export type PrismaClientWithoutTransactions = Omit<
 
 export const validateSlugUnique = async (
   db: PrismaClientWithoutTransactions,
-  model: "author" | "article" | "category" | "tag",
+  model: "author" | "article" | "category" | "tag" | "person",
   slug: string,
   excludeId?: string
 ): Promise<void> => {
@@ -44,6 +44,12 @@ export const validateSlugUnique = async (
       break;
     case "tag":
       existing = await db.tag.findUnique({
+        where: { slug },
+        select: { id: true },
+      });
+      break;
+    case "person":
+      existing = await db.person.findUnique({
         where: { slug },
         select: { id: true },
       });

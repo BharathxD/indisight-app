@@ -43,7 +43,7 @@ export const ArticleCardCompact = ({
         <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-muted">
           <Image
             alt={article.title}
-            className="object-cover transition-opacity duration-200 group-hover:opacity-90"
+            className="object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
             fill
             sizes="80px"
             src={article.thumbnailUrl}

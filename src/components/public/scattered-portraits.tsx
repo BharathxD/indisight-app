@@ -19,39 +19,56 @@ const portraits: Portrait[] = [
 ];
 
 const MasonryColumn = ({ items }: { items: Portrait[] }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+
+  const handleImageLoad = (portraitId: number) => {
+    setLoadedImages((prev) => new Set(prev).add(portraitId));
+  };
 
   return (
     <div className="pointer-events-none flex h-full flex-col justify-center gap-1 lg:gap-2">
       {items.map((portrait, index) => {
-        const isHovered = hoveredIndex === index;
+        const isHovered = hoveredId === portrait.id;
+        const isLoaded = loadedImages.has(portrait.id);
         return (
           <div
             className="group pointer-events-auto relative w-[120px] shrink-0 cursor-pointer overflow-hidden transition-all duration-300 md:w-[140px] lg:w-[160px]"
             key={`${portrait.id}-${index}`}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
+            onMouseEnter={() => setHoveredId(portrait.id)}
+            onMouseLeave={() => setHoveredId(null)}
             role="button"
             style={{ height: `${portrait.height * 0.7}px` }}
             tabIndex={0}
           >
             <div
-              className="relative size-full transition-all duration-500 ease-out will-change-[transform,filter,opacity]"
+              className="relative size-full transition-[transform,opacity] duration-500 ease-out"
               style={{
-                filter: isHovered ? "grayscale(0%)" : "grayscale(100%)",
-                transform: isHovered ? "scale(1.08)" : "scale(1)",
-                opacity: isHovered ? 1 : 0.4,
+                transform: isLoaded
+                  ? isHovered
+                    ? "scale(1.08)"
+                    : "scale(1)"
+                  : "scale(0.95)",
+                opacity: isLoaded ? (isHovered ? 1 : 0.4) : 0,
               }}
             >
-              <Image
-                alt=""
-                className="object-cover"
-                fill
-                loading="lazy"
-                quality={75}
-                sizes="(max-width: 768px) 120px, (max-width: 1024px) 140px, 160px"
-                src={portrait.src}
-              />
+              <div
+                className="relative size-full transition-[filter] duration-300 ease-out"
+                style={{
+                  filter: isHovered ? "grayscale(0%)" : "grayscale(100%)",
+                }}
+              >
+                <Image
+                  alt=""
+                  className="object-cover object-top"
+                  fill
+                  loading="lazy"
+                  onLoad={() => handleImageLoad(portrait.id)}
+                  quality={75}
+                  sizes="(max-width: 768px) 120px, (max-width: 1024px) 140px, 160px"
+                  src={portrait.src}
+                />
+              </div>
             </div>
           </div>
         );

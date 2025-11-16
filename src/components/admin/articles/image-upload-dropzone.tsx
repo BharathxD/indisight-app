@@ -13,6 +13,9 @@ import { animationVariants } from "@/lib/animation-variants";
 import { isValidImageUrl } from "@/lib/editor-utils";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
+import { ImageCropper } from "./image-cropper";
+
+import "react-image-crop/dist/ReactCrop.css";
 
 type ImageUploadDropzoneProps = {
   value?: string;
@@ -41,6 +44,9 @@ export const ImageUploadDropzone = ({
   const [urlInput, setUrlInput] = useState("");
   const [isDragActive, setIsDragActive] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [imageForCropping, setImageForCropping] = useState<string | null>(null);
+  const [originalFileName, setOriginalFileName] = useState<string>("");
 
   const uploadMutation = trpc.file.uploadFile.useMutation({
     onSuccess: (data) => {
@@ -54,46 +60,35 @@ export const ImageUploadDropzone = ({
     },
   });
 
-  const processFile = useCallback(
-    (file: File) => {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file");
+  const processFile = useCallback((file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("Image size must be less than 10MB");
+      return;
+    }
+
+    setOriginalFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result?.toString();
+      if (!dataUrl) {
+        toast.error("Failed to read file");
         return;
       }
+      setImageForCropping(dataUrl);
+      setCropDialogOpen(true);
+    };
 
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error("Image size must be less than 10MB");
-        return;
-      }
+    reader.onerror = () => {
+      toast.error("Failed to process file");
+    };
 
-      setUploadState("uploading");
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result?.toString().split(",")[1];
-        if (!base64) {
-          toast.error("Failed to read file");
-          setUploadState("idle");
-          return;
-        }
-
-        uploadMutation.mutate({
-          filename: file.name,
-          contentType: file.type,
-          content: base64,
-          folder,
-        });
-      };
-
-      reader.onerror = () => {
-        toast.error("Failed to process file");
-        setUploadState("idle");
-      };
-
-      reader.readAsDataURL(file);
-    },
-    [folder, uploadMutation]
-  );
+    reader.readAsDataURL(file);
+  }, []);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -153,7 +148,7 @@ export const ImageUploadDropzone = ({
     };
   }, [value, showSuccessToast]);
 
-  const handleUrlSubmit = useCallback(() => {
+  const handleUrlSubmit = useCallback(async () => {
     const trimmedUrl = urlInput.trim();
     if (!trimmedUrl) return;
 
@@ -162,10 +157,69 @@ export const ImageUploadDropzone = ({
       return;
     }
 
-    onChange(trimmedUrl);
-    setUrlInput("");
-    toast.success("Image URL added");
-  }, [urlInput, onChange]);
+    try {
+      const response = await fetch(trimmedUrl);
+      if (!response.ok) {
+        toast.error("Failed to fetch image from URL");
+        return;
+      }
+
+      const blob = await response.blob();
+      if (!blob.type.startsWith("image/")) {
+        toast.error("URL does not point to a valid image");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result?.toString();
+        if (!dataUrl) {
+          toast.error("Failed to read image");
+          return;
+        }
+        setOriginalFileName(`url-image-${Date.now()}.jpg`);
+        setImageForCropping(dataUrl);
+        setCropDialogOpen(true);
+        setUrlInput("");
+      };
+
+      reader.onerror = () => {
+        toast.error("Failed to process image");
+      };
+
+      reader.readAsDataURL(blob);
+    } catch {
+      toast.error("Failed to fetch image. Check CORS or URL validity.");
+    }
+  }, [urlInput]);
+
+  const handleCropComplete = useCallback(
+    (croppedImageBase64: string) => {
+      const base64Data = croppedImageBase64.split(",")[1];
+      if (!base64Data) {
+        toast.error("Failed to process cropped image");
+        return;
+      }
+
+      setUploadState("uploading");
+      uploadMutation.mutate({
+        filename: originalFileName || `cropped-${Date.now()}.jpg`,
+        contentType: "image/jpeg",
+        content: base64Data,
+        folder,
+      });
+
+      setImageForCropping(null);
+      setCropDialogOpen(false);
+    },
+    [folder, originalFileName, uploadMutation]
+  );
+
+  const handleCropCancel = useCallback(() => {
+    setImageForCropping(null);
+    setCropDialogOpen(false);
+    setOriginalFileName("");
+  }, []);
 
   const handleRemove = useCallback(() => {
     onChange("");
@@ -209,7 +263,7 @@ export const ImageUploadDropzone = ({
             >
               <Image
                 alt="Preview"
-                className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                className="h-full w-full object-cover object-top transition-transform duration-200 group-hover:scale-105"
                 height={192}
                 src={value}
                 width={400}
@@ -359,6 +413,17 @@ export const ImageUploadDropzone = ({
           </Button>
         </motion.div>
       </div>
+
+      {imageForCropping && (
+        <ImageCropper
+          dialogOpen={cropDialogOpen}
+          imageUrl={imageForCropping}
+          onCancel={handleCropCancel}
+          onCropComplete={handleCropComplete}
+          recommendedDimensions={recommendedDimensions}
+          setDialogOpen={setCropDialogOpen}
+        />
+      )}
     </div>
   );
 };

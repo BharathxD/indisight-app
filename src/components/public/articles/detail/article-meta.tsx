@@ -30,7 +30,7 @@ export const ArticleMeta = ({
       {author.profileImageUrl ? (
         <Image
           alt={author.name}
-          className="size-11 rounded-full object-cover"
+          className="size-11 rounded-full object-cover object-top"
           height={44}
           src={author.profileImageUrl}
           width={44}

@@ -47,17 +47,40 @@ export const ArticleCardStandard = ({
         )}
       >
         <Link className="block" href={`/articles/${article.slug}`}>
-          {article.thumbnailUrl && (
-            <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
+          <div className="relative aspect-square w-full overflow-hidden bg-muted">
+            {article.thumbnailUrl ? (
               <Image
                 alt={article.title}
-                className="object-cover transition-opacity duration-200 group-hover:opacity-90"
+                className="object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 src={article.thumbnailUrl}
               />
-            </div>
-          )}
+            ) : (
+              <div className="flex size-full items-center justify-center bg-linear-to-br from-muted via-muted to-muted/80">
+                <div className="flex flex-col items-center gap-3 opacity-40">
+                  <svg
+                    aria-label="Placeholder icon"
+                    className="size-12 text-muted-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    viewBox="0 0 24 24"
+                  >
+                    <title>Placeholder icon</title>
+                    <path
+                      d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span className="font-medium text-muted-foreground text-sm tracking-tight">
+                    IndiSight
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="p-6">
             {primaryCategory && (
               <div className="mb-3">
@@ -96,17 +119,40 @@ export const ArticleCardStandard = ({
       )}
     >
       <Link className="flex flex-1 gap-6" href={`/articles/${article.slug}`}>
-        {article.thumbnailUrl && (
-          <div className="relative h-[140px] w-[200px] shrink-0 overflow-hidden bg-muted">
+        <div className="relative size-[160px] shrink-0 overflow-hidden bg-muted">
+          {article.thumbnailUrl ? (
             <Image
               alt={article.title}
-              className="object-cover transition-opacity duration-200 group-hover:opacity-90"
+              className="object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
               fill
-              sizes="200px"
+              sizes="160px"
               src={article.thumbnailUrl}
             />
-          </div>
-        )}
+          ) : (
+            <div className="flex size-full items-center justify-center bg-linear-to-br from-muted via-muted to-muted/80">
+              <div className="flex flex-col items-center gap-2 opacity-40">
+                <svg
+                  aria-label="Placeholder icon"
+                  className="size-10 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  viewBox="0 0 24 24"
+                >
+                  <title>Placeholder icon</title>
+                  <path
+                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="font-medium text-muted-foreground text-xs tracking-tight">
+                  IndiSight
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="flex flex-1 flex-col justify-center">
           {primaryCategory && (
             <div className="mb-3">

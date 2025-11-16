@@ -43,21 +43,23 @@ export const ArticleCardHero = ({
         className
       )}
     >
-      <Link className="block" href={`/articles/${article.slug}`}>
+      <Link
+        className="flex flex-col md:flex-row"
+        href={`/articles/${article.slug}`}
+      >
         {article.featuredImageUrl && (
-          <div className="relative h-[480px] w-full overflow-hidden bg-muted md:h-[560px]">
+          <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-muted md:w-[480px]">
             <Image
               alt={article.title}
-              className="object-cover transition-opacity duration-300 group-hover:opacity-90"
+              className="object-cover object-top transition-opacity duration-300 group-hover:opacity-90"
               fill
               priority
-              sizes="(max-width: 1280px) 100vw, 1280px"
+              sizes="(max-width: 768px) 100vw, 480px"
               src={article.featuredImageUrl}
             />
-            <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
           </div>
         )}
-        <div className="p-8 md:p-12">
+        <div className="flex flex-1 flex-col justify-center p-8 md:p-12">
           {primaryCategory && (
             <div className="mb-5">
               <CategoryBadge name={primaryCategory.category.name} />

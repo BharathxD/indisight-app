@@ -38,7 +38,7 @@ export const AuthorInfo = ({
   const avatarContent = author.profileImageUrl ? (
     <Image
       alt={author.name}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover object-top"
       height={avatarSize}
       src={author.profileImageUrl}
       style={{ width: avatarSize, height: avatarSize }}
