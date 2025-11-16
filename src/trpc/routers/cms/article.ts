@@ -199,7 +199,10 @@ export const articleRouter = router({
               articleAuthors: {
                 some: {
                   author: {
-                    name: { contains: input.search, mode: "insensitive" as const },
+                    name: {
+                      contains: input.search,
+                      mode: "insensitive" as const,
+                    },
                   },
                 },
               },

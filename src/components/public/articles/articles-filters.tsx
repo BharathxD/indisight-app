@@ -94,9 +94,9 @@ export const ArticlesFilters = ({
     <div className="space-y-6 border-border border-b pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="relative flex-1 md:max-w-md">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
-            className="pl-10 pr-10"
+            className="pr-10 pl-10"
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search articles, authors..."
             type="search"
@@ -104,7 +104,7 @@ export const ArticlesFilters = ({
           />
           {(searchInput || isSearching) && (
             <button
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground transition-colors hover:text-foreground"
               onClick={handleClearSearch}
               type="button"
             >
@@ -121,11 +121,7 @@ export const ArticlesFilters = ({
           <SlidersHorizontal className="size-4 text-muted-foreground" />
           <span className="text-muted-foreground text-sm">Filters</span>
           {hasActiveFilters && (
-            <Button
-              onClick={handleClearAll}
-              size="sm"
-              variant="ghost"
-            >
+            <Button onClick={handleClearAll} size="sm" variant="ghost">
               Clear all
             </Button>
           )}
@@ -225,4 +221,3 @@ export const ArticlesFilters = ({
     </div>
   );
 };
-

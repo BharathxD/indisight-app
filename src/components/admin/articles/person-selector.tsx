@@ -2,8 +2,8 @@
 
 import { Check, ChevronsUpDown, Plus, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import slugify from "slugify";
 import { useState } from "react";
+import slugify from "slugify";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -158,47 +158,51 @@ export const PersonSelector = ({ value, onChange }: PersonSelectorProps) => {
                 )}
                 {people
                   .filter((person) =>
-                    person.name.toLowerCase().includes(searchValue.toLowerCase())
+                    person.name
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase())
                   )
                   .map((person) => (
-                  <CommandItem
-                    key={person.id}
-                    onSelect={() => togglePerson(person.id)}
-                    value={person.name}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 size-4",
-                        value.includes(person.id) ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <div className="flex items-center gap-2">
-                      {person.imageUrl ? (
-                        <div className="size-5 overflow-hidden rounded-full">
-                          <div
-                            className="size-full bg-center bg-cover"
-                            style={{
-                              backgroundImage: `url(${person.imageUrl})`,
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex size-5 items-center justify-center rounded-full bg-accent">
-                          <User className="size-3" />
-                        </div>
-                      )}
-                      <div className="flex flex-col">
-                        <span className="text-sm">{person.name}</span>
-                        {(person.jobTitle || person.company) && (
-                          <span className="text-muted-foreground text-xs">
-                            {[person.jobTitle, person.company]
-                              .filter(Boolean)
-                              .join(" at ")}
-                          </span>
+                    <CommandItem
+                      key={person.id}
+                      onSelect={() => togglePerson(person.id)}
+                      value={person.name}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 size-4",
+                          value.includes(person.id)
+                            ? "opacity-100"
+                            : "opacity-0"
                         )}
+                      />
+                      <div className="flex items-center gap-2">
+                        {person.imageUrl ? (
+                          <div className="size-5 overflow-hidden rounded-full">
+                            <div
+                              className="size-full bg-center bg-cover"
+                              style={{
+                                backgroundImage: `url(${person.imageUrl})`,
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex size-5 items-center justify-center rounded-full bg-accent">
+                            <User className="size-3" />
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <span className="text-sm">{person.name}</span>
+                          {(person.jobTitle || person.company) && (
+                            <span className="text-muted-foreground text-xs">
+                              {[person.jobTitle, person.company]
+                                .filter(Boolean)
+                                .join(" at ")}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CommandItem>
+                    </CommandItem>
                   ))}
               </CommandGroup>
             </CommandList>

@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const ArticlesLayout = ({ children }: { children: React.ReactNode }) => children;
+const ArticlesLayout = ({ children }: { children: React.ReactNode }) =>
+  children;
 
 export default ArticlesLayout;

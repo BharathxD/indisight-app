@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { cn } from "@/lib/utils";
 
 type ArticlesSkeletonProps = {
@@ -60,25 +61,26 @@ export const ArticlesSkeleton = ({
   heroCount = 0,
   gridCount = 0,
   className,
-}: ArticlesSkeletonProps) => (
-  <div className={cn("space-y-12", className)}>
-    {heroCount > 0 && (
-      <section>
-        {Array.from({ length: heroCount }).map((_, index) => (
-          <HeroCardSkeleton key={`hero-skeleton-${index}`} />
-        ))}
-      </section>
-    )}
+}: ArticlesSkeletonProps) => {
+  const heroItems: ReactElement[] = [];
+  for (let i = 0; i < heroCount; i++) {
+    heroItems.push(<HeroCardSkeleton key={`hero-${i}`} />);
+  }
 
-    {gridCount > 0 && (
-      <section>
-        <div className="grid gap-6 md:grid-cols-2">
-          {Array.from({ length: gridCount }).map((_, index) => (
-            <StandardCardSkeleton key={`grid-skeleton-${index}`} />
-          ))}
-        </div>
-      </section>
-    )}
-  </div>
-);
+  const gridItems: ReactElement[] = [];
+  for (let i = 0; i < gridCount; i++) {
+    gridItems.push(<StandardCardSkeleton key={`grid-${i}`} />);
+  }
 
+  return (
+    <div className={cn("space-y-12", className)}>
+      {heroCount > 0 && <section>{heroItems}</section>}
+
+      {gridCount > 0 && (
+        <section>
+          <div className="grid gap-6 md:grid-cols-2">{gridItems}</div>
+        </section>
+      )}
+    </div>
+  );
+};

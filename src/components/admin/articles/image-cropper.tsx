@@ -4,9 +4,9 @@ import { CropIcon, Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { type SyntheticEvent, useRef, useState } from "react";
 import ReactCrop, {
+  type Crop,
   centerCrop,
   makeAspectCrop,
-  type Crop,
   type PixelCrop,
 } from "react-image-crop";
 import { Button } from "@/components/ui/button";
@@ -32,9 +32,9 @@ type ImageCropperProps = {
 const parseAspectRatio = (dimensions: string): number => {
   const parts = dimensions.split("x").map((d) => d.trim());
   if (parts.length === 2) {
-    const width = Number.parseInt(parts[0]);
-    const height = Number.parseInt(parts[1]);
-    if (!Number.isNaN(width) && !Number.isNaN(height) && height !== 0) {
+    const width = Number.parseInt(parts[0], 10);
+    const height = Number.parseInt(parts[1], 10);
+    if (!(Number.isNaN(width) || Number.isNaN(height)) && height !== 0) {
       return width / height;
     }
   }
@@ -131,7 +131,7 @@ export const ImageCropper = ({
 
   return (
     <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
-      <DialogContent className="gap-0 max-w-3xl p-0">
+      <DialogContent className="max-w-3xl gap-0 p-0">
         <div className="size-full p-6">
           <div className="mb-4">
             <DialogTitle className="font-semibold text-foreground text-lg">
@@ -190,4 +190,3 @@ export const ImageCropper = ({
     </Dialog>
   );
 };
-
