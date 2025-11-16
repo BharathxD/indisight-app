@@ -23,4 +23,4 @@
 - [x] Polish frontend
 - [x] Testing as we go
 - [ ] Deploy to production
-- [ ] Write docs
+- [x] Write docs
