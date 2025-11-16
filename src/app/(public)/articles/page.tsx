@@ -3,7 +3,7 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   ArticleCardHero,
   ArticleCardStandard,
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { trpc } from "@/trpc/client";
 
-const AllArticlesPage = () => {
+const AllArticlesContent = () => {
   const [search, setSearch] = useQueryState(
     "search",
     parseAsString.withOptions({ shallow: true, history: "replace" })
@@ -194,5 +194,11 @@ const AllArticlesPage = () => {
     </div>
   );
 };
+
+const AllArticlesPage = () => (
+  <Suspense fallback={<ArticlesSkeleton gridCount={50} heroCount={0} />}>
+    <AllArticlesContent />
+  </Suspense>
+);
 
 export default AllArticlesPage;

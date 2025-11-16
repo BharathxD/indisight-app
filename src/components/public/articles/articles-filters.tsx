@@ -4,6 +4,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,9 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
-import { Separator } from "@/components/ui/separator";
 
 type Category = {
   id: string;
@@ -94,7 +93,7 @@ export const ArticlesFilters = ({
   return (
     <div className="space-y-6 border-border">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] md:max-w-md">
+        <div className="relative min-w-[200px] flex-1 md:max-w-md">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
             className="pr-10 pl-10"
@@ -155,14 +154,10 @@ export const ArticlesFilters = ({
               onFeaturedChange(checked ? true : null)
             }
           />
-          <Label
-            className="cursor-pointer text-sm"
-            htmlFor="featured-filter"
-          >
+          <Label className="cursor-pointer text-sm" htmlFor="featured-filter">
             Featured only
           </Label>
         </div>
-
 
         <div className="flex items-center gap-2">
           <Switch
@@ -172,10 +167,7 @@ export const ArticlesFilters = ({
               onTrendingChange(checked ? true : null)
             }
           />
-          <Label
-            className="cursor-pointer text-sm"
-            htmlFor="trending-filter"
-          >
+          <Label className="cursor-pointer text-sm" htmlFor="trending-filter">
             Trending only
           </Label>
         </div>
