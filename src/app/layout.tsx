@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import type { Organization, WebSite, WithContext } from "schema-dts";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -124,18 +125,58 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = ({ children }: Readonly<React.PropsWithChildren>) => (
-  <html lang="en" suppressHydrationWarning>
-    <body
-      className={cn(
-        "font-satoshi antialiased",
-        geistMono.variable,
-        satoshi.variable
-      )}
-    >
-      <Providers>{children}</Providers>
-    </body>
-  </html>
-);
+const RootLayout = ({ children }: Readonly<React.PropsWithChildren>) => {
+  const organizationSchema: WithContext<Organization> = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/logo/indisight-2.png`,
+    sameAs: [siteConfig.links.twitter, siteConfig.links.linkedin],
+  };
+
+  const searchAction = {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteConfig.url}/articles?search={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  };
+
+  const websiteSchema: WithContext<WebSite> = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    potentialAction: searchAction as WithContext<WebSite>["potentialAction"],
+  };
+
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "font-satoshi antialiased",
+          geistMono.variable,
+          satoshi.variable
+        )}
+      >
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data is safe
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+          type="application/ld+json"
+        />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data is safe
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          type="application/ld+json"
+        />
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+};
 
 export default RootLayout;

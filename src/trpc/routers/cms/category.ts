@@ -89,6 +89,19 @@ export const categoryRouter = router({
     return categories.map((c) => c.slug);
   }),
 
+  getAllForSitemap: publicProcedure.query(async ({ ctx }) => {
+    const categories = await ctx.db.category.findMany({
+      where: { isActive: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return categories;
+  }),
+
   getTopByArticleCount: publicProcedure
     .input(z.object({ limit: z.number().default(8) }))
     .query(

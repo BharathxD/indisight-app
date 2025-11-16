@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AnimatedHero } from "@/components/public/animated-hero";
 import { CategoryBentoGrid } from "@/components/public/category-bento-grid";
@@ -12,6 +13,28 @@ import { siteConfig } from "@/lib/config";
 import { trpc } from "@/trpc/server-client";
 
 export const revalidate = 30;
+
+export const metadata: Metadata = {
+  title: siteConfig.seo.defaultTitle,
+  description: siteConfig.seo.defaultDescription,
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    type: "website",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    images: [siteConfig.ogImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  alternates: {
+    canonical: siteConfig.url,
+  },
+};
 
 const HomePage = async () => {
   const caller = trpc();
@@ -81,8 +104,8 @@ const HomePage = async () => {
                 </p>
               </div>
               <Link
-                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
-                href="/articles"
+                className="inline-flex items-center gap-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+                href="/articles?featured=true"
               >
                 View all <ArrowRightIcon className="size-4" />
               </Link>

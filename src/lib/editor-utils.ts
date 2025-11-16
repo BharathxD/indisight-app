@@ -169,6 +169,22 @@ export const extractHeadings = (html: string): Heading[] => {
   return headings;
 };
 
+export const calculateWordCountFromHtml = (html: string): number => {
+  const text = html
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) return 0;
+
+  const words = text.split(WORD_COUNT_REGEX).filter((word) => word.length > 0);
+  return words.length;
+};
+
 export const jsonToHtml = async (
   content: JSONContent | string | unknown
 ): Promise<string> => {

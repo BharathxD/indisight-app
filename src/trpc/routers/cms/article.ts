@@ -623,6 +623,20 @@ export const articleRouter = router({
     return articles.map((a) => a.slug);
   }),
 
+  getAllPublishedForSitemap: publicProcedure.query(async ({ ctx }) => {
+    const articles = await ctx.db.article.findMany({
+      where: { status: ArticleStatus.PUBLISHED },
+      select: {
+        slug: true,
+        updatedAt: true,
+        thumbnailUrl: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return articles;
+  }),
+
   list: adminProcedure
     .input(listArticlesSchema)
     .query(async ({ input, ctx }) => {

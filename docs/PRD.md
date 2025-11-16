@@ -35,24 +35,23 @@ IndiSight needs a CMS for managing their editorial content across different cate
 
 ## 2. User Roles & Permissions
 
-| Role | Permissions |
-| --- | --- |
-| **Super Admin** | Full system access, user management, category/tag management, system settings |
-| **Editor** | Create/edit articles, manage author profiles, publish articles, assign categories/tags, manage media library |
-| **Viewer** | Read-only access to published content, preview unpublished articles |
+| Role            | Permissions                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Super Admin** | Full system access, user management, category/tag management, system settings                                |
+| **Editor**      | Create/edit articles, manage author profiles, publish articles, assign categories/tags, manage media library |
+| **Viewer**      | Read-only access to published content, preview unpublished articles                                          |
 
 ---
 
 ## 3. Core Features
 
-| Feature | Capabilities |
-| --- | --- |
-| **User Management** | Create/manage accounts, assign roles, set credentials, view activity logs, enable/disable users |
-| **Article Management** | Rich text editor (shadcn-tiptap w/ search/replace, image upload, colors), title/subtitle/excerpt/body, featured image, thumbnail, multiple authors per article, assign to category, add tags, featured flag, trending flag, status workflow (Draft/Review/Published/Archived), SEO metadata, read time calculation, view counter, schedule publishing |
-| **Author Management** | Create profiles, add bio/image/contact, social links, featured author flag, see all articles by author, author stats |
-| **Category Management** | Pre-defined: All Articles, CXO Series, Quiet Architects, Editorial Archive, Events. Create custom categories, enable/disable, reorder, category image/icon, descriptions, SEO metadata per category |
-| **Tag Management** | Create/manage tags, assign to articles for cross-category discovery, trending tags, tag cloud, tag SEO |
-| **Media Library** | Upload/manage images, automatic optimization (WebP conversion), alt text, image metadata, organize in folders, search media, usage tracking |
+| Feature                 | Capabilities                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User Management**     | Create/manage accounts, assign roles, set credentials, view activity logs, enable/disable users                                                                                                                                                                                                                                                       |
+| **Article Management**  | Rich text editor (shadcn-tiptap w/ search/replace, image upload, colors), title/subtitle/excerpt/body, featured image, thumbnail, multiple authors per article, assign to category, add tags, featured flag, trending flag, status workflow (Draft/Review/Published/Archived), SEO metadata, read time calculation, view counter, schedule publishing |
+| **Author Management**   | Create profiles, add bio/image/contact, social links, featured author flag, see all articles by author, author stats                                                                                                                                                                                                                                  |
+| **Category Management** | Pre-defined: All Articles, CXO Series, Quiet Architects, Editorial Archive, Events. Create custom categories, enable/disable, reorder, category image/icon, descriptions, SEO metadata per category                                                                                                                                                   |
+| **Tag Management**      | Create/manage tags, assign to articles for cross-category discovery, trending tags, tag cloud, tag SEO                                                                                                                                                                                                                                                |
 
 ---
 
@@ -60,24 +59,22 @@ IndiSight needs a CMS for managing their editorial content across different cate
 
 ### Core Tables
 
-| Table | Key Fields | Purpose |
-| --- | --- | --- |
-| **users** | id, email, password_hash, name, role, avatar_url, is_active, created_at, updated_at | User accounts and auth |
-| **authors** | id, name, slug, bio, email, profile_image_url, social_links (jsonb), is_featured, article_count, created_at, updated_at | Author profiles & stats |
-| **articles** | id, title, slug, subtitle, excerpt, content (text/html), featured_image_url, thumbnail_url, is_featured, is_trending, status, view_count, published_at, scheduled_at, seo_meta_title, seo_meta_description, seo_keywords, read_time, created_at, updated_at | Main article content |
-| **categories** | id, name, slug, description, image_url, icon, is_active, display_order, article_count, parent_id (for nested categories), seo_meta_title, seo_meta_description, created_at, updated_at | Content categories with hierarchy |
-| **tags** | id, name, slug, description, usage_count, is_trending, created_at, updated_at | Tags for cross-category organization |
-| **media** | id, filename, original_filename, url, thumbnail_url, file_size, mime_type, width, height, alt_text, caption, folder_id, uploaded_by, created_at | Media library management |
-| **media_folders** | id, name, parent_id, created_at, updated_at | Organize media in folders |
+| Table          | Key Fields                                                                                                                                                                                                                                                  | Purpose                              |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **users**      | id, email, password_hash, name, role, avatar_url, is_active, created_at, updated_at                                                                                                                                                                         | User accounts and auth               |
+| **authors**    | id, name, slug, bio, email, profile_image_url, social_links (jsonb), is_featured, article_count, created_at, updated_at                                                                                                                                     | Author profiles & stats              |
+| **articles**   | id, title, slug, subtitle, excerpt, content (text/html), featured_image_url, thumbnail_url, is_featured, is_trending, status, view_count, published_at, scheduled_at, seo_meta_title, seo_meta_description, seo_keywords, read_time, created_at, updated_at | Main article content                 |
+| **categories** | id, name, slug, description, image_url, icon, is_active, display_order, article_count, parent_id (for nested categories), seo_meta_title, seo_meta_description, created_at, updated_at                                                                      | Content categories with hierarchy    |
+| **tags**       | id, name, slug, description, usage_count, is_trending, created_at, updated_at                                                                                                                                                                               | Tags for cross-category organization |
 
 ### Junction Tables (Relationships)
 
-| Table | Fields | Purpose |
-| --- | --- | --- |
-| **article_authors** | article_id, author_id, author_order, is_primary | Many-to-many: Articles ↔ Authors (with primary author) |
-| **article_categories** | article_id, category_id, is_primary | Many-to-many: Articles ↔ Categories (primary for main category) |
-| **article_tags** | article_id, tag_id, created_at | Many-to-many: Articles ↔ Tags |
-| **article_related** | article_id, related_article_id, relevance_score | Related articles suggestions |
+| Table                  | Fields                                          | Purpose                                                         |
+| ---------------------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| **article_authors**    | article_id, author_id, author_order, is_primary | Many-to-many: Articles ↔ Authors (with primary author)          |
+| **article_categories** | article_id, category_id, is_primary             | Many-to-many: Articles ↔ Categories (primary for main category) |
+| **article_tags**       | article_id, tag_id, created_at                  | Many-to-many: Articles ↔ Tags                                   |
+| **article_related**    | article_id, related_article_id, relevance_score | Related articles suggestions                                    |
 
 ---
 
@@ -85,56 +82,55 @@ IndiSight needs a CMS for managing their editorial content across different cate
 
 ### Admin Panel
 
-| Page | Features |
-| --- | --- |
-| **Dashboard** | Article stats, view counts, trending content, recent activity, quick actions, publish scheduled articles |
-| **User Management** | User list w/ search/filters, create/edit users, assign roles, activity logs |
-| **Articles** | Article list with filters (status/category/author/tag), bulk actions, create/edit interface, rich text editor, media upload, select authors/categories/tags, featured toggle, trending toggle, publish controls, schedule publishing |
-| **Authors** | Author list, create/edit profiles, featured toggle, see articles by author, author stats |
-| **Categories** | Category list w/ hierarchy, create/edit, reorder, category image, nested categories support |
-| **Tags** | Tag list, create/edit/merge tags, see usage count, trending tags |
-| **Media Library** | Grid/list view, upload images, organize in folders, bulk operations, search, filter by type, see usage |
-| **Settings** | General settings, SEO defaults, social media integrations, preferences |
+| Page                | Features                                                                                                                                                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Dashboard**       | Article stats, view counts, trending content, recent activity, quick actions, publish scheduled articles                                                                                                                             |
+| **User Management** | User list w/ search/filters, create/edit users, assign roles, activity logs                                                                                                                                                          |
+| **Articles**        | Article list with filters (status/category/author/tag), bulk actions, create/edit interface, rich text editor, media upload, select authors/categories/tags, featured toggle, trending toggle, publish controls, schedule publishing |
+| **Authors**         | Author list, create/edit profiles, featured toggle, see articles by author, author stats                                                                                                                                             |
+| **Categories**      | Category list w/ hierarchy, create/edit, reorder, category image, nested categories support                                                                                                                                          |
+| **Tags**            | Tag list, create/edit/merge tags, see usage count, trending tags                                                                                                                                                                     |
+| **Settings**        | General settings, SEO defaults, social media integrations, preferences                                                                                                                                                               |
 
 ### Public Frontend
 
-| Page | Features |
-| --- | --- |
-| **Homepage** | Hero section with featured articles (like YourStory), category navigation, trending articles, latest articles by category, newsletter signup CTA |
-| **Category Pages** | Category header w/ description, filtered articles, featured articles in category, pagination/infinite scroll, sidebar with related categories |
-| **Article Page** | Article content (clean reading experience), author card, tags, social share buttons, related articles (by tags/category), "Read More" section, view counter, reading progress bar |
-| **Author Page** | Author bio/image, social links, articles by author grid, author stats (total articles, views) |
-| **Tag Page** | Tag description, articles with this tag, related tags |
-| **Search** | Full-text search (articles/authors), autocomplete, filter by category/tag/date/author, search highlights |
-| **About/Contact** | Static pages for company info |
+| Page               | Features                                                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Homepage**       | Hero section with featured articles (like YourStory), category navigation, trending articles, latest articles by category, newsletter signup CTA                                  |
+| **Category Pages** | Category header w/ description, filtered articles, featured articles in category, pagination/infinite scroll, sidebar with related categories                                     |
+| **Article Page**   | Article content (clean reading experience), author card, tags, social share buttons, related articles (by tags/category), "Read More" section, view counter, reading progress bar |
+| **Author Page**    | Author bio/image, social links, articles by author grid, author stats (total articles, views)                                                                                     |
+| **Tag Page**       | Tag description, articles with this tag, related tags                                                                                                                             |
+| **Search**         | Full-text search (articles/authors), autocomplete, filter by category/tag/date/author, search highlights                                                                          |
+| **About/Contact**  | Static pages for company info                                                                                                                                                     |
 
 ---
 
 ## 6. Authentication & Authorization
 
-| Component | Implementation |
-| --- | --- |
-| **Authentication** | Better Auth - email/password login, sessions, password reset |
-| **Authorization** | Role-based access - Super Admin gets everything, Editors handle content/media, Public read-only |
+| Component          | Implementation                                                                                  |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| **Authentication** | Better Auth - email/password login, sessions, password reset                                    |
+| **Authorization**  | Role-based access - Super Admin gets everything, Editors handle content/media, Public read-only |
 
 ---
 
 ## 7. Success Criteria
 
-| Phase | Criteria |
-| --- | --- |
-| **Phase 1** | Database and auth working, user management done, all CRUD operations functional, admin panel usable, basic SEO (meta tags, slugs, sitemaps) |
-| **Phase 2** | Frontend matches Figma designs, search works, featured articles system working, advanced SEO (structured data, Open Graph), loads under 3s, deployed to production, no major bugs |
+| Phase       | Criteria                                                                                                                                                                           |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 1** | Database and auth working, user management done, all CRUD operations functional, admin panel usable, basic SEO (meta tags, slugs, sitemaps)                                        |
+| **Phase 2** | Frontend matches Figma designs, search works, featured articles system working, advanced SEO (structured data, Open Graph), loads under 3s, deployed to production, no major bugs  |
 | **Overall** | Editors can publish articles in under 10 min, featured articles display correctly on homepage, all user roles work correctly, related articles showing up, client is happy with it |
 
 ---
 
 ## 8. Timeline
 
-| Phase | Deliverables | Duration |
-| --- | --- | --- |
-| **Phase 1: Core Build** | Database setup, Auth, user management, Article/Author/Category/Tag CRUD, media library, admin panel, basic frontend, **basic SEO** (meta tags, slugs, sitemaps) | 1 week |
-| **Phase 2: Polish & Deploy** | Implement Figma designs, featured articles system, related articles algorithm, polish frontend, add search, **advanced SEO** (structured data, Open Graph, performance), code cleanup, testing, bug fixes, deploy to production, write docs | 1 week |
+| Phase                        | Deliverables                                                                                                                                                                                                                                | Duration |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| **Phase 1: Core Build**      | Database setup, Auth, user management, Article/Author/Category/Tag CRUD, admin panel, basic frontend, **basic SEO** (meta tags, slugs, sitemaps)                                                                                            | 1 week   |
+| **Phase 2: Polish & Deploy** | Implement Figma designs, featured articles system, related articles algorithm, polish frontend, add search, **advanced SEO** (structured data, Open Graph, performance), code cleanup, testing, bug fixes, deploy to production, write docs | 1 week   |
 
 **Total: 2 weeks**
 

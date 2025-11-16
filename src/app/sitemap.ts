@@ -4,38 +4,38 @@ import { trpc } from "@/trpc/server-client";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const caller = trpc();
-  const [articleSlugs, categorySlugs, authorSlugs, tagSlugs] =
-    await Promise.all([
-      caller.cms.article.getAllPublishedSlugs(),
-      caller.cms.category.getAllSlugs(),
-      caller.cms.author.getAllSlugs(),
-      caller.cms.tag.getAllSlugs(),
-    ]);
+  const [articleData, categoryData, authorData, tagData] = await Promise.all([
+    caller.cms.article.getAllPublishedForSitemap(),
+    caller.cms.category.getAllForSitemap(),
+    caller.cms.author.getAllForSitemap(),
+    caller.cms.tag.getAllForSitemap(),
+  ]);
 
-  const articles: MetadataRoute.Sitemap = articleSlugs.map((slug) => ({
-    url: `${siteConfig.url}/articles/${slug}`,
-    lastModified: new Date(),
+  const articles: MetadataRoute.Sitemap = articleData.map((article) => ({
+    url: `${siteConfig.url}/articles/${article.slug}`,
+    lastModified: article.updatedAt,
     changeFrequency: "weekly",
     priority: 0.8,
+    images: article.thumbnailUrl ? [article.thumbnailUrl] : undefined,
   }));
 
-  const categories: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
-    url: `${siteConfig.url}/categories/${slug}`,
-    lastModified: new Date(),
+  const categories: MetadataRoute.Sitemap = categoryData.map((category) => ({
+    url: `${siteConfig.url}/categories/${category.slug}`,
+    lastModified: category.updatedAt,
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
-  const authors: MetadataRoute.Sitemap = authorSlugs.map((slug) => ({
-    url: `${siteConfig.url}/authors/${slug}`,
-    lastModified: new Date(),
+  const authors: MetadataRoute.Sitemap = authorData.map((author) => ({
+    url: `${siteConfig.url}/authors/${author.slug}`,
+    lastModified: author.updatedAt,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
 
-  const tags: MetadataRoute.Sitemap = tagSlugs.map((slug) => ({
-    url: `${siteConfig.url}/tags/${slug}`,
-    lastModified: new Date(),
+  const tags: MetadataRoute.Sitemap = tagData.map((tag) => ({
+    url: `${siteConfig.url}/tags/${tag.slug}`,
+    lastModified: tag.updatedAt,
     changeFrequency: "monthly",
     priority: 0.5,
   }));

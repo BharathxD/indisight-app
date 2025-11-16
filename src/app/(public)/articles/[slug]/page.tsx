@@ -8,8 +8,13 @@ import { ArticleMeta } from "@/components/public/articles/detail/article-meta";
 import { ArticleSidebar } from "@/components/public/articles/detail/article-sidebar";
 import { ArticleSuggestions } from "@/components/public/articles/detail/article-suggestions";
 import { ArticleTags } from "@/components/public/articles/detail/article-tags";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 import { siteConfig } from "@/lib/config";
-import { extractHeadings, jsonToHtml } from "@/lib/editor-utils";
+import {
+  calculateWordCountFromHtml,
+  extractHeadings,
+  jsonToHtml,
+} from "@/lib/editor-utils";
 import { trpc } from "@/trpc/server-client";
 
 type ArticlePageProps = {
@@ -104,14 +109,19 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
   });
 
   const articleUrl = `${siteConfig.url}/articles/${slug}`;
+  const wordCount = calculateWordCountFromHtml(htmlContent);
 
-  // Structured data for SEO (typed with schema-dts)
   const structuredData: WithContext<Article> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
     description: article.excerpt || undefined,
-    image: article.thumbnailUrl || undefined,
+    image: article.thumbnailUrl
+      ? {
+          "@type": "ImageObject",
+          url: article.thumbnailUrl,
+        }
+      : undefined,
     datePublished: article.publishedAt?.toISOString(),
     dateModified: article.updatedAt.toISOString(),
     author: article.articleAuthors.map((aa) => ({
@@ -123,19 +133,38 @@ const ArticlePage = async ({ params }: ArticlePageProps) => {
       "@type": "Organization",
       name: siteConfig.name,
       url: siteConfig.url,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/logo/indisight-2.png`,
+      },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `${siteConfig.url}/articles/${slug}`,
     },
+    articleSection: primaryCategory?.category.name,
+    keywords: article.articleTags.map((at) => at.tag.name).join(", "),
+    wordCount,
   };
 
   return (
     <>
       <script
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: content is trusted
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data is safe
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: siteConfig.url },
+          {
+            name: primaryCategory?.category.name || "Articles",
+            url: primaryCategory
+              ? `${siteConfig.url}/categories/${primaryCategory.category.slug}`
+              : `${siteConfig.url}/articles`,
+          },
+          { name: article.title, url: articleUrl },
+        ]}
       />
       <article className="bg-background">
         <ArticleHeader

@@ -8,6 +8,7 @@ import {
   Hash,
   ImageIcon,
   Layers,
+  Star,
   Tag,
   Type,
   Users,
@@ -70,7 +71,9 @@ const articleSchema = z.object({
   primaryCategoryId: z.string().min(1, "Primary category is required"),
   tagIds: z.array(z.string()),
   personIds: z.array(z.string()),
-  status: z.nativeEnum(ArticleStatus),
+  isFeatured: z.boolean(),
+  isTrending: z.boolean(),
+  status: z.enum(ArticleStatus),
 });
 
 type ArticleFormData = z.infer<typeof articleSchema>;
@@ -117,6 +120,8 @@ export const ArticleForm = ({
       primaryCategoryId: initialData?.primaryCategoryId || "",
       tagIds: initialData?.tagIds || [],
       personIds: initialData?.personIds || [],
+      isFeatured: initialData?.isFeatured,
+      isTrending: initialData?.isTrending,
       status: initialData?.status || ArticleStatus.DRAFT,
     },
   });
@@ -131,6 +136,8 @@ export const ArticleForm = ({
   const personIds = watch("personIds");
   const featuredImageUrl = watch("featuredImageUrl");
   const thumbnailUrl = watch("thumbnailUrl");
+  const isFeatured = watch("isFeatured");
+  const isTrending = watch("isTrending");
 
   useEffect(() => {
     if (mode === "create" && title && !initialData?.slug) {
@@ -183,6 +190,8 @@ export const ArticleForm = ({
       primaryCategoryId: data.primaryCategoryId,
       tagIds: data.tagIds,
       personIds: data.personIds,
+      isFeatured: data.isFeatured,
+      isTrending: data.isTrending,
       status: data.status,
     };
 
@@ -490,6 +499,49 @@ export const ArticleForm = ({
                   {errors.featuredImageUrl.message}
                 </motion.p>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={animationVariants.staggerItem}>
+          <Card className="py-4">
+            <CardContent className="space-y-4 px-4">
+              <h3 className="flex items-center gap-2 font-medium text-base">
+                <Star className="size-4" />
+                Visibility
+              </h3>
+
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label className="font-medium text-sm">
+                    Mark as Featured
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    Display this article in the Featured Stories section
+                  </p>
+                </div>
+                <Switch
+                  checked={isFeatured}
+                  disabled={isPending}
+                  onCheckedChange={(checked) => setValue("isFeatured", checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label className="font-medium text-sm">
+                    Mark as Trending
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    Highlight this article as currently trending
+                  </p>
+                </div>
+                <Switch
+                  checked={isTrending}
+                  disabled={isPending}
+                  onCheckedChange={(checked) => setValue("isTrending", checked)}
+                />
+              </div>
             </CardContent>
           </Card>
         </motion.div>

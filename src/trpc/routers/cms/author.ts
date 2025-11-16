@@ -72,6 +72,18 @@ export const authorRouter = router({
     return authors.map((a) => a.slug);
   }),
 
+  getAllForSitemap: publicProcedure.query(async ({ ctx }) => {
+    const authors = await ctx.db.author.findMany({
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return authors;
+  }),
+
   list: adminProcedure
     .input(listAuthorsSchema)
     .query(async ({ input, ctx }) => {

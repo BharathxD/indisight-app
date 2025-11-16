@@ -57,6 +57,18 @@ export const tagRouter = router({
     return tags.map((t) => t.slug);
   }),
 
+  getAllForSitemap: publicProcedure.query(async ({ ctx }) => {
+    const tags = await ctx.db.tag.findMany({
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return tags;
+  }),
+
   list: adminProcedure.input(listTagsSchema).query(async ({ input, ctx }) => {
     const { isTrending, search, limit, cursor } = input;
 

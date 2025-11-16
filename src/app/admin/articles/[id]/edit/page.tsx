@@ -68,18 +68,12 @@ const EditArticlePage = ({ params }: EditArticlePageProps) => {
         (ac: { isPrimary: boolean }) => ac.isPrimary
       )?.categoryId || "",
     tagIds: article.articleTags.map((at: { tagId: string }) => at.tagId),
+    isFeatured: article.isFeatured,
+    isTrending: article.isTrending,
     status: article.status,
   };
 
-  return (
-    <DashboardContainer
-      description="Edit article"
-      icon={FileText}
-      title="Edit Article"
-    >
-      <ArticleForm articleId={id} initialData={initialData} mode="edit" />
-    </DashboardContainer>
-  );
+  return <ArticleForm articleId={id} initialData={initialData} mode="edit" />;
 };
 
 export default EditArticlePage;
