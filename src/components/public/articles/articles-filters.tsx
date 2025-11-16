@@ -1,11 +1,9 @@
 "use client";
 
-import { Loader2, Search, SlidersHorizontal, X } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,7 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { Separator } from "@/components/ui/separator";
 
 type Category = {
   id: string;
@@ -91,9 +92,9 @@ export const ArticlesFilters = ({
   };
 
   return (
-    <div className="space-y-6 border-border border-b pb-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="relative flex-1 md:max-w-md">
+    <div className="space-y-6 border-border">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px] md:max-w-md">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
             className="pr-10 pl-10"
@@ -117,92 +118,77 @@ export const ArticlesFilters = ({
           )}
         </div>
 
-        <div className="flex items-center gap-3">
-          <SlidersHorizontal className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground text-sm">Filters</span>
-          {hasActiveFilters && (
-            <Button onClick={handleClearAll} size="sm" variant="ghost">
-              Clear all
-            </Button>
-          )}
-        </div>
-      </div>
+        <Select
+          onValueChange={(value) =>
+            onCategoryChange(value === "all" ? null : value)
+          }
+          value={categoryId || "all"}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name} ({category.articleCount})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-2">
-          <Label className="text-sm" htmlFor="category-select">
-            Category
-          </Label>
-          <Select
-            onValueChange={(value) =>
-              onCategoryChange(value === "all" ? null : value)
-            }
-            value={categoryId || "all"}
-          >
-            <SelectTrigger id="category-select">
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name} ({category.articleCount})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select onValueChange={onSortByChange} value={sortBy}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Newest first</SelectItem>
+            <SelectItem value="oldest">Oldest first</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <div className="space-y-2">
-          <Label className="text-sm" htmlFor="sort-select">
-            Sort by
-          </Label>
-          <Select onValueChange={onSortByChange} value={sortBy}>
-            <SelectTrigger id="sort-select">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest first</SelectItem>
-              <SelectItem value="oldest">Oldest first</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-end space-x-2">
-          <Checkbox
+        <div className="flex items-center gap-2 pr-1.5">
+          <Switch
             checked={isFeatured === true}
             id="featured-filter"
             onCheckedChange={(checked) =>
-              onFeaturedChange(checked === true ? true : null)
+              onFeaturedChange(checked ? true : null)
             }
           />
           <Label
-            className="cursor-pointer text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm"
             htmlFor="featured-filter"
           >
             Featured only
           </Label>
         </div>
 
-        <div className="flex items-end space-x-2">
-          <Checkbox
+
+        <div className="flex items-center gap-2">
+          <Switch
             checked={isTrending === true}
             id="trending-filter"
             onCheckedChange={(checked) =>
-              onTrendingChange(checked === true ? true : null)
+              onTrendingChange(checked ? true : null)
             }
           />
           <Label
-            className="cursor-pointer text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm"
             htmlFor="trending-filter"
           >
             Trending only
           </Label>
         </div>
+
+        {hasActiveFilters && (
+          <Button onClick={handleClearAll} size="sm" variant="ghost">
+            Clear all
+          </Button>
+        )}
       </div>
 
       {resultsCount !== undefined && (
-        <div className="flex items-center justify-between border-border border-t pt-4">
+        <div className="flex items-center justify-between border-border">
           <p className="text-muted-foreground text-sm">
             {isLoading ? (
               <span className="flex items-center gap-2">
