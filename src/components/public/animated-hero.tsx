@@ -75,7 +75,7 @@ export const AnimatedHero = () => (
       variants={item}
     >
       Capturing the minds shaping{" "}
-      <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+      <span className="bg-linear-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
         meaningful change
       </span>
     </motion.h1>
@@ -116,7 +116,7 @@ export const AnimatedHero = () => (
       <motion.div variants={button}>
         <Link
           className="inline-flex items-center justify-center border border-border bg-muted px-8 py-3 font-medium text-foreground text-sm transition-all hover:border-foreground hover:bg-background"
-          href="/about"
+          href="/why"
         >
           Learn More
         </Link>
