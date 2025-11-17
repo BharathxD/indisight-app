@@ -69,10 +69,10 @@ const articleSchema = z.object({
   primaryAuthorId: z.string().min(1, "Primary author is required"),
   categoryIds: z.array(z.string()).min(1, "At least one category is required"),
   primaryCategoryId: z.string().min(1, "Primary category is required"),
-  tagIds: z.array(z.string()),
-  personIds: z.array(z.string()),
-  isFeatured: z.boolean(),
-  isTrending: z.boolean(),
+  tagIds: z.array(z.string()).default([]),
+  personIds: z.array(z.string()).default([]),
+  isFeatured: z.boolean().default(false),
+  isTrending: z.boolean().default(false),
   status: z.enum(ArticleStatus),
 });
 
@@ -120,8 +120,8 @@ export const ArticleForm = ({
       primaryCategoryId: initialData?.primaryCategoryId || "",
       tagIds: initialData?.tagIds || [],
       personIds: initialData?.personIds || [],
-      isFeatured: initialData?.isFeatured,
-      isTrending: initialData?.isTrending,
+      isFeatured: initialData?.isFeatured ?? false,
+      isTrending: initialData?.isTrending ?? false,
       status: initialData?.status || ArticleStatus.DRAFT,
     },
   });
@@ -176,6 +176,8 @@ export const ArticleForm = ({
   });
 
   const onSubmit = (data: ArticleFormData) => {
+    console.log("Form data being submitted:", data);
+
     const payload = {
       title: data.title,
       slug: data.slug,
@@ -194,6 +196,8 @@ export const ArticleForm = ({
       isTrending: data.isTrending,
       status: data.status,
     };
+
+    console.log("Payload being sent to API:", payload);
 
     if (mode === "edit" && articleId) {
       updateArticle.mutate({ id: articleId, ...payload });
