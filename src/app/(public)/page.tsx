@@ -154,7 +154,7 @@ const HomePage = async () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <section className="relative min-h-[calc(100vh-65px)] overflow-hidden border-border border-b bg-background">
         <ScatteredPortraits />
         <div className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-50" />
@@ -165,47 +165,45 @@ const HomePage = async () => {
       </section>
 
       {categoriesWithImages.length > 0 && (
-        <section className="relative border-border border-b bg-linear-to-b from-muted/40 via-background to-background py-12 md:py-16">
-          <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,var(--color-primary)_0%,transparent_50%)] opacity-5" />
+        <section className="border-border border-b bg-muted/30 py-16 md:py-20">
           <div className="mx-auto max-w-[1400px] px-6 md:px-12">
             <CategoryBentoGrid categories={categoriesWithImages} />
           </div>
         </section>
       )}
 
-      <StatsSection stats={stats} />
+      <section className="border-border border-b bg-background">
+        <StatsSection stats={stats} />
+      </section>
 
-      <main>
-        {(featuredArticles.length > 0 ||
-          col1Row1Articles.length > 0 ||
-          col1Row2Articles.length > 0) && (
-          <section className="relative border-border border-b bg-linear-to-b from-background via-muted/30 to-background py-16 md:py-20">
-            <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_0%,var(--color-secondary)_0%,transparent_40%)] opacity-3" />
-            <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
-              <div className="my-auto flex min-h-screen">
-                <HomeSpotlightGrid
-                  col1Row1Article={col1Row1Articles[0] || null}
-                  col1Row1CategorySlug={col1Row1Category?.slug}
-                  col1Row1Title={spotlightGridConfig.col1Row1.title}
-                  col1Row2Article={col1Row2Articles[0] || null}
-                  col1Row2CategorySlug={col1Row2Category?.slug}
-                  col1Row2Title={spotlightGridConfig.col1Row2.title}
-                  col1Row3ColSpan2Articles={col1Row3ColSpan2Articles}
-                  col1Row3ColSpan2CategorySlug={col1Row3ColSpan2Category?.slug}
-                  col1Row3ColSpan2Title={
-                    spotlightGridConfig.col1Row3ColSpan2.title
-                  }
-                  col2Row12Article={featuredArticles[0] || null}
-                  col3Row14Articles={latestArticles.slice(0, 7)}
-                />
-              </div>
-            </div>
-          </section>
-        )}
+      <main className="bg-muted/20">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+          {(featuredArticles.length > 0 ||
+            col1Row1Articles.length > 0 ||
+            col1Row2Articles.length > 0) && (
+            <section className="my-auto mb-20 min-h-screen">
+              <HomeSpotlightGrid
+                col1Row1Article={col1Row1Articles[0] || null}
+                col1Row1CategorySlug={col1Row1Category?.slug}
+                col1Row1Title={spotlightGridConfig.col1Row1.title}
+                col1Row2Article={col1Row2Articles[0] || null}
+                col1Row2CategorySlug={col1Row2Category?.slug}
+                col1Row2Title={spotlightGridConfig.col1Row2.title}
+                col1Row3ColSpan2Articles={col1Row3ColSpan2Articles}
+                col1Row3ColSpan2CategorySlug={col1Row3ColSpan2Category?.slug}
+                col1Row3ColSpan2Title={
+                  spotlightGridConfig.col1Row3ColSpan2.title
+                }
+                col2Row12Article={featuredArticles[0] || null}
+                col3Row14Articles={latestArticles.slice(0, 7)}
+              />
+            </section>
+          )}
+        </div>
+
         {cxoSectionArticles.length > 0 && col1Row1Category && (
-          <section className="relative border-border border-b bg-linear-to-b from-muted/50 via-background to-muted/30 py-16 md:py-20">
-            <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_120%_100%_at_50%_100%,var(--color-accent)_0%,transparent_50%)] opacity-4" />
-            <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+          <section className="border-border border-y bg-background py-20 md:py-32">
+            <div className="mx-auto max-w-[1400px] px-6 md:px-12">
               <SpotlightSection
                 articles={cxoSectionArticles}
                 title={categorySectionsConfig.cxo.title}
@@ -216,9 +214,8 @@ const HomePage = async () => {
 
         {quietArchitectsSectionArticles.length > 0 &&
           col1Row3ColSpan2Category && (
-            <section className="relative border-border border-b bg-linear-to-b from-background via-muted/25 to-background py-16 md:py-20">
-              <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_50%_50%,var(--color-primary)_0%,transparent_60%)] opacity-3" />
-              <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+            <section className="bg-muted/30 py-20 md:py-32">
+              <div className="mx-auto max-w-[1400px] px-6 md:px-12">
                 <SpotlightSection
                   articles={quietArchitectsSectionArticles}
                   horizontalTitle
@@ -229,7 +226,9 @@ const HomePage = async () => {
           )}
       </main>
 
-      <NewsletterEnhanced signupUrl={siteConfig.newsletter.signupUrl} />
+      <section className="border-border border-t bg-background">
+        <NewsletterEnhanced signupUrl={siteConfig.newsletter.signupUrl} />
+      </section>
     </div>
   );
 };
