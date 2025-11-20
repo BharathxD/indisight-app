@@ -177,11 +177,11 @@ const HomePage = async () => {
       </section>
 
       <main className="bg-muted/20">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
-          {(featuredArticles.length > 0 ||
-            col1Row1Articles.length > 0 ||
-            col1Row2Articles.length > 0) && (
-            <section className="my-auto mb-20 min-h-screen">
+        {(featuredArticles.length > 0 ||
+          col1Row1Articles.length > 0 ||
+          col1Row2Articles.length > 0) && (
+          <section className="flex min-h-screen items-center py-16 md:py-20">
+            <div className="mx-auto w-full max-w-[1400px] px-6 md:px-12">
               <HomeSpotlightGrid
                 col1Row1Article={col1Row1Articles[0] || null}
                 col1Row1CategorySlug={col1Row1Category?.slug}
@@ -197,9 +197,9 @@ const HomePage = async () => {
                 col2Row12Article={featuredArticles[0] || null}
                 col3Row14Articles={latestArticles.slice(0, 7)}
               />
-            </section>
-          )}
-        </div>
+            </div>
+          </section>
+        )}
 
         {cxoSectionArticles.length > 0 && col1Row1Category && (
           <section className="border-border border-y bg-background py-20 md:py-32">
