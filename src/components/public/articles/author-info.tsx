@@ -63,12 +63,14 @@ export const AuthorInfo = ({
             {avatarContent}
           </Link>
         ))}
-      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+      <div className="flex min-w-0 flex-1 items-center gap-1.5 text-muted-foreground text-sm">
         {disableLinks ? (
-          <span className="font-medium text-foreground">{author.name}</span>
+          <span className="truncate font-medium text-foreground">
+            {author.name}
+          </span>
         ) : (
           <Link
-            className="font-medium text-foreground transition-colors hover:text-muted-foreground"
+            className="truncate font-medium text-foreground transition-colors hover:text-muted-foreground"
             href={`/authors/${author.slug}`}
           >
             {author.name}
@@ -76,8 +78,9 @@ export const AuthorInfo = ({
         )}
         {date && (
           <>
-            <span className="text-border">·</span>
+            <span className="shrink-0 text-border">·</span>
             <time
+              className="shrink-0"
               dateTime={typeof date === "string" ? date : date.toISOString()}
             >
               {formatDate(date)}
@@ -86,8 +89,8 @@ export const AuthorInfo = ({
         )}
         {readTime && (
           <>
-            <span className="text-border">·</span>
-            <span>{readTime} min read</span>
+            <span className="shrink-0 text-border">·</span>
+            <span className="shrink-0">{readTime} min read</span>
           </>
         )}
       </div>
