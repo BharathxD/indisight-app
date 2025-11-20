@@ -22,7 +22,7 @@ export const Header = ({ categories = [] }: HeaderProps) => {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
-              className="font-bold text-foreground text-xl tracking-tight transition-colors hover:text-muted-foreground"
+              className="font-bold font-raleway text-foreground text-xl uppercase tracking-tight transition-colors hover:text-muted-foreground"
               href="/"
             >
               {siteConfig.name}

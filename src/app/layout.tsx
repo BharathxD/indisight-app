@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Raleway } from "next/font/google";
 import localFont from "next/font/local";
 import type { Organization, WebSite, WithContext } from "schema-dts";
 import { siteConfig } from "@/lib/config";
@@ -15,6 +15,12 @@ const _geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const raleway = Raleway({
+  variable: "--font-raleway",
+  subsets: ["latin"],
+  weight: ["700"],
 });
 
 const satoshi = localFont({
@@ -158,7 +164,8 @@ const RootLayout = ({ children }: Readonly<React.PropsWithChildren>) => {
         className={cn(
           "font-satoshi antialiased",
           geistMono.variable,
-          satoshi.variable
+          satoshi.variable,
+          raleway.variable
         )}
       >
         <script
