@@ -47,7 +47,7 @@ export const NewsletterEnhanced = ({
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="border-border border-t bg-background py-16 md:py-20">
+    <section className="border-border bg-background py-16 md:py-16">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
         <motion.div
           animate={isInView ? "show" : "hidden"}

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { AnimatedHero } from "@/components/public/animated-hero";
 import { CategoryBentoGrid } from "@/components/public/category-bento-grid";
+import { EditorialHero } from "@/components/public/editorial-hero";
 import { HomeSpotlightGrid } from "@/components/public/home-spotlight-grid";
 import { NewsletterEnhanced } from "@/components/public/newsletter-enhanced";
-import { ScatteredPortraits } from "@/components/public/scattered-portraits";
 import { SpotlightSection } from "@/components/public/spotlight-section";
 import { StatsSection } from "@/components/public/stats-section";
 import { siteConfig } from "@/lib/config";
@@ -155,33 +154,28 @@ const HomePage = async () => {
 
   return (
     <div className="min-h-screen">
-      <section className="relative min-h-[calc(100vh-65px)] overflow-hidden border-border border-b bg-background">
-        <ScatteredPortraits />
-        <div className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px] opacity-50" />
-
-        <div className="relative z-10 m-auto flex min-h-[calc(100vh-65px)] max-w-[1400px] items-center px-6 md:px-12">
-          <AnimatedHero />
-        </div>
-      </section>
+      <EditorialHero />
 
       {categoriesWithImages.length > 0 && (
         <section className="border-border border-b bg-muted/30 py-16 md:py-20">
-          <div className="mx-auto max-w-[1400px] px-6 md:px-12">
+          <div className="mx-auto max-w-[1400px] border-border border-x px-6 md:px-12">
             <CategoryBentoGrid categories={categoriesWithImages} />
           </div>
         </section>
       )}
 
       <section className="border-border border-b bg-background">
-        <StatsSection stats={stats} />
+        <div className="mx-auto max-w-[1400px] border-border border-x">
+          <StatsSection stats={stats} />
+        </div>
       </section>
 
       <main className="bg-muted/20">
         {(featuredArticles.length > 0 ||
           col1Row1Articles.length > 0 ||
           col1Row2Articles.length > 0) && (
-          <section className="flex min-h-screen items-center py-16 md:py-20">
-            <div className="mx-auto w-full max-w-[1400px] px-6 md:px-12">
+          <section className="flex min-h-screen items-center">
+            <div className="mx-auto w-full max-w-[1400px] border-border border-x bg-background/50 px-6 py-16 md:px-12 md:py-20">
               <HomeSpotlightGrid
                 col1Row1Article={col1Row1Articles[0] || null}
                 col1Row1CategorySlug={col1Row1Category?.slug}
@@ -202,8 +196,8 @@ const HomePage = async () => {
         )}
 
         {cxoSectionArticles.length > 0 && col1Row1Category && (
-          <section className="border-border border-y bg-background py-20 md:py-32">
-            <div className="mx-auto max-w-[1400px] px-6 md:px-12">
+          <section className="border-border border-y bg-background">
+            <div className="mx-auto max-w-[1400px] border-border border-x px-6 py-20 md:px-12 md:py-32">
               <SpotlightSection
                 articles={cxoSectionArticles}
                 title={categorySectionsConfig.cxo.title}
@@ -214,8 +208,8 @@ const HomePage = async () => {
 
         {quietArchitectsSectionArticles.length > 0 &&
           col1Row3ColSpan2Category && (
-            <section className="bg-muted/30 py-20 md:py-32">
-              <div className="mx-auto max-w-[1400px] px-6 md:px-12">
+            <section className="bg-muted/30">
+              <div className="mx-auto max-w-[1400px] border-border border-x px-6 py-20 md:px-12 md:py-32">
                 <SpotlightSection
                   articles={quietArchitectsSectionArticles}
                   horizontalTitle
@@ -227,7 +221,9 @@ const HomePage = async () => {
       </main>
 
       <section className="border-border border-t bg-background">
-        <NewsletterEnhanced signupUrl={siteConfig.newsletter.signupUrl} />
+        <div className="mx-auto max-w-[1400px] border-border border-x">
+          <NewsletterEnhanced signupUrl={siteConfig.newsletter.signupUrl} />
+        </div>
       </section>
     </div>
   );

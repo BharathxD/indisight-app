@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "IndiSight",
   title: "IndiSight - Insights for Leaders & Innovators",
   description:
-    "IndiSight captures the minds shaping meaningful change. We document people, institutions, and ideas through the lens of intent, resilience, and quiet conviction. Not for headlines — but for those who care how things are truly built.",
+    "IndiSight captures the minds shaping meaningful change. We document people, institutions, and ideas through the lens of intent, resilience, and quiet conviction. Not for headlines, but for those who care how things are truly built.",
   url: env.NEXT_PUBLIC_APP_URL,
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.jpg`,
   links: {

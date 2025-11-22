@@ -34,7 +34,10 @@ export const ArticleHeader = ({
             {title}
           </h1>
           {excerpt && (
-            <p className="text-[1rem] text-white/70 leading-[1.65] sm:text-[1.125rem] md:text-[1.25rem] md:leading-[1.6]">
+            <p
+              className="line-clamp-7 text-[1rem] text-white/70 leading-[1.65] sm:text-[1.125rem] md:text-[1.25rem] md:leading-[1.6]"
+              title={excerpt}
+            >
               {excerpt}
             </p>
           )}

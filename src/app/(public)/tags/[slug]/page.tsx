@@ -149,7 +149,7 @@ const TagPage = async ({ params, searchParams }: TagPageProps) => {
           {displayArticles.length > 0 ? (
             <>
               <section>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {displayArticles.map((article) => (
                     <ArticleCardStandard
                       article={article}

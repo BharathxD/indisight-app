@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type ArticlePersonProfileProps = {
   people: {
@@ -25,19 +25,27 @@ export const ArticlePersonProfile = ({ people }: ArticlePersonProfileProps) => {
       <div className="space-y-6">
         {people.map((person) => (
           <div className="space-y-4" key={person.slug}>
-            <div className="flex items-start gap-3">
-              {person.imageUrl && (
-                <Image
-                  alt={person.name}
-                  className="size-10 shrink-0 rounded-full object-cover object-top"
-                  height={100}
-                  src={person.imageUrl}
-                  width={100}
-                />
-              )}
+            <div className="flex items-center gap-3">
+              <Avatar className="size-10 shrink-0">
+                {person.imageUrl && (
+                  <AvatarImage
+                    alt={person.name}
+                    className="object-cover object-top"
+                    src={person.imageUrl}
+                  />
+                )}
+                <AvatarFallback>
+                  {person.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
 
-              <div className="min-w-0 flex-1">
-                <h3 className="mb-1 font-medium text-foreground text-sm leading-tight">
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <h3 className="font-medium text-foreground text-sm leading-tight">
                   {person.name}
                 </h3>
 

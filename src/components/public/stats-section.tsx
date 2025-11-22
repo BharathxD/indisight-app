@@ -62,10 +62,7 @@ export const StatsSection = ({ stats }: StatsSectionProps) => {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <section
-      className="relative overflow-hidden border-border border-b bg-muted py-16 md:py-20"
-      ref={ref}
-    >
+    <div className="relative overflow-hidden bg-muted py-16 md:py-20" ref={ref}>
       <motion.div
         animate={{ opacity: isInView ? 0.4 : 0 }}
         className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px]"
@@ -73,21 +70,20 @@ export const StatsSection = ({ stats }: StatsSectionProps) => {
         transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
       />
 
-      <div className="mx-auto max-w-[1400px] px-6 md:px-12">
-        <motion.div
-          animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
-          className="overflow-hidden border border-border bg-background shadow-sm"
-          initial={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-        >
-          <div className="grid grid-cols-2 divide-x divide-y divide-border lg:grid-cols-4 lg:divide-y-0">
-            {isInView &&
-              stats.map((stat, index) => (
-                <StatItem index={index} key={stat.label} stat={stat} />
-              ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
+      {/* Removed inner max-w container and px since parent handles it */}
+      <motion.div
+        animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
+        className="overflow-hidden border-border border-y bg-background"
+        initial={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+      >
+        <div className="grid grid-cols-2 divide-x divide-y divide-border lg:grid-cols-4 lg:divide-y-0">
+          {isInView &&
+            stats.map((stat, index) => (
+              <StatItem index={index} key={stat.label} stat={stat} />
+            ))}
+        </div>
+      </motion.div>
+    </div>
   );
 };

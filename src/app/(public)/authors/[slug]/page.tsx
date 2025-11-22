@@ -212,7 +212,7 @@ const AuthorPage = async ({ params, searchParams }: AuthorPageProps) => {
                 <h2 className="mb-6 font-bold text-2xl text-foreground">
                   Articles
                 </h2>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {displayArticles.map((article) => (
                     <ArticleCardStandard
                       article={article}

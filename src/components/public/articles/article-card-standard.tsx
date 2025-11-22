@@ -42,12 +42,15 @@ export const ArticleCardStandard = ({
     return (
       <article
         className={cn(
-          "group overflow-hidden border border-border bg-background transition-colors hover:border-foreground",
+          "group flex h-full flex-col overflow-hidden border border-border bg-background transition-colors hover:border-foreground",
           className
         )}
       >
-        <Link className="block" href={`/articles/${article.slug}`}>
-          <div className="relative aspect-square w-full overflow-hidden bg-muted">
+        <Link
+          className="flex h-full flex-col"
+          href={`/articles/${article.slug}`}
+        >
+          <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-muted">
             {article.thumbnailUrl ? (
               <Image
                 alt={article.title}
@@ -81,30 +84,32 @@ export const ArticleCardStandard = ({
               </div>
             )}
           </div>
-          <div className="p-6">
+          <div className="flex flex-1 flex-col p-6">
             {primaryCategory && (
               <div className="mb-3">
                 <CategoryBadge name={primaryCategory.category.name} />
               </div>
             )}
-            <h3 className="mb-3 font-semibold text-foreground text-lg leading-snug tracking-tight">
+            <h3 className="mb-3 line-clamp-3 font-semibold text-foreground text-lg leading-snug tracking-tight">
               {article.title}
             </h3>
             {article.excerpt && (
-              <p className="mb-4 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
+              <p className="mb-4 line-clamp-3 flex-1 text-muted-foreground text-sm leading-relaxed">
                 {article.excerpt}
               </p>
             )}
-            {primaryAuthor && (
-              <AuthorInfo
-                author={primaryAuthor}
-                className="text-xs"
-                date={article.publishedAt}
-                disableLinks
-                readTime={article.readTime}
-                showAvatar={false}
-              />
-            )}
+            <div className="mt-auto">
+              {primaryAuthor && (
+                <AuthorInfo
+                  author={primaryAuthor}
+                  className="text-xs"
+                  date={article.publishedAt}
+                  disableLinks
+                  readTime={article.readTime}
+                  showAvatar={false}
+                />
+              )}
+            </div>
           </div>
         </Link>
       </article>
