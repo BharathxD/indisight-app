@@ -101,6 +101,13 @@ export const siteConfig = {
       bio: "Anshul founded IndiSight with a bold vision: to build a media platform that captures the intelligence, intent, and invisible decisions behind the world's most impactful people, institutions, and ideas. With a strong foundation in strategic consulting and ecosystem thinking, he brings a deep understanding of how decisions shape outcomes, how systems evolve, and how enduring impact is built.",
     },
     {
+      name: "Ravi Teja Nadakudity",
+      role: "Founder",
+      linkedin: "https://www.linkedin.com/in/nadakudityraviteja",
+      image: "/team/ravi-teja-nadakudity.jpg",
+      bio: "Ravi is an edtech entrepreneur and founder passionate about AI, SaaS, and data intelligence. He has built ventures like Vertocity and is currently building a stealth AI startup in the Bay Area. With a background in venture capital and product leadership, he focuses on merging AI, data, and human potential to create scalable impact.",
+    },
+    {
       name: "Poulami Mukherjee",
       role: "Co-founder & Chief Editor",
       linkedin: "https://www.linkedin.com/in/poulami-mukherjee-8496bb28a/",

@@ -96,6 +96,7 @@ const CategoryPage = async ({ params, searchParams }: CategoryPageProps) => {
       caller.cms.article.getByCategory({
         categorySlug: slug,
         limit: articlesPerPage + 1,
+        offset: (currentPage - 1) * articlesPerPage,
       }),
     ]);
   } catch {

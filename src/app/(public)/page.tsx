@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CategoryBentoGrid } from "@/components/public/category-bento-grid";
+import { CategoryMagazineSection } from "@/components/public/category-magazine-section";
 import { EditorialHero } from "@/components/public/editorial-hero";
 import { HomeSpotlightGrid } from "@/components/public/home-spotlight-grid";
 import { NewsletterEnhanced } from "@/components/public/newsletter-enhanced";
@@ -36,6 +37,16 @@ const categorySectionsConfig = {
     title: "Quiet Architects",
     description: "Stories of founders building tomorrow's innovations",
   },
+  investors: {
+    categorySlug: "investors",
+    title: "Investors",
+    description: "Insights from top investors",
+  },
+  educational: {
+    categorySlug: "education-leadership",
+    title: "Educational Leadership",
+    description: "Learn and grow",
+  },
 } as const;
 
 export const metadata: Metadata = {
@@ -67,6 +78,8 @@ const HomePage = async () => {
     col1Row1Category,
     col1Row2Category,
     col1Row3ColSpan2Category,
+    investorsCategory,
+    educationalCategory,
     featuredArticles,
     latestArticles,
     categories,
@@ -83,8 +96,16 @@ const HomePage = async () => {
         slug: spotlightGridConfig.col1Row3ColSpan2.categorySlug,
       })
       .catch(() => null),
+    caller.cms.category
+      .getBySlugPublic({ slug: categorySectionsConfig.investors.categorySlug })
+      .catch(() => null),
+    caller.cms.category
+      .getBySlugPublic({
+        slug: categorySectionsConfig.educational.categorySlug,
+      })
+      .catch(() => null),
     caller.cms.article.getFeatured({ limit: 6 }),
-    caller.cms.article.getLatest({ limit: 12 }),
+    caller.cms.article.getLatest({ limit: 12 }).then((res) => res.articles),
     caller.cms.category.getAll(),
     caller.analytics.getOverview(),
   ]);
@@ -95,36 +116,64 @@ const HomePage = async () => {
     col1Row3ColSpan2Articles,
     cxoSectionArticles,
     quietArchitectsSectionArticles,
+    investorsArticles,
+    educationalArticles,
   ] = await Promise.all([
     col1Row1Category
-      ? caller.cms.article.getLatest({
-          limit: 1,
-          categoryId: col1Row1Category.id,
-        })
+      ? caller.cms.article
+          .getLatest({
+            limit: 1,
+            categoryId: col1Row1Category.id,
+          })
+          .then((res) => res.articles)
       : Promise.resolve([]),
     col1Row2Category
-      ? caller.cms.article.getLatest({
-          limit: 1,
-          categoryId: col1Row2Category.id,
-        })
+      ? caller.cms.article
+          .getLatest({
+            limit: 1,
+            categoryId: col1Row2Category.id,
+          })
+          .then((res) => res.articles)
       : Promise.resolve([]),
     col1Row3ColSpan2Category
-      ? caller.cms.article.getLatest({
-          limit: 2,
-          categoryId: col1Row3ColSpan2Category.id,
-        })
+      ? caller.cms.article
+          .getLatest({
+            limit: 2,
+            categoryId: col1Row3ColSpan2Category.id,
+          })
+          .then((res) => res.articles)
       : Promise.resolve([]),
     col1Row1Category
-      ? caller.cms.article.getLatest({
-          limit: 6,
-          categoryId: col1Row1Category.id,
-        })
+      ? caller.cms.article
+          .getLatest({
+            limit: 6,
+            categoryId: col1Row1Category.id,
+          })
+          .then((res) => res.articles)
       : Promise.resolve([]),
     col1Row3ColSpan2Category
-      ? caller.cms.article.getLatest({
-          limit: 6,
-          categoryId: col1Row3ColSpan2Category.id,
-        })
+      ? caller.cms.article
+          .getLatest({
+            limit: 6,
+            categoryId: col1Row3ColSpan2Category.id,
+          })
+          .then((res) => res.articles)
+      : Promise.resolve([]),
+    investorsCategory
+      ? caller.cms.article
+          .getLatest({
+            limit: 4,
+            categoryId: investorsCategory.id,
+          })
+          .then((res) => res.articles)
+      : Promise.resolve([]),
+    educationalCategory
+      ? caller.cms.article
+          .getLatest({
+            limit: 4,
+            categoryId: educationalCategory.id,
+          })
+          .then((res) => res.articles)
       : Promise.resolve([]),
   ]);
 
@@ -218,6 +267,31 @@ const HomePage = async () => {
               </div>
             </section>
           )}
+
+        {investorsArticles.length > 0 && investorsCategory && (
+          <section className="border-border border-y bg-background">
+            <div className="mx-auto max-w-[1400px] border-border border-x px-6 py-20 md:px-12 md:py-32">
+              <CategoryMagazineSection
+                articles={investorsArticles}
+                title={categorySectionsConfig.investors.title}
+                viewAllLink={`/categories/${investorsCategory.slug}`}
+              />
+            </div>
+          </section>
+        )}
+
+        {educationalArticles.length > 0 && educationalCategory && (
+          <section className="bg-muted/30">
+            <div className="mx-auto max-w-[1400px] border-border border-x px-6 py-20 md:px-12 md:py-32">
+              <CategoryMagazineSection
+                align="right"
+                articles={educationalArticles}
+                title={categorySectionsConfig.educational.title}
+                viewAllLink={`/categories/${educationalCategory.slug}`}
+              />
+            </div>
+          </section>
+        )}
       </main>
 
       <section className="border-border border-t bg-background">

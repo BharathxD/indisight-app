@@ -6,7 +6,7 @@ export const revalidate = 3600;
 
 export const GET = async () => {
   const caller = trpc();
-  const articles = await caller.cms.article.getLatest({ limit: 50 });
+  const { articles } = await caller.cms.article.getLatest({ limit: 50 });
 
   const feed = new RSS({
     title: siteConfig.name,

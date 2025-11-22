@@ -131,9 +131,14 @@ const ContactPage = () => (
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {siteConfig.team.map((member) => (
+            {siteConfig.team.map((member, index) => (
               <div
-                className="group border border-border bg-muted p-8 transition-colors hover:border-foreground"
+                className={`group border border-border bg-muted p-8 transition-colors hover:border-foreground ${
+                  index === siteConfig.team.length - 1 &&
+                  siteConfig.team.length % 2 !== 0
+                    ? "md:col-span-2"
+                    : ""
+                }`}
                 key={member.name}
               >
                 <div className="mb-6 flex items-start gap-6">

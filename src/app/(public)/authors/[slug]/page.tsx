@@ -92,6 +92,7 @@ const AuthorPage = async ({ params, searchParams }: AuthorPageProps) => {
       caller.cms.article.getByAuthor({
         authorSlug: slug,
         limit: articlesPerPage + 1,
+        offset: (currentPage - 1) * articlesPerPage,
       }),
     ]);
   } catch {

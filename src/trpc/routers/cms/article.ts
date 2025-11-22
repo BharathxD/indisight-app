@@ -176,6 +176,7 @@ export const articleRouter = router({
         isFeatured: z.boolean().optional(),
         isTrending: z.boolean().optional(),
         sortBy: z.enum(["newest", "oldest"]).default("newest"),
+        offset: z.number().int().min(0).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -216,39 +217,43 @@ export const articleRouter = router({
           ? { publishedAt: "desc" as const }
           : { publishedAt: "asc" as const };
 
-      const articles = await ctx.db.article.findMany({
-        where,
-        take: input.limit,
-        orderBy,
-        include: {
-          articleAuthors: {
-            include: {
-              author: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  profileImageUrl: true,
+      const [articles, total] = await Promise.all([
+        ctx.db.article.findMany({
+          where,
+          take: input.limit,
+          skip: input.offset,
+          orderBy,
+          include: {
+            articleAuthors: {
+              include: {
+                author: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    profileImageUrl: true,
+                  },
+                },
+              },
+              orderBy: { authorOrder: "asc" },
+            },
+            articleCategories: {
+              include: {
+                category: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                  },
                 },
               },
             },
-            orderBy: { authorOrder: "asc" },
           },
-          articleCategories: {
-            include: {
-              category: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                },
-              },
-            },
-          },
-        },
-      });
+        }),
+        ctx.db.article.count({ where }),
+      ]);
 
-      return articles;
+      return { articles, total };
     }),
 
   getBySlugPublic: publicProcedure
@@ -422,6 +427,7 @@ export const articleRouter = router({
         categorySlug: z.string(),
         limit: z.number().min(1).max(50).default(12),
         cursor: z.string().optional(),
+        offset: z.number().int().min(0).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -443,7 +449,11 @@ export const articleRouter = router({
           articleCategories: { some: { categoryId: category.id } },
         },
         take: input.limit + 1,
-        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        ...(input.cursor
+          ? { cursor: { id: input.cursor }, skip: 1 }
+          : input.offset !== undefined
+            ? { skip: input.offset }
+            : {}),
         orderBy: { publishedAt: "desc" },
         include: {
           articleAuthors: {
@@ -466,6 +476,7 @@ export const articleRouter = router({
                   id: true,
                   name: true,
                   slug: true,
+                  description: true,
                 },
               },
             },
@@ -488,6 +499,7 @@ export const articleRouter = router({
         authorSlug: z.string(),
         limit: z.number().min(1).max(50).default(12),
         cursor: z.string().optional(),
+        offset: z.number().int().min(0).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -509,7 +521,11 @@ export const articleRouter = router({
           articleAuthors: { some: { authorId: author.id } },
         },
         take: input.limit + 1,
-        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        ...(input.cursor
+          ? { cursor: { id: input.cursor }, skip: 1 }
+          : input.offset !== undefined
+            ? { skip: input.offset }
+            : {}),
         orderBy: { publishedAt: "desc" },
         include: {
           articleAuthors: {
@@ -554,6 +570,7 @@ export const articleRouter = router({
         tagSlug: z.string(),
         limit: z.number().min(1).max(50).default(12),
         cursor: z.string().optional(),
+        offset: z.number().int().min(0).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -575,7 +592,11 @@ export const articleRouter = router({
           articleTags: { some: { tagId: tag.id } },
         },
         take: input.limit + 1,
-        ...(input.cursor && { cursor: { id: input.cursor }, skip: 1 }),
+        ...(input.cursor
+          ? { cursor: { id: input.cursor }, skip: 1 }
+          : input.offset !== undefined
+            ? { skip: input.offset }
+            : {}),
         orderBy: { publishedAt: "desc" },
         include: {
           articleAuthors: {

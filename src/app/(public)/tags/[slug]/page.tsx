@@ -89,6 +89,7 @@ const TagPage = async ({ params, searchParams }: TagPageProps) => {
       caller.cms.article.getByTag({
         tagSlug: slug,
         limit: articlesPerPage + 1,
+        offset: (currentPage - 1) * articlesPerPage,
       }),
     ]);
   } catch {

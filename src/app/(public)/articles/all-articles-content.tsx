@@ -2,7 +2,12 @@
 
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
-import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+} from "nuqs";
 import { useEffect, useState } from "react";
 import {
   ArticleCardHero,
@@ -10,6 +15,7 @@ import {
 } from "@/components/public/articles";
 import { ArticlesFilters } from "@/components/public/articles/articles-filters";
 import { ArticlesSkeleton } from "@/components/public/articles/articles-skeleton";
+import { Pagination } from "@/components/public/pagination";
 import { Button } from "@/components/ui/button";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { trpc } from "@/trpc/client";
@@ -37,23 +43,34 @@ export const AllArticlesContent = () => {
       .withDefault("newest")
       .withOptions({ shallow: true, history: "replace" })
   );
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger
+      .withDefault(1)
+      .withOptions({ shallow: true, history: "push" })
+  );
 
   const [searchInput, setSearchInput] = useState(search || "");
 
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
     setSearch(value || null);
+    setPage(1);
   }, 300);
 
   useEffect(() => {
     debouncedSetSearch(searchInput);
   }, [searchInput, debouncedSetSearch]);
 
+  const limit = 12; // 12 articles per page
+  const offset = (page - 1) * limit;
+
   const {
-    data: articles,
+    data: articlesData,
     isLoading,
     isFetching,
   } = trpc.cms.article.getLatest.useQuery({
-    limit: 50,
+    limit,
+    offset,
     search: search || undefined,
     categoryId: categoryId || undefined,
     isFeatured: isFeatured || undefined,
@@ -64,8 +81,12 @@ export const AllArticlesContent = () => {
   const { data: categories } = trpc.cms.category.getAll.useQuery();
 
   const showSkeleton = isLoading;
-  const featuredArticle = articles?.[0];
-  const restArticles = articles?.slice(1) || [];
+  const articles = articlesData?.articles || [];
+  const total = articlesData?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  const featuredArticle = page === 1 ? articles[0] : null;
+  const restArticles = page === 1 ? articles.slice(1) : articles;
 
   const hasActiveFilters =
     search || categoryId || isFeatured !== null || isTrending !== null;
@@ -77,12 +98,21 @@ export const AllArticlesContent = () => {
     setIsFeatured(null);
     setIsTrending(null);
     setSortBy("newest");
+    setPage(1);
+  };
+
+  const handleFilterChange = <T,>(
+    setter: (value: T | null) => void,
+    value: T | null
+  ) => {
+    setter(value);
+    setPage(1);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-[1400px] px-6 py-8 md:px-12 md:py-12">
-        <div className="mb-12 border-border border-b pb-8">
+        <div className="mb-6 border-border border-b pb-8">
           <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight md:text-5xl">
             All Articles
           </h1>
@@ -98,20 +128,20 @@ export const AllArticlesContent = () => {
           isFeatured={isFeatured}
           isLoading={isFetching}
           isTrending={isTrending}
-          onCategoryChange={setCategoryId}
-          onFeaturedChange={setIsFeatured}
+          onCategoryChange={(val) => handleFilterChange(setCategoryId, val)}
+          onFeaturedChange={(val) => handleFilterChange(setIsFeatured, val)}
           onSearchChange={setSearchInput}
-          onSortByChange={setSortBy}
-          onTrendingChange={setIsTrending}
-          resultsCount={articles?.length}
+          onSortByChange={(val) => handleFilterChange(setSortBy, val)}
+          onTrendingChange={(val) => handleFilterChange(setIsTrending, val)}
+          resultsCount={total}
           search={searchInput}
           sortBy={sortBy}
         />
 
         <div className="mt-12">
           {showSkeleton ? (
-            <ArticlesSkeleton gridCount={50} heroCount={0} />
-          ) : articles && articles.length > 0 ? (
+            <ArticlesSkeleton gridCount={12} heroCount={1} />
+          ) : articles.length > 0 ? (
             <>
               {featuredArticle && (
                 <section className="mb-12">
@@ -131,6 +161,16 @@ export const AllArticlesContent = () => {
                     ))}
                   </div>
                 </section>
+              )}
+
+              {totalPages > 1 && (
+                <div className="mt-12">
+                  <Pagination
+                    baseUrl="/articles"
+                    currentPage={page}
+                    totalPages={totalPages}
+                  />
+                </div>
               )}
             </>
           ) : (

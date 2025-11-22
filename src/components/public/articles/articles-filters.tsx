@@ -3,6 +3,7 @@
 import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { FancySwitch } from "@/components/ui/fancy-switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 
 type Category = {
@@ -96,7 +96,7 @@ export const ArticlesFilters = ({
         <div className="relative min-w-[200px] flex-1 md:max-w-md">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
-            className="pr-10 pl-10"
+            className="rounded-none pr-10 pl-10 [&::-webkit-search-cancel-button]:appearance-none"
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search articles, authors..."
             type="search"
@@ -104,7 +104,7 @@ export const ArticlesFilters = ({
           />
           {(searchInput || isSearching) && (
             <button
-              className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground transition-colors hover:text-foreground"
+              className="-translate-y-1/2 absolute top-1/2 right-3 rounded-none text-muted-foreground transition-colors hover:text-foreground"
               onClick={handleClearSearch}
               type="button"
             >
@@ -123,7 +123,7 @@ export const ArticlesFilters = ({
           }
           value={categoryId || "all"}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] rounded-none">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
@@ -137,7 +137,7 @@ export const ArticlesFilters = ({
         </Select>
 
         <Select onValueChange={onSortByChange} value={sortBy}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[160px] rounded-none">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -147,7 +147,7 @@ export const ArticlesFilters = ({
         </Select>
 
         <div className="flex items-center gap-2 pr-1.5">
-          <Switch
+          <FancySwitch
             checked={isFeatured === true}
             id="featured-filter"
             onCheckedChange={(checked) =>
@@ -160,7 +160,7 @@ export const ArticlesFilters = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <Switch
+          <FancySwitch
             checked={isTrending === true}
             id="trending-filter"
             onCheckedChange={(checked) =>

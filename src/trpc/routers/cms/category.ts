@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
+import { getCachedCategories } from "@/lib/cached-queries";
 import { adminProcedure, publicProcedure } from "@/trpc/procedure";
 import { router } from "@/trpc/server";
 import {
@@ -12,7 +14,7 @@ const createCategorySchema = z.object({
   name: z.string().min(1).max(255),
   slug: z.string().min(1).max(255),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.url().optional(),
   imageAlt: z.string().optional(),
   icon: z.string().optional(),
   isActive: z.boolean().default(true),
@@ -33,23 +35,7 @@ const listCategoriesSchema = z.object({
 });
 
 export const categoryRouter = router({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    const categories = await ctx.db.category.findMany({
-      where: { isActive: true },
-      orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        imageUrl: true,
-        icon: true,
-        articleCount: true,
-      },
-    });
-
-    return categories;
-  }),
+  getAll: publicProcedure.query(async () => getCachedCategories()),
 
   getBySlugPublic: publicProcedure
     .input(z.object({ slug: z.string() }))
@@ -219,13 +205,16 @@ export const categoryRouter = router({
         }
       }
 
-      return ctx.db.category.create({
+      const category = await ctx.db.category.create({
         data: {
           ...input,
           slug,
           articleCount: 0,
         },
       });
+
+      revalidateTag("categories", { expire: 0 });
+      return category;
     }),
 
   update: adminProcedure
@@ -285,10 +274,13 @@ export const categoryRouter = router({
         }
       }
 
-      return ctx.db.category.update({
+      const updated = await ctx.db.category.update({
         where: { id },
         data,
       });
+
+      revalidateTag("categories", { expire: 0 });
+      return updated;
     }),
 
   reorder: adminProcedure
@@ -311,10 +303,13 @@ export const categoryRouter = router({
         });
       }
 
-      return ctx.db.category.update({
+      const updated = await ctx.db.category.update({
         where: { id: input.id },
         data: { displayOrder: input.newDisplayOrder },
       });
+
+      revalidateTag("categories", { expire: 0 });
+      return updated;
     }),
 
   delete: adminProcedure
@@ -352,6 +347,8 @@ export const categoryRouter = router({
       await ctx.db.category.delete({
         where: { id: input.id },
       });
+
+      revalidateTag("categories", { expire: 0 });
 
       return { success: true };
     }),
