@@ -44,7 +44,7 @@ const StatItem = ({ stat, index }: { stat: StatItem; index: number }) => (
     </motion.div>
     <motion.div
       animate={{ opacity: 1 }}
-      className="relative font-medium text-muted-foreground text-xs uppercase tracking-widest"
+      className="relative truncate font-medium text-muted-foreground text-xs uppercase tracking-widest"
       initial={{ opacity: 0 }}
       transition={{
         duration: 0.4,

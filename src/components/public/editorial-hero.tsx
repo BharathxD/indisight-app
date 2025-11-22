@@ -218,21 +218,20 @@ const MetricCard = ({
   index: number;
   isMobile?: boolean;
 }) => {
-  const desktopPositions = {
-    top: "top-[15%] left-[10%]",
-    "middle-right": "top-[35%] right-[15%]",
-    middle: "top-[50%] left-[15%]",
-    bottom: "bottom-[20%] right-[10%]",
+  const positionClasses = {
+    top: isMobile
+      ? "top-[20%] left-[3%] sm:top-[10%] sm:left-[5%]"
+      : "top-[12%] left-[8%] xl:top-[15%] xl:left-[10%]",
+    "middle-right": isMobile
+      ? "top-[25%] right-[3%] sm:top-[28%] sm:right-[5%]"
+      : "top-[32%] right-[12%] xl:top-[35%] xl:right-[15%]",
+    middle: isMobile
+      ? "top-[48%] left-[3%] sm:top-[52%] sm:left-[5%]"
+      : "top-[48%] left-[12%] xl:top-[50%] xl:left-[15%]",
+    bottom: isMobile
+      ? "bottom-[8%] right-[3%] sm:bottom-[10%] sm:right-[5%]"
+      : "bottom-[18%] right-[8%] xl:bottom-[20%] xl:right-[10%]",
   };
-
-  const mobilePositions = {
-    top: "top-[8%] left-[5%]",
-    "middle-right": "top-[28%] right-[5%]",
-    middle: "top-[52%] left-[5%]",
-    bottom: "bottom-[10%] right-[5%]",
-  };
-
-  const positionClasses = isMobile ? mobilePositions : desktopPositions;
 
   return (
     <motion.div
@@ -243,29 +242,29 @@ const MetricCard = ({
       style={{ willChange: "transform, opacity" }}
       variants={metricCardVariants}
     >
-      <div className="border border-border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-sm lg:px-4 lg:py-3">
-        <div className="flex items-center gap-2 lg:gap-3">
+      <div className="border border-border bg-background/80 px-2.5 py-1.5 shadow-lg backdrop-blur-sm sm:px-3 sm:py-2 lg:px-4 lg:py-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider lg:text-[10px]">
+            <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-wider sm:text-[9px] lg:text-[10px]">
               {metric.label}
             </span>
-            <div className="flex items-baseline gap-1">
-              <span className="font-semibold text-base text-foreground lg:text-lg">
+            <div className="flex items-baseline gap-0.5 sm:gap-1">
+              <span className="font-semibold text-foreground text-sm sm:text-base lg:text-lg">
                 {metric.value}
               </span>
               {metric.subtitle && (
-                <span className="font-mono text-[9px] text-muted-foreground lg:text-[10px]">
+                <span className="font-mono text-[8px] text-muted-foreground sm:text-[9px] lg:text-[10px]">
                   {metric.subtitle}
                 </span>
               )}
             </div>
           </div>
           {metric.status === "active" && (
-            <div className="size-1.5 animate-pulse rounded-full bg-green-500 lg:size-2" />
+            <div className="size-1.5 animate-pulse rounded-full bg-green-500 sm:size-1.5 lg:size-2" />
           )}
           {metric.trend === "up" && (
             <svg
-              className="size-3 text-green-500 lg:size-4"
+              className="size-2.5 text-green-500 sm:size-3 lg:size-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -301,13 +300,13 @@ const MetricCards = ({ isMobile }: { isMobile?: boolean }) => (
 const LiveIndicator = () => (
   <motion.div
     animate={{ opacity: 1 }}
-    className="absolute top-4 left-4 z-20 lg:top-6 lg:left-6"
+    className="absolute top-3 left-3 z-20 sm:top-4 sm:left-4 lg:top-6 lg:left-6"
     initial={{ opacity: 0 }}
     transition={{ delay: 0.5, duration: 0.5 }}
   >
-    <div className="flex items-center gap-2 border border-border bg-background/90 px-3 py-1.5 backdrop-blur-sm">
-      <div className="size-2 animate-pulse rounded-full bg-green-500" />
-      <span className="font-mono text-muted-foreground text-xs uppercase tracking-wider">
+    <div className="flex items-center gap-1.5 border border-border bg-background/90 px-2 py-1 backdrop-blur-sm sm:gap-2 sm:px-3 sm:py-1.5">
+      <div className="size-1.5 animate-pulse rounded-full bg-green-500 sm:size-2" />
+      <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider sm:text-xs">
         Live Intelligence
       </span>
     </div>
@@ -326,22 +325,22 @@ const IntelligenceVisualization = ({ isMobile }: { isMobile?: boolean }) => (
 export const EditorialHero = () => (
   <section className="border-border border-b bg-background">
     <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-[1400px] flex-col border-border border-x lg:flex-row">
-      <div className="flex flex-col justify-center border-border border-r-0 p-6 lg:w-[60%] lg:border-r lg:p-12 xl:p-16">
+      <div className="flex flex-col justify-center border-border border-r-0 p-4 sm:p-6 md:p-8 lg:w-[60%] lg:border-r lg:p-10 xl:p-16">
         <motion.div
           animate="show"
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
           initial="hidden"
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <div className="inline-flex items-center gap-2 border border-border bg-muted/30 px-3 py-1 font-medium text-muted-foreground text-xs uppercase tracking-wider">
-              <span className="h-px w-4 bg-foreground/50" />
+            <div className="inline-flex items-center gap-1.5 border border-border bg-muted/30 px-2.5 py-0.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wider sm:gap-2 sm:px-3 sm:py-1 sm:text-xs">
+              <span className="h-px w-3 bg-foreground/50 sm:w-4" />
               The New Standard
             </div>
           </motion.div>
 
           <motion.h1
-            className="font-medium font-serif text-5xl text-foreground leading-[1.1] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl"
+            className="font-medium font-serif text-4xl text-foreground leading-[1.1] tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
             variants={itemVariants}
           >
             Capturing the <br />
@@ -351,7 +350,7 @@ export const EditorialHero = () => (
           </motion.h1>
 
           <motion.p
-            className="max-w-lg text-lg text-muted-foreground leading-relaxed md:text-xl"
+            className="max-w-lg text-base text-muted-foreground leading-relaxed sm:text-lg md:text-xl"
             variants={itemVariants}
           >
             {siteConfig.description}
@@ -360,19 +359,19 @@ export const EditorialHero = () => (
 
         <motion.div
           animate="show"
-          className="mt-6 flex flex-wrap items-center gap-4"
+          className="mt-4 flex flex-wrap items-center gap-3 sm:mt-6 sm:gap-4"
           initial="hidden"
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
             <Link
-              className="group inline-flex h-11.5 items-center justify-center gap-2 border border-foreground bg-foreground px-8 font-medium text-background text-sm transition-all hover:bg-background hover:text-foreground"
+              className="group inline-flex h-10 items-center justify-center gap-2 border border-foreground bg-foreground px-6 font-medium text-background text-xs transition-all hover:bg-background hover:text-foreground sm:h-11.5 sm:px-8 sm:text-sm"
               href="/articles"
             >
               Explore Articles
               <svg
                 aria-hidden="true"
-                className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                className="size-3.5 transition-transform duration-300 group-hover:translate-x-1 sm:size-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -388,7 +387,7 @@ export const EditorialHero = () => (
           </motion.div>
           <motion.div variants={itemVariants}>
             <Link
-              className="inline-flex h-12 items-center justify-center border px-8 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+              className="inline-flex h-10 items-center justify-center border px-6 font-medium text-muted-foreground text-xs transition-colors hover:text-foreground sm:h-12 sm:px-8 sm:text-sm"
               href="/why"
             >
               Our Manifesto
@@ -403,7 +402,7 @@ export const EditorialHero = () => (
         </div>
       </div>
 
-      <div className="relative block h-[400px] w-full overflow-hidden border-border border-t lg:hidden">
+      <div className="relative block h-[300px] xs:h-[350px] w-full overflow-hidden border-border border-t sm:h-[450px] md:h-[500px] lg:hidden">
         <IntelligenceVisualization isMobile />
       </div>
     </div>
