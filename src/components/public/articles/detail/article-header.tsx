@@ -19,13 +19,14 @@ export const ArticleHeader = ({
   featuredImageAlt,
   primaryCategory,
 }: ArticleHeaderProps) => (
-  <div className="border-border border-b bg-black py-12 md:py-20 lg:py-24">
+  <header className="border-border border-b bg-black py-12 md:py-20 lg:py-24">
     <div className="mx-auto max-w-[1400px] px-6 md:px-12">
       <div className="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
         <div className="order-2 w-full lg:order-1 lg:flex-1 lg:pt-4">
           {primaryCategory && (
             <div className="mb-6">
               <span className="rounded-full border border-white/20 bg-white/5 px-4 py-1.5 font-medium text-[0.8125rem] text-white/90 uppercase tracking-wider backdrop-blur-sm">
+                <span className="sr-only">Category: </span>
                 {primaryCategory.category.name}
               </span>
             </div>
@@ -43,7 +44,7 @@ export const ArticleHeader = ({
           )}
         </div>
         {featuredImageUrl && (
-          <div className="order-1 w-full lg:order-2 lg:w-[420px] lg:shrink-0 xl:w-[480px]">
+          <figure className="order-1 w-full lg:order-2 lg:w-[420px] lg:shrink-0 xl:w-[480px]">
             <div className="relative aspect-4/3 w-full overflow-hidden rounded-lg sm:aspect-square">
               <Image
                 alt={featuredImageAlt || title}
@@ -54,9 +55,9 @@ export const ArticleHeader = ({
                 src={featuredImageUrl}
               />
             </div>
-          </div>
+          </figure>
         )}
       </div>
     </div>
-  </div>
+  </header>
 );
