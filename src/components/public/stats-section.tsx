@@ -62,7 +62,7 @@ export const StatsSection = ({ stats }: StatsSectionProps) => {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <div className="relative overflow-hidden bg-muted py-16 md:py-20" ref={ref}>
+    <div className="relative overflow-hidden py-16 md:py-20" ref={ref}>
       <motion.div
         animate={{ opacity: isInView ? 0.4 : 0 }}
         className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[64px_64px]"
